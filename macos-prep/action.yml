@@ -150,9 +150,9 @@ runs:
           if [ -f "/opt/R/arm64/bin/cargo" ]; then
             echo "Shims already exist"
           else
-            curl -sSL https://github.com/r-universe-org/actions/raw/master/macos-prep/shims/arch.sh > /opt/R/arm64/bin/arch
-            curl -sSL https://github.com/r-universe-org/actions/raw/master/macos-prep/shims/uname.sh > /opt/R/arm64/bin/uname
-            curl -sSL https://github.com/r-universe-org/actions/raw/master/macos-prep/shims/cargo.sh > /opt/R/arm64/bin/cargo
+            curl -sSL https://github.com/r-universe-org/actions/raw/HEAD/macos-prep/shims/arch.sh > /opt/R/arm64/bin/arch
+            curl -sSL https://github.com/r-universe-org/actions/raw/HEAD/macos-prep/shims/uname.sh > /opt/R/arm64/bin/uname
+            curl -sSL https://github.com/r-universe-org/actions/raw/HEAD/macos-prep/shims/cargo.sh > /opt/R/arm64/bin/cargo
             chmod +x /opt/R/arm64/bin/uname /opt/R/arm64/bin/arch /opt/R/arm64/bin/cargo
           fi
 
@@ -169,7 +169,9 @@ runs:
         curl --retry 3 -fLO https://github.com/autobrew/bundler/releases/download/jags-4.3.2/JAGS-4.3.2.pkg
         sudo installer -pkg JAGS-4.3.2.pkg -target /
         rm -f JAGS-4.3.2.pkg
-        cp -f /usr/local/lib/pkgconfig/jags.pc /opt/R/arm64/lib/pkgconfig/
+        if [ -d "/opt/R/arm64/lib/pkgconfig" ]; then
+          cp -f /usr/local/lib/pkgconfig/jags.pc /opt/R/arm64/lib/pkgconfig/
+        fi
         echo "Done installing JAGS!"
         echo "::endgroup::"
       if: inputs.jags
