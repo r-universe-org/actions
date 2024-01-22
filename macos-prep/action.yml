@@ -147,14 +147,7 @@ runs:
           sed -i '' 's|-lpng16|-lpng16 -lz|g' /opt/R/arm64/bin/libpng16-config
 
           # Create shims to help some packages
-          if [ -f "/opt/R/arm64/bin/cargo" ]; then
-            echo "Shims already exist"
-          else
-            curl -sSL https://github.com/r-universe-org/actions/raw/HEAD/macos-prep/shims/arch.sh > /opt/R/arm64/bin/arch
-            curl -sSL https://github.com/r-universe-org/actions/raw/HEAD/macos-prep/shims/uname.sh > /opt/R/arm64/bin/uname
-            curl -sSL https://github.com/r-universe-org/actions/raw/HEAD/macos-prep/shims/cargo.sh > /opt/R/arm64/bin/cargo
-            chmod +x /opt/R/arm64/bin/uname /opt/R/arm64/bin/arch /opt/R/arm64/bin/cargo
-          fi
+          cp -fv ${{ github.action_path }}/shims/* /opt/R/arm64/bin/
 
         fi
         echo "Available libs through pkg-config:"
