@@ -1,0 +1,81 @@
+# This could also just be a step in the 'build-and-check' action
+# but output on GHA might be more clear if this is a separate
+# top-level step in the workflow.
+name: 'Cross compile for ARM64'
+description: 'Prepare and check a package'
+inputs:
+  sourcepkg:
+    description: 'File of the source package'
+    required: true
+  cargo:
+    description: 'Does the package use Rust'
+outputs:
+  binarypkg:
+    description: 'Filename of the output binary package'
+    value: ${{steps.crosscompile.outputs.binarypkg}}
+
+runs:
+  using: "composite"
+  steps: 
+    - name: Prepare cargo toolchain for cross
+      shell: bash
+      if: inputs.cargo
+      run: |
+        rustup target add aarch64-apple-darwin || true
+    - name: Temporary hacks
+      run: |
+        if(length(find.package('RcppParallel', quiet = TRUE))) {
+          install.packages("RcppParallel", repos = "https://rcppcore.r-universe.dev")
+          install.packages("RcppParallel", "/opt", "https://rcppcore.r-universe.dev", type="mac.binary.big-sur-arm64")
+        }
+        if(length(find.package('Rhtslib', quiet = TRUE))) {
+          install.packages("Rhtslib", repos = "https://bioconductor.r-universe.dev")
+          install.packages("Rhtslib", "/opt", "https://bioconductor.r-universe.dev", type="mac.binary.big-sur-arm64")
+        }
+        if(length(find.package('Rhdf5lib', quiet = TRUE))) {
+          install.packages("Rhdf5lib", "/opt", type="mac.binary.big-sur-arm64")
+        }
+      shell: Rscript {0}
+      continue-on-error: true
+    - name: Cross compilation for ARM64
+      shell: bash
+      id: crosscompile
+      env:
+        SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk # Arrow assumes recent libcurl
+        PROJ_GDAL_DATA_COPY: TRUE
+        ARROW_R_DEV: TRUE
+        LIBARROW_BINARY: darwin-arm64-openssl-1.1
+        _R_SHLIB_STRIP_: TRUE
+        R_CONFIGURE_FLAGS: '--build=x86_64-apple-darwin20 --host=aarch64-apple-darwin20'
+        TBB_LINK_LIB: /opt/RcppParallel/lib
+        RHDF5LIB_RPATH: /opt/Rhdf5lib/lib
+        RHTSLIB_RPATH: /opt/Rhtslib/usrlib
+        #arch: arm64 #for RcppParallel
+      run: |
+        sed -i.bak 's|x86_64-apple-darwin20|aarch64-apple-darwin20|g' $(R RHOME)/etc/Makeconf
+        sed -i.bak 's|x86_64|arm64|g' $(R RHOME)/etc/Makeconf
+        sed -i.bak 's|-undefined dynamic_lookup||g' $(R RHOME)/etc/Makeconf
+        sed -i.bak 's|-msse2 -mfpmath=sse||g' $(R RHOME)/etc/Makeconf
+        sed -i.bak 's|R_HOME|R_HOME_CROSS|g' $(R RHOME)/etc/Makeconf
+        sed -i.bak 's|^LIBR =.*|LIBR = -L$(R_HOME_CROSS)/lib -lR|g' $(R RHOME)/etc/Makeconf
+        package=$(echo ${{inputs.sourcepkg}} | cut -d '_' -f1)
+        binarypkg=$(basename "${{inputs.sourcepkg}}" | sed 's/.tar.gz/-arm64.tgz/')
+        export PATH="/opt/R/arm64/bin:$PATH"
+        export PKG_CONFIG_PATH="${PKG_CONFIG_PATH//x86_64/arm64}"
+        export PKG_CONFIG_LIBDIR=$(pkg-config --variable pc_path pkg-config | sed 's|x86_64|arm64|g')
+        export PROJ_LIB="${PROJ_LIB//x86_64/arm64}"
+        echo "::group::pkg-config settings:"
+        echo "PKG_CONFIG_LIBDIR: $PKG_CONFIG_LIBDIR"
+        echo "PKG_CONFIG_PATH: $PKG_CONFIG_PATH"
+        pkg-config --list-all
+        echo "::endgroup::"
+        mkdir armcross
+        R CMD INSTALL ${{inputs.sourcepkg}} --library=armcross --no-test-load --configure-args="${R_CONFIGURE_FLAGS}"
+        sed -i '' 's/x86_64-apple-darwin/aarch64-apple-darwin/g' "armcross/${package}/DESCRIPTION"
+        (cd armcross; GZIP=-9 tar czf "../$binarypkg" $package)
+        if [ -f "${binarypkg}" ]; then
+          echo "Built cross binary package: $binarypkg"
+          echo "binarypkg=$binarypkg" >> $GITHUB_OUTPUT
+        else
+          echo "No binary package $binarypkg found. Skipping deployment."
+        fi

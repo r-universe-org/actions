@@ -1,0 +1,175 @@
+name: 'Prepare MacOS system'
+description: 'Prepare system for building R packages'
+inputs:
+  version:
+    description: 'Version of R'
+    default: 'release'
+    required: false
+  fortran:
+    description: 'Package uses Fortran'
+    required: false
+  jags:
+    description: 'Package depends on JAGS'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        sudo mkdir -p /opt
+        sudo chown $USER /opt
+
+    - shell: bash
+      if: inputs.version == 'release'
+      run: |
+        R_HOME_CROSS="/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources"
+        sudo mkdir -p $R_HOME_CROSS
+        sudo chown $USER $R_HOME_CROSS
+        echo "R_HOME_CROSS=$R_HOME_CROSS" >> $GITHUB_ENV
+
+    - name: Cache tools
+      uses: actions/cache@v3
+      with:
+        path: |
+          /opt/X11
+          /opt/gfortran
+          /opt/R/x86_64
+          /opt/R/arm64
+          /opt/R-4.3-arm64
+          /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources
+        key: ${{ runner.os }}-${{ inputs.version }}-16
+
+    - shell: bash
+      run: |
+        echo "::group::Removing Homebrew"
+        cp $(which gtar git-lfs rustup-init) .
+        brew unlink $(brew list --formula) || true
+        sudo rm -vf $(which brew)
+        sudo mv /usr/local/Homebrew /usr/local/oldhomebrew
+        sudo mv /usr/local/Cellar /usr/local/oldcellar
+        cp -f gtar git-lfs rustup-init /usr/local/bin/
+        hash -r
+        echo "Done removing homebrew!"
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        cargo --version
+        echo "::endgroup::"
+
+    - shell: bash
+      run: |
+        if [ -d "/opt/X11/lib" ]; then
+          echo "/opt/X11/lib exists. Skipping xQuartz installation"
+        else
+          echo "::group::Installing XQuartz"
+          echo "Downloading XQuartz..."
+          curl --retry 3 -fLO https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.5/XQuartz-2.8.5.pkg
+          sudo installer -pkg "XQuartz-2.8.5.pkg" -target /
+          rm -f XQuartz-2.8.5.pkg
+          echo "Done installing XQuartz!"
+          echo "::endgroup::"
+        fi
+
+    - shell: bash
+      if: env.R_HOME_CROSS
+      run: |
+        if [ -d "$R_HOME_CROSS/lib" ]; then
+          echo "$R_HOME_CROSS/lib already exists."
+        else
+          curl -sSL https://github.com/r-universe-org/cranlibs/releases/download/R-4.3.2/R-4.3.2-arm64.tar.xz -o R.tar.xz
+          tar xf R.tar.xz --strip-components=4 -C $R_HOME_CROSS R.framework/Versions/4.3-arm64/Resources/lib
+          rm -f R.tar.xz
+          rm -Rf $R_HOME_CROSS/lib/*.dSYM
+        fi
+        ln -sf "$R_HOME_CROSS" /opt/R-4.3-arm64
+        ls -ltRrh $R_HOME_CROSS/lib
+
+    - shell: bash
+#      if: inputs.fortran
+      run: |
+        if [ -d "/opt/gfortran/bin" ]; then
+          echo "/opt/gfortran/bin exists. Skipping fortran installation"
+        else
+          echo "::group::Installing Fortran"
+          echo "Downloading Fortran..."
+          curl --retry 3 -fsSLO https://github.com/R-macos/gcc-12-branch/releases/download/12.2-darwin-r0.1/gfortran-12.2-universal.pkg
+          sudo installer -pkg "gfortran-12.2-universal.pkg" -target /
+          rm -f gfortran-12.2-universal.pkg
+
+          #Backward compat R-4.2
+          sudo ln -sf /opt/gfortran /usr/local/gfortran
+          #sed -i.bak 's|darwin18/8.2.0|darwin20.0/12.2.0|g' $(R RHOME)/etc/Makeconf  
+          echo "Done installing Fortran!"
+          echo "::endgroup::"
+        fi
+        echo "/opt/gfortran/bin" >> $GITHUB_PATH
+
+    - shell: bash
+      run: |
+        if pandoc --version 2>/dev/null; then
+          echo "Skipping pandoc installation"
+        else
+          echo "::group::Installing Pandoc"
+          curl --retry 3 -fOL https://github.com/jgm/pandoc/releases/download/2.14.2/pandoc-2.14.2-macOS.pkg
+          sudo installer -pkg pandoc-2.14.2-macOS.pkg -target /
+          rm -f pandoc-2.14.2-macOS.pkg
+          echo "::endgroup::"
+        fi
+
+    - shell: bash
+      run: |
+        echo "::group::Installing CRAN libs bundle"
+        if [ "${{inputs.version}}" = "oldrel" ]; then
+          curl --retry 3 -fsSL https://github.com/autobrew/bundler/releases/download/2022-05-19/cranbundle-20220519-high_sierra.tar.xz -o libs.tar.xz
+          sudo tar -xf libs.tar.xz --strip 1 -C /usr/local/
+          echo "PROJ_LIB=/usr/local/share/proj" >> $GITHUB_ENV
+        else
+          if [ -f "/opt/R/x86_64/bin/pkg-config" ]; then
+            echo "/opt/R/x86_64/bin/pkg-config exists, skipping download"
+          else
+            curl --retry 3 -fsSL https://github.com/r-universe-org/cranlibs/releases/download/2023-12-18/cranlibs-everything.tar.xz -o libs.tar.xz
+            sudo tar -xf libs.tar.xz -C / opt
+            rm -f libs.tar.xz
+          fi
+          PATH="/opt/R/x86_64/bin:$PATH"
+          echo "/opt/R/x86_64/bin" >> $GITHUB_PATH
+          export PKG_CONFIG_PATH="/opt/R/x86_64/lib/pkgconfig:/opt/R/x86_64/share/pkgconfig:/usr/lib/pkgconfig:/opt/X11/lib/pkgconfig:/opt/X11/share/pkgconfig"
+          echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> $GITHUB_ENV
+          echo "PROJ_LIB=/opt/R/x86_64/share/proj" >> $GITHUB_ENV
+
+          # Delete non-script files (we cannot run on host)
+          for bin in /opt/R/arm64/bin/*; do
+            if [ "$(file $bin | grep 'executable arm64')" ]; then
+              rm -fv $bin
+            fi
+          done
+
+          # Fix up for libpng-config static linking (for rgl package)
+          sed -i '' 's|-lpng16|-lpng16 -lz|g' /opt/R/arm64/bin/libpng16-config
+
+          # Create shims to help some packages
+          if [ -f "/opt/R/arm64/bin/cargo" ]; then
+            echo "Shims already exist"
+          else
+            curl -sSL https://github.com/r-universe-org/actions/raw/master/macos-prep/shims/arch.sh > /opt/R/arm64/bin/arch
+            curl -sSL https://github.com/r-universe-org/actions/raw/master/macos-prep/shims/uname.sh > /opt/R/arm64/bin/uname
+            curl -sSL https://github.com/r-universe-org/actions/raw/master/macos-prep/shims/cargo.sh > /opt/R/arm64/bin/cargo
+            chmod +x /opt/R/arm64/bin/uname /opt/R/arm64/bin/arch /opt/R/arm64/bin/cargo
+          fi
+
+        fi
+        echo "Available libs through pkg-config:"
+        pkg-config --list-all
+        echo "Done installing CRAN bundle!"
+        echo "::endgroup::"
+
+    - name: "Install JAGS if needed"
+      shell: bash
+      run: |
+        echo "::group::Installing JAGS"
+        curl --retry 3 -fLO https://github.com/autobrew/bundler/releases/download/jags-4.3.2/JAGS-4.3.2.pkg
+        sudo installer -pkg JAGS-4.3.2.pkg -target /
+        rm -f JAGS-4.3.2.pkg
+        cp -f /usr/local/lib/pkgconfig/jags.pc /opt/R/arm64/lib/pkgconfig/
+        echo "Done installing JAGS!"
+        echo "::endgroup::"
+      if: inputs.jags

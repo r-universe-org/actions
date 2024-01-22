@@ -1,0 +1,110 @@
+name: 'Find changed submodules'
+description: 'Find out which submodule has changed'
+inputs:
+  github-token:
+    description: GitHub token
+    default: ''
+  package:
+    description: Which package to build
+    default: ''
+outputs:
+  repo_url:
+    description: "URL of the changed submodule"
+    value: ${{ steps.git-log.outputs.repo_url }}
+  repo_name:
+    description: "Name of the changed submodule"
+    value: ${{ steps.git-log.outputs.repo_name }}
+  repo_commit:
+    description: "Commit of the changed submodule"
+    value: ${{ steps.git-log.outputs.repo_commit }}
+  repo_subdir:
+    description: "Subdirectory of the R package"
+    value: ${{ steps.git-log.outputs.repo_subdir }}
+  repo_branch:
+    description: "Which tag or branch we are tracking"
+    value: ${{ steps.git-log.outputs.repo_branch }}
+  repo_registered:
+    description: "If the R package is in the universe registry (ie not a remote)"
+    value: ${{ steps.git-log.outputs.repo_registered }}
+  universe_app:
+    description: "Does the user have the GitHub app installed"
+    value: ${{ steps.git-log.outputs.universe_app }}
+  maintainer_login:
+    description: "Package maintainer GitHub username"
+    value: ${{ steps.find-user.outputs.maintainer_login }}
+  build_docs:
+    description: "If we should build pkgdown documentation"
+    value: ${{ steps.git-log.outputs.build_docs }}
+  skip_binaries:
+    description: "If we should skip building binaries (for cran packages)"
+    value: ${{ steps.git-log.outputs.skip_binaries }}
+  is_rebuild:
+    description: "If this is a rebuild of an older commit"
+    value: ${{ steps.git-log.outputs.is_rebuild }}
+runs:
+  using: "composite"
+  steps: 
+    - name: Quick checkout
+      if: inputs.package == ''
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 100
+    - name: Full checkout (for rebuild)
+      if: inputs.package != ''
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - id: git-log
+      shell: bash
+      run: |
+        if [ "${{inputs.package}}" ]; then
+          REPO_NAME="${{inputs.package}}"
+          COMMIT_ID=$(git log -n 1 --pretty=format:%H -- ${{inputs.package}})
+          IS_REBUILD=true
+        else
+          REPO_NAME=$(git log --pretty=format: --name-only HEAD^.. | grep "^[^.]")
+          COMMIT_ID=$(git log -n 1 --pretty=format:%H)
+        fi
+        if [ -z "$COMMIT_ID" ]; then
+          echo "Failed to find last commit for package ${REPO_NAME}"
+        fi
+        echo "Building package: ${REPO_NAME} from: https://github.com/${GITHUB_REPOSITORY}/commit/${COMMIT_ID}"
+        git submodule init ${REPO_NAME}
+        REPO_URL=$(git config --list | grep "submodule.${REPO_NAME}.url=" | cut -d'=' -f2)
+        REPO_OWNERURL=$(dirname "$REPO_URL")
+        REPO_COMMIT=$(git submodule status $REPO_NAME | awk '{print $1}' | sed 's/^[^0-9a-z]*//')
+        REPO_SUBDIR=$(git config -f .gitmodules --get "submodule.${REPO_NAME}.subdir" || true)
+        REPO_BRANCH=$(git config -f .gitmodules --get "submodule.${REPO_NAME}.branch" || true)
+        REPO_REGISTERED=$(git config -f .gitmodules --get "submodule.${REPO_NAME}.registered" || true)
+        echo "repo_url=$REPO_URL" >> $GITHUB_OUTPUT
+        echo "repo_name=$REPO_NAME" >> $GITHUB_OUTPUT
+        echo "repo_commit=$REPO_COMMIT" >> $GITHUB_OUTPUT
+        echo "repo_subdir=$REPO_SUBDIR" >> $GITHUB_OUTPUT
+        echo "repo_branch=$REPO_BRANCH" >> $GITHUB_OUTPUT
+        echo "repo_registered=$REPO_REGISTERED" >> $GITHUB_OUTPUT
+        echo "is_rebuild=$IS_REBUILD" >> $GITHUB_OUTPUT
+        if [ -f ".ghapp" ] && [ "${REPO_OWNERURL,,}" = "https://github.com/$(basename $PWD)" ]; then
+          cat .ghapp
+          if jq -e '.repository_selection == "all"' .ghapp; then
+            echo "universe_app=true" >> $GITHUB_OUTPUT
+          elif jq -e ".repositories|any(. == \"${REPO_NAME}\")" .ghapp; then
+            echo "universe_app=true" >> $GITHUB_OUTPUT
+          else
+            echo "GitHub app does not have permission for: ${REPO_NAME}"
+          fi
+        fi
+        if [ "$GITHUB_REPOSITORY" == "r-universe/ropensci" ] && [ "$REPO_REGISTERED" != "false" ]; then
+          echo "build_docs=true" >> $GITHUB_OUTPUT
+        fi
+        if [ "$GITHUB_REPOSITORY" == "r-universe/cran" ]; then
+          echo "skip_binaries=true" >> $GITHUB_OUTPUT
+        fi
+        echo "COMMIT_ID=${COMMIT_ID}" >> $GITHUB_ENV
+    - id: find-user
+      shell: bash
+      run: |
+        LOGIN=$(curl -s -D /dev/stderr --fail -H "Authorization: token ${{inputs.github-token}}" "https://api.github.com/repos/${{github.repository}}/commits/${COMMIT_ID}" | tee output.log | jq -r '.author.login')
+        if [ "$LOGIN" ] && [ "$LOGIN" != "null" ]; then
+          echo "Package maintainer github login: $LOGIN"
+          echo "maintainer_login=$LOGIN" >> $GITHUB_OUTPUT
+        fi

@@ -1,0 +1,145 @@
+name: 'R CMD check'
+description: 'Prepare and check a package'
+inputs:
+  sourcepkg:
+    description: 'File of the source package'
+    required: true
+  checkargs:
+    description: 'Extra args for R CMD check'
+    default: --no-manual --no-build-vignettes
+    required: true
+  cranlikerepo:
+    description: 'URL of the package repository with dependencies'
+    default: 'Sys.getenv("MY_UNIVERSE", "https://dev.ropensci.org")'
+    required: true
+  java:
+    description: 'Package depends on rJava'
+    required: false
+  jags:
+    description: 'Package depends on JAGS'
+    required: false
+
+outputs:
+  binarypkg:
+    description: 'Filename of the output binary package'
+    value: ${{steps.results.outputs.binarypkg}}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set timezone
+      run: |
+        tzutil /g
+        tzutil /s "GMT Standard Time"
+        tzutil /g
+      shell: pwsh
+
+    - name: Decide which ucrt toolchain to use
+      id: toolchain
+      run: |
+        if [ "$RTOOLS43_HOME" ]; then
+          # Try to mimic CRAN setup...
+          echo "Found preinstalled toolchain in $RTOOLS43_HOME"
+          echo "RTOOLS42_HOME=$RTOOLS43_HOME" >> $GITHUB_ENV
+          echo "_R_INSTALL_TIME_PATCHES_=https://www.r-project.org/nosvn/winutf8/ucrt3/" >> $GITHUB_ENV
+          #r-devel-patches: https://developer.r-project.org/WindowsBuilds/winutf8/ucrt3/r_packages/patches/CRAN/
+        elif tar --wildcards -tf ${{inputs.sourcepkg}} '*/src/' 2> /dev/null >&2; then
+          echo "rtools43=true" >> $GITHUB_OUTPUT
+        else
+          echo "No src, compilation not needed"
+        fi
+      shell: bash
+
+    - name: "Install rtools43 toolchain if needed"
+      run: |
+        url="https://cloud.r-project.org/bin/windows/Rtools/rtools43/files/rtools43-toolchain-libs-full-5550.tar.zst"
+        curl -sSL $url | tar x --zstd -C /c/
+        echo "R_CUSTOM_TOOLS_PATH=c:/x86_64-w64-mingw32.static.posix/bin;c:/rtools43/usr/bin;c:/rtools40/usr/bin" >> $GITHUB_ENV
+        echo "R_CUSTOM_TOOLS_SOFT=c:/x86_64-w64-mingw32.static.posix" >> $GITHUB_ENV
+        echo "c:/x86_64-w64-mingw32.static.posix/bin" >> $GITHUB_PATH
+      shell: bash
+      if: steps.toolchain.outputs.rtools43
+
+    - name: "Install JAGS if needed"
+      run: |
+        curl -o JAGS.exe -L https://github.com/r-windows/files/releases/download/JAGS/JAGS-4.3.1.exe
+        Start-Process "JAGS.exe" -argumentlist "/S" -wait
+        Remove-Item JAGS.exe
+      shell: pwsh
+      if: inputs.jags
+
+    - name: "Setup R package library"
+      shell: bash
+      run: |
+        echo "::group::Setup R package library"
+        if [ "${R_LIBS_USER}" ]; then mkdir -p $R_LIBS_USER; fi
+        echo 'options(repos = c(CRAN = "https://cloud.r-project.org"))' > $R_PROFILE_USER
+        echo 'options(Ncpus = 2, crayon.enabled = TRUE)' >> $R_PROFILE_USER
+        echo 'if(grepl("4.2", getRversion())) Sys.setenv(R_BIOC_VERSION=3.16)' >> $R_PROFILE_USER
+        echo 'if(grepl("4.3", getRversion())) Sys.setenv(R_BIOC_VERSION=3.18)' >> $R_PROFILE_USER
+        echo 'if(grepl("4.4", getRversion())) options(BioC_mirror = "https://bioc.cran.dev")' >> $R_PROFILE_USER
+        echo 'utils::setRepositories(ind = 1:3)' >> $R_PROFILE_USER
+        echo 'Sys.unsetenv(c("CI", "GITHUB_ACTIONS"))' >> $R_PROFILE_USER
+        echo 'options(HTTPUserAgent = paste0(getOption("HTTPUserAgent"), "; r-universe"))' >> $R_PROFILE_USER
+        echo 'options(repos = c(pppm = "https://p3m.dev/cran/latest", getOption("repos")))' >> $R_PROFILE_USER
+        echo 'options(repos = c(universe = trimws(strsplit(${{inputs.cranlikerepo}}, ";")[[1]]), getOption("repos")))' >> $R_PROFILE_USER
+        cat $R_PROFILE_USER
+        echo "::endgroup::"
+      env:
+        R_PROFILE_USER: .Rprofile
+    - name: Install package dependencies
+      run: |
+        cat(Sys.which('gcc'), "\n")
+        invisible(system("gcc --version"))   
+        cat('::group::Install package dependencies\n')
+        print(as.list(getOption('repos')))
+        install.packages('remotes')
+        pkg_deps <- remotes::local_package_deps("${{inputs.sourcepkg}}", dependencies = TRUE)
+        installed <- row.names(installed.packages())
+        update.packages(oldPkgs = pkg_deps, ask = FALSE)
+        needpkg <- setdiff(pkg_deps, installed)
+        avail <- row.names(available.packages())
+        install <- intersect(needpkg, avail)
+        unavail <- setdiff(needpkg, avail)
+        install.packages(install)
+        if(length(unavail)) {
+          warning("Installing from remotes: ", paste(unavail, collapse = ','))
+          remotes::install_deps("${{inputs.sourcepkg}}", dependencies = TRUE, upgrade = FALSE)
+        }
+        cat('::endgroup::\n')
+      shell: Rscript {0}
+      env:
+        R_COMPILE_AND_INSTALL_PACKAGES: never
+        R_DEFAULT_INTERNET_TIMEOUT: 150
+    - name: Build and check package
+      shell: cmd
+      run: R CMD check ${{inputs.sourcepkg}} --install-args="--build" ${{inputs.checkargs}}
+      env:
+        R_BROWSER: echo
+        R_PDFVIEWER: echo
+        RGL_USE_NULL: TRUE
+        ARROW_R_DEV: TRUE
+        R_TEXI2DVICMD: emulation
+        NOT_CRAN: FALSE
+        R_PROFILE_USER: .Rprofile
+        _R_CHECK_FORCE_SUGGESTS_: FALSE
+        _R_CHECK_CRAN_INCOMING_: FALSE
+        _R_CHECK_CRAN_INCOMING_REMOTE_: FALSE
+        _R_CHECK_TIMINGS_: 5
+
+    - name: Inspect check outputs
+      if: always()
+      id: results
+      shell: bash
+      run: |
+        SOURCEPKG="${{ inputs.sourcepkg }}"
+        BINARYPKG="${SOURCEPKG%tar.gz}zip"
+        PKGNAME=$(echo $SOURCEPKG | cut -d '_' -f1)
+        if [ -f "${BINARYPKG}" ]; then
+          echo "Built binary package: $BINARYPKG"
+          echo "binarypkg=$BINARYPKG" >> $GITHUB_OUTPUT
+        else
+          echo "No binary package $BINARYPKG found. Skipping deployment."
+        fi
+        find . -regex '.*\.R*out' | while read f; do echo "::group::$f"; echo " ===== $f ====="; tail -n1000 $f; echo "::endgroup::"; done
+        find . -regex '.*\.fail' | while read f; do echo "::group::$f"; echo " ===== $f ====="; tail -n1000 $f; echo "::endgroup::"; done

@@ -1,0 +1,28 @@
+inputs:
+  name:
+    required: true
+  JOB_STATUS: 
+    description: 'Build success status'
+  DISTRO: 
+    description: 'Name of operating system'
+  FILE: 
+    description: 'Filename to upload'
+  TARGET: 
+    description: 'One of source, win, mac, wasm'
+
+runs:
+  using: "composite"
+  steps: 
+    - shell: bash
+      run: |
+        echo "JOB_STATUS='${{ inputs.JOB_STATUS }}'" > pkgdata.txt
+        echo "DISTRO='${{ inputs.DISTRO }}'" >> pkgdata.txt
+        echo "FILE='${{ inputs.FILE }}'" >> pkgdata.txt
+        echo "TARGET='${{ inputs.TARGET }}'" >> pkgdata.txt
+    - name: "Save source package"
+      uses: actions/upload-artifact@v3
+      with:
+        name:  ${{ inputs.name }}
+        path: |
+          ${{ inputs.FILE }}
+          pkgdata.txt
