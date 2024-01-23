@@ -1,0 +1,44 @@
+inputs:
+  r-version:
+    required: false
+    default: release
+
+runs:
+  using: "composite"
+  steps: 
+    - shell: bash
+      if: runner.os == 'macos'
+      run: |
+        version="${{inputs.r-version}}"
+        if [ "$version" = "devel" ]; then
+          URL="https://mac.r-project.org/big-sur/last-success/R-devel-x86_64.pkg"
+        elif [ "$version" = "release" ]; then
+          URL="https://github.com/r-universe-org/actions/releases/download/4.3.2/R-4.3.2-x86_64.pkg"
+        elif [ "$version" = "oldrel" ]; then
+          URL="https://github.com/r-universe-org/actions/releases/download/4.2.3/R-4.2.3.pkg"
+        fi
+        PKG=$(basename $URL)
+        curl --max-time 300 --retry 3 -sSfLO $URL
+        sudo installer -pkg "$PKG" -target /
+        rm -f $PKG
+
+    - shell: pwsh
+      if: runner.os == 'windows'
+      run: |
+        $version = "${{inputs.r-version}}"
+        if ( $version -eq "devel" ) {
+          $URL = "https://cloud.r-project.org/bin/windows/base/R-devel-win.exe"
+        } elseif ( $version -eq "release" ) {
+          $URL = "https://github.com/r-universe-org/actions/releases/download/4.3.2/R-4.3.2-win.exe"
+        } elseif ( $version -eq "oldrel" ) {
+          $URL = "https://github.com/r-universe-org/actions/releases/download/4.2.3/R-4.2.3-win.exe"
+        }
+        curl -o Rinstall.exe -sSfL $URL
+        echo "Starting R installer..."
+        Start-Process "Rinstall.exe" -argumentlist "/VERYSILENT /SUPPRESSMSGBOXES /DIR=C:\\R" -wait
+        echo "Done!"
+        Remove-Item Rinstall.exe
+        echo "C:\\R\\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - shell: bash
+      run: R --version
