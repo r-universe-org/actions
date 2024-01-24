@@ -42,3 +42,21 @@ runs:
 
     - shell: bash
       run: R --version
+
+    - name: Start fake X11 server
+      shell: bash
+      if: runner.os == 'macos'
+      continue-on-error: true
+      run: |
+        sudo nohup /opt/X11/bin/Xvfb :6 -screen 0 1280x1024x24 > ~/X.log &
+        export DISPLAY=:6
+        echo "Running fake X server on $DISPLAY"
+        echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
+
+    - name: Set Windows timezone
+      if: runner.os == 'windows'
+      run: |
+        tzutil /g
+        tzutil /s "GMT Standard Time"
+        tzutil /g
+      shell: pwsh

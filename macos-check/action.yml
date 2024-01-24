@@ -59,15 +59,6 @@ runs:
       env:
         R_PROFILE_USER: .Rprofile
 
-    - name: "Start fake X11 server"
-      shell: bash
-      continue-on-error: true
-      run: |
-        sudo nohup /opt/X11/bin/Xvfb :6 -screen 0 1280x1024x24 > ~/X.log &
-        export DISPLAY=:6
-        echo "Running fake X server on $DISPLAY"
-        echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
-
     - name: Install package dependencies
       run: |
         cat('::group::Install package dependencies\n')

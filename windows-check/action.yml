@@ -27,12 +27,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Set timezone
-      run: |
-        tzutil /g
-        tzutil /s "GMT Standard Time"
-        tzutil /g
-      shell: pwsh
 
     - name: Decide which ucrt toolchain to use
       id: toolchain
