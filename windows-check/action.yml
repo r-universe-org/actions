@@ -28,32 +28,6 @@ runs:
   using: "composite"
   steps:
 
-    - name: Decide which ucrt toolchain to use
-      id: toolchain
-      run: |
-        if [ "$RTOOLS43_HOME" ]; then
-          # Try to mimic CRAN setup...
-          echo "Found preinstalled toolchain in $RTOOLS43_HOME"
-          echo "RTOOLS42_HOME=$RTOOLS43_HOME" >> $GITHUB_ENV
-          echo "_R_INSTALL_TIME_PATCHES_=https://www.r-project.org/nosvn/winutf8/ucrt3/" >> $GITHUB_ENV
-          #r-devel-patches: https://developer.r-project.org/WindowsBuilds/winutf8/ucrt3/r_packages/patches/CRAN/
-        elif tar --wildcards -tf ${{inputs.sourcepkg}} '*/src/' 2> /dev/null >&2; then
-          echo "rtools43=true" >> $GITHUB_OUTPUT
-        else
-          echo "No src, compilation not needed"
-        fi
-      shell: bash
-
-    - name: "Install rtools43 toolchain if needed"
-      run: |
-        url="https://cloud.r-project.org/bin/windows/Rtools/rtools43/files/rtools43-toolchain-libs-full-5550.tar.zst"
-        curl -sSL $url | tar x --zstd -C /c/
-        echo "R_CUSTOM_TOOLS_PATH=c:/x86_64-w64-mingw32.static.posix/bin;c:/rtools43/usr/bin;c:/rtools40/usr/bin" >> $GITHUB_ENV
-        echo "R_CUSTOM_TOOLS_SOFT=c:/x86_64-w64-mingw32.static.posix" >> $GITHUB_ENV
-        echo "c:/x86_64-w64-mingw32.static.posix/bin" >> $GITHUB_PATH
-      shell: bash
-      if: steps.toolchain.outputs.rtools43
-
     - name: "Setup R package library"
       shell: bash
       run: |

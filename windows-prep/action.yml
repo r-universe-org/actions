@@ -11,6 +11,17 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Install rtools
+      run: |
+        if [ "$RTOOLS43_HOME" ]; then
+          echo "Found preinstalled toolchain in $RTOOLS43_HOME"
+          echo "RTOOLS42_HOME=$RTOOLS43_HOME" >> $GITHUB_ENV
+          echo "_R_INSTALL_TIME_PATCHES_=https://www.r-project.org/nosvn/winutf8/ucrt3/" >> $GITHUB_ENV
+        else
+          echo "RTOOLS43_HOME not found!"
+        fi
+      shell: bash
+
     - name: "Install JAGS if needed"
       run: |
         curl -o JAGS.exe -L https://github.com/r-windows/files/releases/download/JAGS/JAGS-4.3.1.exe
