@@ -36,7 +36,6 @@ runs:
           /opt/gfortran
           /opt/R/x86_64
           /opt/R/arm64
-          /opt/R-4.3-arm64
           /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources
         key: ${{ runner.os }}-${{ inputs.version }}-16
 
@@ -80,7 +79,6 @@ runs:
           rm -f R.tar.xz
           rm -Rf $R_HOME_CROSS/lib/*.dSYM
         fi
-        ln -sf "$R_HOME_CROSS" /opt/R-4.3-arm64
         ls -ltRrh $R_HOME_CROSS/lib
 
     - shell: bash
