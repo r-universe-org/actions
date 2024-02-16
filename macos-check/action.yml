@@ -42,6 +42,7 @@ runs:
         echo 'options(Ncpus = 2, crayon.enabled = TRUE)' >> $R_PROFILE_USER
         echo 'if(grepl("4.2", getRversion())) Sys.setenv(R_BIOC_VERSION=3.16)' >> $R_PROFILE_USER
         echo 'if(grepl("4.3", getRversion())) Sys.setenv(R_BIOC_VERSION=3.18)' >> $R_PROFILE_USER
+        echo 'if(grepl("4.4", getRversion())) Sys.setenv(R_BIOC_VERSION=3.19)' >> $R_PROFILE_USER
         # echo 'if(grepl("4.3", getRversion())) options(BioC_mirror = "https://bioc.cran.dev")' >> $R_PROFILE_USER
         echo 'utils::setRepositories(ind = 1:3)' >> $R_PROFILE_USER
         echo 'Sys.unsetenv(c("CI", "GITHUB_ACTIONS"))' >> $R_PROFILE_USER
