@@ -29,7 +29,7 @@ runs:
         echo "R_HOME_CROSS=$R_HOME_CROSS" >> $GITHUB_ENV
 
     - name: Cache tools
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           /opt/X11
