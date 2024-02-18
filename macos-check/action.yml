@@ -37,7 +37,8 @@ runs:
         sed -i.bak 's|darwin18/8.2.0|darwin20.0/12.2.0|g' $(R RHOME)/etc/Makeconf
         echo "::group::Setup R package library"
         if [ "${R_LIBS_USER}" ]; then mkdir -p $R_LIBS_USER; fi
-        echo 'if(grepl("4.3", getRversion())) options(repos = c(CRAN = "https://cloud.r-project.org"))' > $R_PROFILE_USER
+        echo 'if(grepl("4.4", getRversion())) options(repos = c(CRAN = "https://cloud.r-project.org"))' > $R_PROFILE_USER
+        echo 'if(grepl("4.3", getRversion())) options(repos = c(CRAN = "https://cloud.r-project.org"))' >> $R_PROFILE_USER
         echo 'if(grepl("4.2", getRversion())) options(repos = c(CRAN = "https://p3m.dev/cran/latest"))' >> $R_PROFILE_USER
         echo 'options(Ncpus = 2, crayon.enabled = TRUE)' >> $R_PROFILE_USER
         echo 'if(grepl("4.2", getRversion())) Sys.setenv(R_BIOC_VERSION=3.16)' >> $R_PROFILE_USER

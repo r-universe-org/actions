@@ -16,17 +16,25 @@ runs:
   using: "composite"
   steps:
     - shell: bash
+      if: inputs.version == 'release'
+      run: |
+        echo "R_HOME_CROSS=/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources" >> $GITHUB_ENV
+        echo "R_CROSS_URL=https://github.com/r-universe-org/cranlibs/releases/download/R-4.3.2/R-4.3.2-arm64.tar.xz" >> $GITHUB_ENV
+
+    - shell: bash
+      if: inputs.version == 'devel'
+      run: |
+        echo "R_HOME_CROSS=/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources" >> $GITHUB_ENV
+        echo "R_CROSS_URL=https://github.com/r-universe-org/cranlibs/releases/download/R-devel/R-devel-arm64.tar.xz" >> $GITHUB_ENV
+
+    - shell: bash
       run: |
         sudo mkdir -p /opt
         sudo chown $USER /opt
-
-    - shell: bash
-      if: inputs.version == 'release'
-      run: |
-        R_HOME_CROSS="/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources"
-        sudo mkdir -p $R_HOME_CROSS
-        sudo chown $USER $R_HOME_CROSS
-        echo "R_HOME_CROSS=$R_HOME_CROSS" >> $GITHUB_ENV
+        if [ "$R_HOME_CROSS" ]; then
+          sudo mkdir -p $R_HOME_CROSS
+          sudo chown $USER $R_HOME_CROSS
+        fi
 
     - name: Cache tools
       uses: actions/cache@v4
@@ -37,6 +45,7 @@ runs:
           /opt/R/x86_64
           /opt/R/arm64
           /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources
+          /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources
         key: ${{ runner.os }}-${{ inputs.version }}-16
 
     - shell: bash
@@ -74,10 +83,9 @@ runs:
         if [ -d "$R_HOME_CROSS/lib" ]; then
           echo "$R_HOME_CROSS/lib already exists."
         else
-          curl -sSL https://github.com/r-universe-org/cranlibs/releases/download/R-4.3.2/R-4.3.2-arm64.tar.xz -o R.tar.xz
-          tar xf R.tar.xz --strip-components=4 -C $R_HOME_CROSS R.framework/Versions/4.3-arm64/Resources/lib
-          rm -f R.tar.xz
-          rm -Rf $R_HOME_CROSS/lib/*.dSYM
+          curl -sSL $R_CROSS_URL -o R.tar.xz
+          tar xf R.tar.xz --strip-components=4 -C $R_HOME_CROSS 'R.framework/Versions/*/Resources/lib'
+          rm -Rf R.tar.xz $R_HOME_CROSS/lib/*.dSYM
         fi
         ls -ltRrh $R_HOME_CROSS/lib
 

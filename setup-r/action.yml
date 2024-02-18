@@ -11,7 +11,7 @@ runs:
       run: |
         version="${{inputs.r-version}}"
         if [ "$version" = "devel" ]; then
-          URL="https://mac.r-project.org/big-sur/last-success/R-devel-x86_64.pkg"
+          URL="https://github.com/r-universe-org/cranlibs/releases/download/R-devel/R-devel-x86_64.pkg"
         elif [ "$version" = "release" ]; then
           URL="https://github.com/r-universe-org/actions/releases/download/4.3.2/R-4.3.2-x86_64.pkg"
         elif [ "$version" = "oldrel" ]; then
