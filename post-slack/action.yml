@@ -1,0 +1,12 @@
+name: 'Post Failure to slack'
+description: 'Find out which submodule has changed'
+runs:
+  using: "composite"
+  steps: 
+    - id: post
+      shell: bash
+      run: |
+        SLACKAPI="https://ropensci.slack.com/api/chat.postMessage"
+        RUNURL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+        echo "DEPLOY_STATUS is $DEPLOY_STATUS"
+        curl -sS $SLACKAPI -d "text=Deployment $DEPLOY_STATUS: $RUNURL" -d "channel=deployments" -H "Authorization: Bearer $SLACK_TOKEN"
