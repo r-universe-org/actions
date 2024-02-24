@@ -115,9 +115,9 @@ runs:
           echo "Skipping pandoc installation"
         else
           echo "::group::Installing Pandoc"
-          curl --retry 3 -fOL https://github.com/jgm/pandoc/releases/download/2.14.2/pandoc-2.14.2-macOS.pkg
-          sudo installer -pkg pandoc-2.14.2-macOS.pkg -target /
-          rm -f pandoc-2.14.2-macOS.pkg
+          curl --retry 3 -fOL https://github.com/jgm/pandoc/releases/download/3.1.12.1/pandoc-3.1.12.1-x86_64-macOS.pkg
+          sudo installer -pkg pandoc-3.1.12.1-x86_64-macOS.pkg -target /
+          rm -f pandoc-3.1.12.1-x86_64-macOS.pkg
           echo "::endgroup::"
         fi
 
@@ -148,6 +148,9 @@ runs:
               rm -fv $bin
             fi
           done
+
+          # Copy pandoc to cached dir
+          cp -f /usr/local/bin/pandoc /opt/R/x86_64/bin/
 
           # Fix up for libpng-config static linking (for rgl package)
           sed -i '' 's|-lpng16|-lpng16 -lz|g' /opt/R/arm64/bin/libpng16-config
