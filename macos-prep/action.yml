@@ -19,13 +19,13 @@ runs:
       if: inputs.version == 'release'
       run: |
         echo "R_HOME_CROSS=/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources" >> $GITHUB_ENV
-        echo "R_CROSS_URL=https://github.com/r-universe-org/cranlibs/releases/download/R-4.3.2/R-4.3.2-arm64.tar.xz" >> $GITHUB_ENV
+        echo "R_CROSS_URL=https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-arm64.tar.xz" >> $GITHUB_ENV
 
     - shell: bash
       if: inputs.version == 'devel'
       run: |
         echo "R_HOME_CROSS=/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources" >> $GITHUB_ENV
-        echo "R_CROSS_URL=https://github.com/r-universe-org/cranlibs/releases/download/R-devel/R-devel-arm64.tar.xz" >> $GITHUB_ENV
+        echo "R_CROSS_URL=https://github.com/r-universe-org/actions/releases/download/devel/R-devel-arm64.tar.xz" >> $GITHUB_ENV
 
     - shell: bash
       run: |
