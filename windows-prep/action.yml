@@ -17,10 +17,14 @@ runs:
           echo "Found preinstalled toolchain in $RTOOLS43_HOME"
           echo "RTOOLS42_HOME=$RTOOLS43_HOME" >> $GITHUB_ENV
           echo "RTOOLS44_HOME=$RTOOLS43_HOME" >> $GITHUB_ENV
-          echo "_R_INSTALL_TIME_PATCHES_=https://www.r-project.org/nosvn/winutf8/ucrt3/" >> $GITHUB_ENV
+        elif [ "$RTOOLS44_HOME" ]; then
+          echo "Found preinstalled toolchain in $RTOOLS44_HOME"
+          echo "RTOOLS42_HOME=$RTOOLS44_HOME" >> $GITHUB_ENV
+          echo "RTOOLS43_HOME=$RTOOLS44_HOME" >> $GITHUB_ENV
         else
-          echo "RTOOLS43_HOME not found!"
+          echo "No rtools installation found!"
         fi
+        echo "_R_INSTALL_TIME_PATCHES_=https://www.r-project.org/nosvn/winutf8/ucrt3/" >> $GITHUB_ENV
       shell: bash
 
     - name: "Install JAGS if needed"
