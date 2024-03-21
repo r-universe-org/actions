@@ -33,18 +33,13 @@ runs:
     - name: "Setup R package library"
       shell: bash
       run: |
-        sed -i.bak 's/-mmacosx-version-min=10.13//g' $(R RHOME)/etc/Makeconf
-        sed -i.bak 's|darwin18/8.2.0|darwin20.0/12.2.0|g' $(R RHOME)/etc/Makeconf
         echo "::group::Setup R package library"
         if [ "${R_LIBS_USER}" ]; then mkdir -p $R_LIBS_USER; fi
         echo 'if(grepl("4.4", getRversion())) options(repos = c(CRAN = "https://cloud.r-project.org"))' > $R_PROFILE_USER
         echo 'if(grepl("4.3", getRversion())) options(repos = c(CRAN = "https://cloud.r-project.org"))' >> $R_PROFILE_USER
-        echo 'if(grepl("4.2", getRversion())) options(repos = c(CRAN = "https://p3m.dev/cran/latest"))' >> $R_PROFILE_USER
         echo 'options(Ncpus = 2, crayon.enabled = TRUE)' >> $R_PROFILE_USER
-        echo 'if(grepl("4.2", getRversion())) Sys.setenv(R_BIOC_VERSION=3.16)' >> $R_PROFILE_USER
         echo 'if(grepl("4.3", getRversion())) Sys.setenv(R_BIOC_VERSION=3.18)' >> $R_PROFILE_USER
         echo 'if(grepl("4.4", getRversion())) Sys.setenv(R_BIOC_VERSION=3.19)' >> $R_PROFILE_USER
-        # echo 'if(grepl("4.3", getRversion())) options(BioC_mirror = "https://bioc.cran.dev")' >> $R_PROFILE_USER
         echo 'utils::setRepositories(ind = 1:3)' >> $R_PROFILE_USER
         echo 'Sys.unsetenv(c("CI", "GITHUB_ACTIONS"))' >> $R_PROFILE_USER
         echo 'options(HTTPUserAgent = paste0(getOption("HTTPUserAgent"), "; r-universe"))' >> $R_PROFILE_USER
@@ -52,10 +47,6 @@ runs:
         cat $R_PROFILE_USER
         echo "JAVA_HOME=$JAVA_HOME_11_X64" >> $GITHUB_ENV
         R --version | grep darwin20 && echo "MACOSX_DEPLOYMENT_TARGET=11.0" >> $GITHUB_ENV
-        #if test -d /Library/Frameworks/R.framework/Versions/4.3-x86_64; then
-        #  sudo mv /Library/Frameworks/R.framework/Versions/4.2 /Library/Frameworks/R.framework/Versions/4.2old || true
-        #  sudo ln -sf /Library/Frameworks/R.framework/Versions/4.3-x86_64 /Library/Frameworks/R.framework/Versions/4.2
-        #fi
         R CMD javareconf || true
         echo "::endgroup::"
       env:

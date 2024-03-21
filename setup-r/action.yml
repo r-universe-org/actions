@@ -13,9 +13,9 @@ runs:
         if [ "$version" = "devel" ]; then
           URL="https://github.com/r-universe-org/actions/releases/download/devel/R-devel-x86_64.pkg"
         elif [ "$version" = "release" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-x86_64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/devel/R-devel-x86_64.pkg"
         elif [ "$version" = "oldrel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.2.3/R-4.2.3.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-x86_64.pkg"
         fi
         PKG=$(basename $URL)
         curl --max-time 300 --retry 3 -sSfLO $URL
@@ -29,9 +29,9 @@ runs:
         if ( $version -eq "devel" ) {
           $URL = "https://github.com/r-universe-org/actions/releases/download/devel/R-devel-win.exe"
         } elseif ( $version -eq "release" ) {
-          $URL = "https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-win.exe"
+          $URL = "https://github.com/r-universe-org/actions/releases/download/devel/R-devel-win.exe"
         } elseif ( $version -eq "oldrel" ) {
-          $URL = "https://github.com/r-universe-org/actions/releases/download/4.2.3/R-4.2.3-win.exe"
+          $URL = "https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-win.exe"
         }
         curl -o Rinstall.exe -sSfL $URL
         echo "Starting R installer..."

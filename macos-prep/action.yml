@@ -16,16 +16,16 @@ runs:
   using: "composite"
   steps:
     - shell: bash
-      if: inputs.version == 'release'
-      run: |
-        echo "R_HOME_CROSS=/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources" >> $GITHUB_ENV
-        echo "R_CROSS_URL=https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-arm64.tar.xz" >> $GITHUB_ENV
-
-    - shell: bash
-      if: inputs.version == 'devel'
+      if: inputs.version != 'oldrel'
       run: |
         echo "R_HOME_CROSS=/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources" >> $GITHUB_ENV
         echo "R_CROSS_URL=https://github.com/r-universe-org/actions/releases/download/devel/R-devel-arm64.tar.xz" >> $GITHUB_ENV
+
+    - shell: bash
+      if: inputs.version == 'oldrel'
+      run: |
+        echo "R_HOME_CROSS=/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources" >> $GITHUB_ENV
+        echo "R_CROSS_URL=https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-arm64.tar.xz" >> $GITHUB_ENV
 
     - shell: bash
       run: |
@@ -44,9 +44,9 @@ runs:
           /opt/gfortran
           /opt/R/x86_64
           /opt/R/arm64
-          /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources
           /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources
-        key: ${{ runner.os }}-${{ inputs.version }}-16
+          /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources
+        key: ${{ runner.os }}-${{ inputs.version }}-17
 
     - shell: bash
       run: |
@@ -124,41 +124,35 @@ runs:
     - shell: bash
       run: |
         echo "::group::Installing CRAN libs bundle"
-        if [ "${{inputs.version}}" = "oldrel" ]; then
-          curl --retry 3 -fsSL https://github.com/autobrew/bundler/releases/download/2022-05-19/cranbundle-20220519-high_sierra.tar.xz -o libs.tar.xz
-          sudo tar -xf libs.tar.xz --strip 1 -C /usr/local/
-          echo "PROJ_LIB=/usr/local/share/proj" >> $GITHUB_ENV
+        if [ -f "/opt/R/x86_64/bin/pkg-config" ]; then
+          echo "/opt/R/x86_64/bin/pkg-config exists, skipping download"
         else
-          if [ -f "/opt/R/x86_64/bin/pkg-config" ]; then
-            echo "/opt/R/x86_64/bin/pkg-config exists, skipping download"
-          else
-            curl --retry 3 -fsSL https://github.com/r-universe-org/cranlibs/releases/download/2023-12-18/cranlibs-everything.tar.xz -o libs.tar.xz
-            sudo tar -xf libs.tar.xz -C / opt
-            rm -f libs.tar.xz
-          fi
-          PATH="/opt/R/x86_64/bin:$PATH"
-          echo "/opt/R/x86_64/bin" >> $GITHUB_PATH
-          export PKG_CONFIG_PATH="/opt/R/x86_64/lib/pkgconfig:/opt/R/x86_64/share/pkgconfig:/usr/lib/pkgconfig:/opt/X11/lib/pkgconfig:/opt/X11/share/pkgconfig"
-          echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> $GITHUB_ENV
-          echo "PROJ_LIB=/opt/R/x86_64/share/proj" >> $GITHUB_ENV
-
-          # Delete non-script files (we cannot run on host)
-          for bin in /opt/R/arm64/bin/*; do
-            if [ "$(file $bin | grep 'executable arm64')" ]; then
-              rm -fv $bin
-            fi
-          done
-
-          # Copy pandoc to cached dir
-          cp -f /usr/local/bin/pandoc /opt/R/x86_64/bin/
-
-          # Fix up for libpng-config static linking (for rgl package)
-          sed -i '' 's|-lpng16|-lpng16 -lz|g' /opt/R/arm64/bin/libpng16-config
-
-          # Create shims to help some packages
-          cp -fv ${{ github.action_path }}/shims/* /opt/R/arm64/bin/
-
+          curl --retry 3 -fsSL https://github.com/r-universe-org/cranlibs/releases/download/2023-12-18/cranlibs-everything.tar.xz -o libs.tar.xz
+          sudo tar -xf libs.tar.xz -C / opt
+          rm -f libs.tar.xz
         fi
+        PATH="/opt/R/x86_64/bin:$PATH"
+        echo "/opt/R/x86_64/bin" >> $GITHUB_PATH
+        export PKG_CONFIG_PATH="/opt/R/x86_64/lib/pkgconfig:/opt/R/x86_64/share/pkgconfig:/usr/lib/pkgconfig:/opt/X11/lib/pkgconfig:/opt/X11/share/pkgconfig"
+        echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> $GITHUB_ENV
+        echo "PROJ_LIB=/opt/R/x86_64/share/proj" >> $GITHUB_ENV
+
+        # Delete non-script files (we cannot run on host)
+        for bin in /opt/R/arm64/bin/*; do
+          if [ "$(file $bin | grep 'executable arm64')" ]; then
+            rm -fv $bin
+          fi
+        done
+
+        # Copy pandoc to cached dir
+        cp -f /usr/local/bin/pandoc /opt/R/x86_64/bin/
+
+        # Fix up for libpng-config static linking (for rgl package)
+        sed -i '' 's|-lpng16|-lpng16 -lz|g' /opt/R/arm64/bin/libpng16-config
+
+        # Create shims to help some packages
+        cp -fv ${{ github.action_path }}/shims/* /opt/R/arm64/bin/
+
         echo "Available libs through pkg-config:"
         pkg-config --list-all
         echo "Done installing CRAN bundle!"

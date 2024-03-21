@@ -35,7 +35,6 @@ runs:
         if [ "${R_LIBS_USER}" ]; then mkdir -p $R_LIBS_USER; fi
         echo 'options(repos = c(CRAN = "https://cloud.r-project.org"))' > $R_PROFILE_USER
         echo 'options(Ncpus = 2, crayon.enabled = TRUE)' >> $R_PROFILE_USER
-        echo 'if(grepl("4.2", getRversion())) Sys.setenv(R_BIOC_VERSION=3.16)' >> $R_PROFILE_USER
         echo 'if(grepl("4.3", getRversion())) Sys.setenv(R_BIOC_VERSION=3.18)' >> $R_PROFILE_USER
         echo 'if(grepl("4.4", getRversion())) Sys.setenv(R_BIOC_VERSION=3.19)' >> $R_PROFILE_USER
         #echo 'if(grepl("4.4", getRversion())) options(BioC_mirror = "https://bioc.cran.dev")' >> $R_PROFILE_USER
