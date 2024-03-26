@@ -96,7 +96,7 @@ runs:
         if [ "$GITHUB_REPOSITORY" == "r-universe/ropensci" ] && [ "$REPO_REGISTERED" != "false" ]; then
           echo "build_docs=true" >> $GITHUB_OUTPUT
         fi
-        if [ "$GITHUB_REPOSITORY" == "r-universe/cran" ]; then
+        if [ "$GITHUB_REPOSITORY" == "r-universe/cran" ] || [ "$GITHUB_REPOSITORY" == "r-universe/bioc" ]; then
           echo "skip_binaries=true" >> $GITHUB_OUTPUT
         fi
         echo "COMMIT_ID=${COMMIT_ID}" >> $GITHUB_ENV
