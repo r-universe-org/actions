@@ -36,6 +36,10 @@ runs:
       if: inputs.jags
 
     - name: "Install Pandoc"
-      run: choco install -y --no-progress pandoc
-      shell: pwsh
+      run: |
+        curl -o pandoc.zip -sSL https://github.com/jgm/pandoc/releases/download/3.1.12.3/pandoc-3.1.12.3-windows-x86_64.zip
+        unzip pandoc.zip
+        cp -vf "pandoc-3.1.12.3/pandoc.exe" "/c/windows/"
+        rm -Rf pandoc*
+      shell: bash
       continue-on-error: true
