@@ -34,3 +34,8 @@ runs:
         Remove-Item JAGS.exe
       shell: pwsh
       if: inputs.jags
+
+    - name: "Install Pandoc"
+      run: choco install -y --no-progress pandoc
+      shell: pwsh
+      continue-on-error: true
