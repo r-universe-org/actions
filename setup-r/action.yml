@@ -27,7 +27,7 @@ runs:
       run: |
         $version = "${{inputs.r-version}}"
         if ( $version -eq "devel" ) {
-          $URL = "https://github.com/r-universe-org/actions/releases/download/devel/R-devel-win.exe"
+          $URL = "https://cloud.r-project.org/bin/windows/base/R-devel-win.exe"
         } elseif ( $version -eq "release" ) {
           $URL = "https://github.com/r-universe-org/actions/releases/download/devel/R-devel-win.exe"
         } elseif ( $version -eq "oldrel" ) {
