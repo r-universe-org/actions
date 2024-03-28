@@ -19,7 +19,7 @@ runs:
       if: inputs.version != 'oldrel'
       run: |
         echo "R_HOME_CROSS=/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources" >> $GITHUB_ENV
-        echo "R_CROSS_URL=https://github.com/r-universe-org/actions/releases/download/devel/R-devel-arm64.tar.xz" >> $GITHUB_ENV
+        echo "R_CROSS_URL=https://github.com/r-universe-org/actions/releases/download/4.4.0/R-4.4-branch-arm64.tar.xz" >> $GITHUB_ENV
 
     - shell: bash
       if: inputs.version == 'oldrel'
