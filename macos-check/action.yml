@@ -89,7 +89,7 @@ runs:
       env:
         MACOSX_DEPLOYMENT_TARGET: 11.0
         #NB: Remove SDKROOT below when using building on newer macOS
-        SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk
+        SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk
         R_BROWSER: echo
         R_PDFVIEWER: echo
         RGL_USE_NULL: TRUE

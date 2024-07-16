@@ -41,7 +41,7 @@ runs:
       shell: bash
       id: crosscompile
       env:
-        SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk # Arrow assumes recent libcurl
+        SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk # Arrow assumes recent libcurl
         PROJ_GDAL_DATA_COPY: TRUE
         ARROW_R_DEV: TRUE
         LIBARROW_BINARY: darwin-arm64-openssl-1.1
