@@ -149,9 +149,9 @@ runs:
           echo "Skipping pandoc installation"
         else
           echo "::group::Installing Pandoc"
-          curl --retry 3 -fOL https://github.com/jgm/pandoc/releases/download/3.1.12.1/pandoc-3.1.12.1-x86_64-macOS.pkg
-          sudo installer -pkg pandoc-3.1.12.1-x86_64-macOS.pkg -target /
-          rm -f pandoc-3.1.12.1-x86_64-macOS.pkg
+          curl --retry 3 -fOL https://github.com/jgm/pandoc/releases/download/3.2.1/pandoc-3.2.1-x86_64-macOS.pkg
+          sudo installer -pkg pandoc-3.2.1-x86_64-macOS.pkg -target /
+          rm -f pandoc-3.2.1-x86_64-macOS.pkg
           cp -f /usr/local/bin/pandoc /opt/R/x86_64/bin/  #Copy to cache
           echo "::endgroup::"
         fi
