@@ -50,6 +50,8 @@ runs:
         TBB_LINK_LIB: /opt/RcppParallel/lib
         RHDF5LIB_RPATH: /opt/Rhdf5lib/lib
         RHTSLIB_RPATH: /opt/Rhtslib/usrlib
+        GOARCH: arm64
+        GOOS: darwin
         #arch: arm64 #for RcppParallel
       run: |
         sed -i.bak 's|x86_64-apple-darwin20|aarch64-apple-darwin20|g' $(R RHOME)/etc/Makeconf

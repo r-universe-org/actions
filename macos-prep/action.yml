@@ -8,6 +8,9 @@ inputs:
   fortran:
     description: 'Package uses Fortran'
     required: false
+  golang:
+    description: 'Package uses Go'
+    required: false
   jags:
     description: 'Package depends on JAGS'
     required: false
@@ -169,3 +172,18 @@ runs:
         echo "Done installing JAGS!"
         echo "::endgroup::"
       if: inputs.jags
+
+    - name: "Install GO if needed"
+      shell: bash
+      run: |
+        if go version 2>/dev/null; then
+          echo "Skipping GO installation"
+        else
+          echo "::group::Installing GO"
+          curl --retry 3 -fLOSs https://go.dev/dl/go1.22.5.darwin-amd64.pkg
+          sudo installer -pkg go1.22.5.darwin-amd64.pkg -target /
+          rm -f go1.22.5.darwin-amd64.pkg
+          echo "Done installing GO!"
+          echo "::endgroup::"
+        fi
+      if: inputs.golang
