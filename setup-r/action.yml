@@ -7,7 +7,24 @@ runs:
   using: "composite"
   steps: 
     - shell: bash
-      if: runner.os == 'macos'
+      if: runner.os == 'macos' && runner.arch == 'arm64'
+      run: |
+        version="${{inputs.r-version}}"
+        if [ "$version" = "devel" ]; then
+          URL="https://github.com/r-universe-org/actions/releases/download/4.4.0/R-4.4.0-arm64.pkg"
+        elif [ "$version" = "release" ]; then
+          URL="https://github.com/r-universe-org/actions/releases/download/4.4.0/R-4.4.0-arm64.pkg"
+        elif [ "$version" = "oldrel" ]; then
+          URL="https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-arm64.pkg"
+        fi
+        echo "Installing from $URL"
+        PKG=$(basename $URL)
+        curl --max-time 300 --retry 3 -sSfLO $URL
+        sudo installer -pkg "$PKG" -target /
+        rm -f $PKG
+
+    - shell: bash
+      if: runner.os == 'macos' && runner.arch != 'arm64'
       run: |
         version="${{inputs.r-version}}"
         if [ "$version" = "devel" ]; then
