@@ -126,7 +126,7 @@ runs:
         if [ -f "${BINARYPKG}" ]; then
           echo "Built binary package: $BINARYPKG"
           echo "binarypkg=$BINARYPKG" >> $GITHUB_OUTPUT
-          if tar -xOf "${BINARYPKG}" "${PKGNAME}/DESCRIPTION" | grep -q '^Built.*x86_64'; then
+          if tar -xOf "${BINARYPKG}" "${PKGNAME}/DESCRIPTION" | grep -q '^Built.*64'; then
             echo "hasplatform=true" >> $GITHUB_OUTPUT
           fi
         else

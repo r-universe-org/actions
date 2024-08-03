@@ -3,8 +3,10 @@ description: 'Prepare system for building R packages'
 inputs:
   version:
     description: 'Version of R'
-    default: 'release'
-    required: false
+    required: true
+  arch:
+    description: 'Target arch of R'
+    required: true
   fortran:
     description: 'Package uses Fortran'
     required: false
@@ -18,26 +20,11 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - shell: bash
-      if: inputs.version != 'oldrel'
-      run: |
-        echo "R_HOME_CROSS=/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources" >> $GITHUB_ENV
-        echo "R_CROSS_URL=https://github.com/r-universe-org/actions/releases/download/4.4.0/R-4.4.0-arm64.tar.xz" >> $GITHUB_ENV
-
-    - shell: bash
-      if: inputs.version == 'oldrel'
-      run: |
-        echo "R_HOME_CROSS=/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources" >> $GITHUB_ENV
-        echo "R_CROSS_URL=https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-arm64.tar.xz" >> $GITHUB_ENV
 
     - shell: bash
       run: |
         sudo mkdir -p /opt
         sudo chown $USER /opt
-        if [ "$R_HOME_CROSS" ]; then
-          sudo mkdir -p $R_HOME_CROSS
-          sudo chown $USER $R_HOME_CROSS
-        fi
 
     - name: Cache tools
       uses: actions/cache@v4
@@ -47,22 +34,22 @@ runs:
           /opt/gfortran
           /opt/R/x86_64
           /opt/R/arm64
-          /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources
-          /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources
-        key: ${{ runner.os }}-${{ inputs.version }}-21
+        key: ${{ runner.os }}-${{ inputs.version }}-22
 
     - shell: bash
       run: |
         echo "::group::Removing Homebrew"
         cp $(which gtar git-lfs rustup-init) .
         brew unlink $(brew list --formula) || true
+        brewdir=$(brew --repo)
+        sudo mv $(brew --prefix)/Cellar $(brew --prefix)/Cellar.old
         sudo rm -vf $(which brew)
-        sudo mv /usr/local/Homebrew /usr/local/oldhomebrew
-        sudo mv /usr/local/Cellar /usr/local/oldcellar
+        sudo mv $brewdir $brewdir.old
         cp -f gtar git-lfs rustup-init /usr/local/bin/
         hash -r
         echo "Done removing homebrew!"
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        ln -sf /usr/local/bin/rustup-init $HOME/.cargo/bin/rustup
         cargo --version
         echo "::endgroup::"
 
@@ -81,19 +68,6 @@ runs:
         fi
 
     - shell: bash
-      if: env.R_HOME_CROSS
-      run: |
-        if [ -d "$R_HOME_CROSS/lib" ]; then
-          echo "$R_HOME_CROSS/lib already exists."
-        else
-          curl -sSL $R_CROSS_URL -o R.tar.xz
-          tar xf R.tar.xz --strip-components=4 -C $R_HOME_CROSS 'R.framework/Versions/*/Resources/lib'
-          rm -Rf R.tar.xz $R_HOME_CROSS/lib/*.dSYM
-        fi
-        ls -ltRrh $R_HOME_CROSS/lib
-
-    - shell: bash
-#      if: inputs.fortran
       run: |
         if [ -d "/opt/gfortran/bin" ]; then
           echo "/opt/gfortran/bin exists. Skipping fortran installation"
@@ -103,10 +77,7 @@ runs:
           curl --retry 3 -fsSLO https://github.com/R-macos/gcc-12-branch/releases/download/12.2-darwin-r0.1/gfortran-12.2-universal.pkg
           sudo installer -pkg "gfortran-12.2-universal.pkg" -target /
           rm -f gfortran-12.2-universal.pkg
-
-          #Backward compat R-4.2
-          sudo ln -sf /opt/gfortran /usr/local/gfortran
-          #sed -i.bak 's|darwin18/8.2.0|darwin20.0/12.2.0|g' $(R RHOME)/etc/Makeconf  
+          sudo ln -sf /opt/gfortran /usr/local/gfortran  #Backward compat R-4.2
           echo "Done installing Fortran!"
           echo "::endgroup::"
         fi
@@ -115,31 +86,19 @@ runs:
     - shell: bash
       run: |
         echo "::group::Installing CRAN libs bundle"
-        if [ -f "/opt/R/x86_64/bin/pkg-config" ]; then
-          echo "/opt/R/x86_64/bin/pkg-config exists, skipping download"
+        CRANPATH="/opt/R/${{ inputs.arch }}"
+        if [ -f "$CRANPATH/bin/pkg-config" ]; then
+          echo "$CRANPATH/bin/pkg-config exists, skipping download"
         else
           curl --retry 3 -fsSL https://github.com/r-universe-org/cranlibs/releases/download/2024-07-16/cranlibs-everything.tar.xz -o libs.tar.xz
           sudo tar -xf libs.tar.xz -C / opt
           rm -f libs.tar.xz
         fi
-        PATH="/opt/R/x86_64/bin:$PATH"
-        echo "/opt/R/x86_64/bin" >> $GITHUB_PATH
-        export PKG_CONFIG_PATH="/opt/R/x86_64/lib/pkgconfig:/opt/R/x86_64/share/pkgconfig:/usr/lib/pkgconfig:/opt/X11/lib/pkgconfig:/opt/X11/share/pkgconfig"
+        PATH="$CRANPATH/bin:$PATH"
+        echo "$CRANPATH/bin" >> $GITHUB_PATH
+        export PKG_CONFIG_PATH="$CRANPATH/lib/pkgconfig:$CRANPATH/share/pkgconfig:/usr/lib/pkgconfig:/opt/X11/lib/pkgconfig:/opt/X11/share/pkgconfig"
         echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> $GITHUB_ENV
-        echo "PROJ_LIB=/opt/R/x86_64/share/proj" >> $GITHUB_ENV
-
-        # Delete non-script files (we cannot run on host)
-        for bin in /opt/R/arm64/bin/*; do
-          if [ "$(file $bin | grep 'executable arm64')" ]; then
-            rm -fv $bin
-          fi
-        done
-
-        # Fix up for libpng-config static linking (for rgl package)
-        sed -i '' 's|-lpng16|-lpng16 -lz|g' /opt/R/arm64/bin/libpng16-config
-
-        # Create shims to help some packages
-        cp -fv ${{ github.action_path }}/shims/* /opt/R/arm64/bin/
+        echo "PROJ_LIB=$CRANPATH/share/proj" >> $GITHUB_ENV
 
         echo "Available libs through pkg-config:"
         pkg-config --list-all
@@ -152,10 +111,11 @@ runs:
           echo "Skipping pandoc installation"
         else
           echo "::group::Installing Pandoc"
-          curl --retry 3 -fOL https://github.com/jgm/pandoc/releases/download/3.2.1/pandoc-3.2.1-x86_64-macOS.pkg
-          sudo installer -pkg pandoc-3.2.1-x86_64-macOS.pkg -target /
-          rm -f pandoc-3.2.1-x86_64-macOS.pkg
-          cp -f /usr/local/bin/pandoc /opt/R/x86_64/bin/  #Copy to cache
+          pkgfile="pandoc-3.3-${{ inputs.arch }}-macOS.pkg"
+          curl --retry 3 -fOL https://github.com/jgm/pandoc/releases/download/3.3/$pkgfile
+          sudo installer -pkg $pkgfile -target /
+          rm -f $pkgfile
+          cp -f /usr/local/bin/pandoc /opt/R/${{ inputs.arch }}/bin/  #Copy to cache
           echo "::endgroup::"
         fi
 
@@ -180,9 +140,14 @@ runs:
           echo "Skipping GO installation"
         else
           echo "::group::Installing GO"
-          curl --retry 3 -fLOSs https://go.dev/dl/go1.22.5.darwin-amd64.pkg
-          sudo installer -pkg go1.22.5.darwin-amd64.pkg -target /
-          rm -f go1.22.5.darwin-amd64.pkg
+          if [ "${{ inputs.arch }}" = "arm64" ]; then
+          installgo="go1.22.5.darwin-arm64.pkg"
+          else
+          installgo="go1.22.5.darwin-amd64.pkg"
+          fi
+          curl --retry 3 -fLOSs https://go.dev/dl/$installgo
+          sudo installer -pkg $installgo -target /
+          rm -f $installgo
           echo "Done installing GO!"
           echo "::endgroup::"
         fi
