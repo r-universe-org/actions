@@ -13,13 +13,8 @@ runs:
   steps:
     - name: Install rtools
       run: |
-        if [ "$RTOOLS43_HOME" ]; then
-          echo "Found preinstalled toolchain in $RTOOLS43_HOME"
-          echo "RTOOLS42_HOME=$RTOOLS43_HOME" >> $GITHUB_ENV
-          echo "RTOOLS44_HOME=$RTOOLS43_HOME" >> $GITHUB_ENV
-        elif [ "$RTOOLS44_HOME" ]; then
+        if [ "$RTOOLS44_HOME" ]; then
           echo "Found preinstalled toolchain in $RTOOLS44_HOME"
-          echo "RTOOLS42_HOME=$RTOOLS44_HOME" >> $GITHUB_ENV
           echo "RTOOLS43_HOME=$RTOOLS44_HOME" >> $GITHUB_ENV
         else
           echo "No rtools installation found!"
@@ -37,9 +32,9 @@ runs:
 
     - name: "Install Pandoc"
       run: |
-        curl -o pandoc.zip -sSL https://github.com/jgm/pandoc/releases/download/3.2.1/pandoc-3.2.1-windows-x86_64.zip
+        curl -sSLo pandoc.zip -sSL https://github.com/jgm/pandoc/releases/download/3.3/pandoc-3.3-windows-x86_64.zip
         unzip pandoc.zip
-        cp -vf "pandoc-3.2.1/pandoc.exe" "/c/windows/"
+        cp -vf "pandoc-3.3/pandoc.exe" "/c/windows/"
         rm -Rf pandoc*
       shell: bash
       continue-on-error: true
