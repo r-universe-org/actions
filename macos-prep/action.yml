@@ -4,9 +4,6 @@ inputs:
   version:
     description: 'Version of R'
     required: true
-  arch:
-    description: 'Target arch of R'
-    required: true
   fortran:
     description: 'Package uses Fortran'
     required: false
@@ -25,6 +22,7 @@ runs:
       run: |
         sudo mkdir -p /opt
         sudo chown $USER /opt
+        echo "ARCH=$(uname -m)" >> $GITHUB_ENV
 
     - name: Cache tools
       uses: actions/cache@v4
@@ -86,7 +84,7 @@ runs:
     - shell: bash
       run: |
         echo "::group::Installing CRAN libs bundle"
-        CRANPATH="/opt/R/${{ inputs.arch }}"
+        CRANPATH="/opt/R/$ARCH"
         if [ -f "$CRANPATH/bin/pkg-config" ]; then
           echo "$CRANPATH/bin/pkg-config exists, skipping download"
         else
@@ -111,11 +109,11 @@ runs:
           echo "Skipping pandoc installation"
         else
           echo "::group::Installing Pandoc"
-          pkgfile="pandoc-3.3-${{ inputs.arch }}-macOS.pkg"
+          pkgfile="pandoc-3.3-$ARCH-macOS.pkg"
           curl --retry 3 -fOL https://github.com/jgm/pandoc/releases/download/3.3/$pkgfile
           sudo installer -pkg $pkgfile -target /
           rm -f $pkgfile
-          cp -f /usr/local/bin/pandoc /opt/R/${{ inputs.arch }}/bin/  #Copy to cache
+          cp -f /usr/local/bin/pandoc /opt/R/$ARCH/bin/  #Copy to cache
           echo "::endgroup::"
         fi
 
@@ -140,7 +138,7 @@ runs:
           echo "Skipping GO installation"
         else
           echo "::group::Installing GO"
-          if [ "${{ inputs.arch }}" = "arm64" ]; then
+          if [ "$ARCH" = "arm64" ]; then
           installgo="go1.22.5.darwin-arm64.pkg"
           else
           installgo="go1.22.5.darwin-amd64.pkg"
