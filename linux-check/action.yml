@@ -70,6 +70,7 @@ runs:
         RGL_USE_NULL: TRUE
         R_TEXI2DVICMD: emulation
         NOT_CRAN: FALSE
+        UserNM: nm --quiet
         _R_CHECK_FORCE_SUGGESTS_: FALSE
         _R_CHECK_CRAN_INCOMING_: FALSE
         _R_CHECK_CRAN_INCOMING_REMOTE_: FALSE
