@@ -96,7 +96,6 @@ runs:
         SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk
         PROJ_GDAL_DATA_COPY: TRUE
         R_PROFILE_USER: .Rprofile
-        _R_SHLIB_STRIP_: TRUE
 
     - name: Parse CMD check results
       if: always()

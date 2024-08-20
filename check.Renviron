@@ -9,6 +9,10 @@ _R_CHECK_DOC_SIZES_=FALSE
 _R_CHECK_TOPLEVEL_FILES_=FALSE
 _R_CHECK_TIMINGS_=5
 
+# Remove debugging symbols (if they were compiled in the first place).
+# On Unix this also supresses NOTEs about non-api endpoints.
+_R_SHLIB_STRIP_=TRUE
+
 # Help some packages
 R_TEXI2DVICMD=emulation
 R_BROWSER=echo

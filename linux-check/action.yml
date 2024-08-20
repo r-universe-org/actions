@@ -67,7 +67,6 @@ runs:
         R_CHECK_ENVIRON: ${{github.action_path}}/../check.Renviron
         LANG: en_US.UTF-8
         UserNM: nm --quiet
-        _R_SHLIB_STRIP_: TRUE
 
     - name: Parse CMD check results
       if: always()
