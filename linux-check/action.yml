@@ -58,7 +58,7 @@ runs:
         cat('::endgroup::\n')
       shell: Rscript {0}
       env:
-        R_DEFAULT_INTERNET_TIMEOUT: 150
+        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
 
     - name: Build and check package
       shell: bash

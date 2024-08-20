@@ -97,7 +97,7 @@ runs:
         export PKG_CONFIG_PATH="$CRANPATH/lib/pkgconfig:$CRANPATH/share/pkgconfig:/usr/lib/pkgconfig:/opt/X11/lib/pkgconfig:/opt/X11/share/pkgconfig"
         echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> $GITHUB_ENV
         echo "PROJ_LIB=$CRANPATH/share/proj" >> $GITHUB_ENV
-
+        echo "PROJ_GDAL_DATA_COPY=TRUE" >> $GITHUB_ENV
         echo "Available libs through pkg-config:"
         pkg-config --list-all
         echo "Done installing CRAN bundle!"

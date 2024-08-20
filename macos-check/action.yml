@@ -75,10 +75,7 @@ runs:
         cat('::endgroup::\n')
       shell: Rscript {0}
       env:
-        R_DEFAULT_INTERNET_TIMEOUT: 150
-#        PKG_CONFIG_PATH: /usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig
-#        PROJ_LIB: /usr/local/share/proj
-        PROJ_GDAL_DATA_COPY: TRUE
+        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
         R_PROFILE_USER: .Rprofile
 #        R_COMPILE_AND_INSTALL_PACKAGES: never
     - name: Build and check package
@@ -88,7 +85,6 @@ runs:
         R_CHECK_ENVIRON: ${{github.action_path}}/../check.Renviron
         MACOSX_DEPLOYMENT_TARGET: 11.0
         SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk
-        PROJ_GDAL_DATA_COPY: TRUE
         R_PROFILE_USER: .Rprofile
 
     - name: Parse CMD check results
