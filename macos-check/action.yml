@@ -107,7 +107,7 @@ runs:
         _R_CHECK_FORCE_SUGGESTS_: FALSE
         _R_CHECK_CRAN_INCOMING_: FALSE
         _R_CHECK_CRAN_INCOMING_REMOTE_: FALSE
-        _R_SHLIB_STRIP_: TRUE
+#        _R_SHLIB_STRIP_: TRUE
         _R_CHECK_TIMINGS_: 5
 
     - name: Parse CMD check results
@@ -138,3 +138,14 @@ runs:
         fi
         find . -regex '.*\.R*out' | while read f; do echo "::group::$f"; echo " ===== $f ====="; tail -n1000 $f; echo "::endgroup::"; done
         find . -regex '.*\.fail' | while read f; do echo "::group::$f"; echo " ===== $f ====="; tail -n1000 $f; echo "::endgroup::"; done
+
+    - name: Upload error logs
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: failures
+        path: |
+          **/*.fail
+          **/*.Rout
+          /Users/runner/Library/Logs/DiagnosticReports/R-*
+
