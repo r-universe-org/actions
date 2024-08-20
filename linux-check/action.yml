@@ -8,10 +8,6 @@ inputs:
     description: 'Extra args for R CMD check'
     default: --no-manual --no-vignettes
     required: false
-  cranlikerepo:
-    description: 'URL of the package repository with dependencies'
-    default: 'Sys.getenv("MY_UNIVERSE", "https://dev.ropensci.org")'
-    required: true
   java:
     description: 'Package depends on rJava'
     required: false

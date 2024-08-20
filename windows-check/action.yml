@@ -9,10 +9,6 @@ inputs:
 #    default: --no-manual --no-build-vignettes # knitr has a bug for --no-build-vignettes
     default: --no-manual --no-vignettes
     required: true
-  cranlikerepo:
-    description: 'URL of the package repository with dependencies'
-    default: 'Sys.getenv("MY_UNIVERSE", "https://dev.ropensci.org")'
-    required: true
   java:
     description: 'Package depends on rJava'
     required: false
@@ -31,29 +27,9 @@ outputs:
 runs:
   using: "composite"
   steps:
-
-    - name: "Setup R package library"
-      shell: bash
-      run: |
-        echo "::group::Setup R package library"
-        if [ "${R_LIBS_USER}" ]; then mkdir -p $R_LIBS_USER; fi
-        echo 'options(repos = c(CRAN = "https://cloud.r-project.org"))' > $R_PROFILE_USER
-        echo 'options(Ncpus = 2, crayon.enabled = TRUE)' >> $R_PROFILE_USER
-        echo 'options(install.packages.compile.from.source = "yes")' >> $R_PROFILE_USER
-        echo 'if(grepl("4.3", getRversion())) Sys.setenv(R_BIOC_VERSION=3.18)' >> $R_PROFILE_USER
-        echo 'if(grepl("4.4", getRversion())) Sys.setenv(R_BIOC_VERSION=3.19)' >> $R_PROFILE_USER
-        echo 'options(BioC_mirror = "https://bioc.cran.dev")' >> $R_PROFILE_USER
-        echo 'utils::setRepositories(ind = 1:3)' >> $R_PROFILE_USER
-        echo 'Sys.unsetenv(c("CI", "GITHUB_ACTIONS"))' >> $R_PROFILE_USER
-        echo 'options(HTTPUserAgent = paste0(getOption("HTTPUserAgent"), "; r-universe"))' >> $R_PROFILE_USER
-        echo 'options(repos = c(pppm = "https://p3m.dev/cran/latest", getOption("repos")))' >> $R_PROFILE_USER
-        echo 'options(repos = c(universe = trimws(strsplit(${{inputs.cranlikerepo}}, ";")[[1]]), getOption("repos")))' >> $R_PROFILE_USER
-        cat $R_PROFILE_USER
-        echo "::endgroup::"
-      env:
-        R_PROFILE_USER: .Rprofile
     - name: Install package dependencies
       run: |
+        dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE, showWarnings = FALSE)
         cat(Sys.which('gcc'), "\n")
         invisible(system("gcc --version"))   
         cat('::group::Install package dependencies\n')
@@ -75,12 +51,13 @@ runs:
       shell: Rscript {0}
       env:
         R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
+        R_PROFILE_USER: ${{github.action_path}}/../Rprofile
     - name: Build and check package
       shell: cmd
       run: R CMD check ${{inputs.sourcepkg}} --install-args="--build" ${{inputs.checkargs}}
       env:
         R_CHECK_ENVIRON: ${{github.action_path}}/../check.Renviron
-        R_PROFILE_USER: .Rprofile
+        R_PROFILE_USER: ${{github.action_path}}/../Rprofile
 
     - name: Parse CMD check results
       if: always()
