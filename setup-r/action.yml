@@ -68,7 +68,7 @@ runs:
       run: |
         sudo nohup /opt/X11/bin/Xvfb :6 -screen 0 1280x1024x24 > ~/X.log &
         export DISPLAY=:6
-        echo "Running fake X server on $DISPLAY"
+        echo "Started Xvfb server on $DISPLAY"
         echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
 
     - name: Set Windows timezone
