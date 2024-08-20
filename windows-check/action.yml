@@ -49,7 +49,6 @@ runs:
         echo 'options(repos = c(pppm = "https://p3m.dev/cran/latest", getOption("repos")))' >> $R_PROFILE_USER
         echo 'options(repos = c(universe = trimws(strsplit(${{inputs.cranlikerepo}}, ";")[[1]]), getOption("repos")))' >> $R_PROFILE_USER
         cat $R_PROFILE_USER
-        echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
         echo "::endgroup::"
       env:
         R_PROFILE_USER: .Rprofile

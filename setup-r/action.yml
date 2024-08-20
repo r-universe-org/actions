@@ -71,6 +71,24 @@ runs:
         echo "Started Xvfb server on $DISPLAY"
         echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
 
+    - name: Setup rJava
+      shell: bash
+      if: runner.os == 'macos'
+      continue-on-error: true
+      run: |
+        if [ "$(uname -m)" = "arm64" ]; then
+          echo "JAVA_HOME=$JAVA_HOME_21_arm64" >> $GITHUB_ENV
+        else
+          echo "JAVA_HOME=$JAVA_HOME_21_X64" >> $GITHUB_ENV
+        fi
+        R CMD javareconf || true
+
+    - name: Setup rJava
+      shell: bash
+      if: runner.os == 'windows'
+      run: |
+        echo "JAVA_HOME=$JAVA_HOME_21_X64" >> $GITHUB_ENV
+
     - name: Set Windows timezone
       if: runner.os == 'windows'
       run: |

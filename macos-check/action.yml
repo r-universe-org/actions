@@ -52,12 +52,6 @@ runs:
         echo 'options(HTTPUserAgent = paste0(getOption("HTTPUserAgent"), "; r-universe"))' >> $R_PROFILE_USER
         echo 'options(repos = c(universe = trimws(strsplit(${{inputs.cranlikerepo}}, ";")[[1]]), getOption("repos")))' >> $R_PROFILE_USER
         cat $R_PROFILE_USER
-        if [ "$(uname -m)" = "arm64" ]; then
-          echo "JAVA_HOME=$JAVA_HOME_21_arm64" >> $GITHUB_ENV
-        else
-          echo "JAVA_HOME=$JAVA_HOME_21_X64" >> $GITHUB_ENV
-        fi
-        R CMD javareconf || true
         echo "::endgroup::"
       env:
         R_PROFILE_USER: .Rprofile
