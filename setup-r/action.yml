@@ -11,9 +11,9 @@ runs:
       run: |
         version="${{inputs.r-version}}"
         if [ "$version" = "devel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.4.0/R-4.4.0-arm64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.4.1/R-4.4.1-arm64.pkg"
         elif [ "$version" = "release" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.4.0/R-4.4.0-arm64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.4.1/R-4.4.1-arm64.pkg"
         elif [ "$version" = "oldrel" ]; then
           URL="https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-arm64.pkg"
         fi
@@ -28,9 +28,9 @@ runs:
       run: |
         version="${{inputs.r-version}}"
         if [ "$version" = "devel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.4.0/R-4.4.0-x86_64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.4.1/R-4.4.1-x86_64.pkg"
         elif [ "$version" = "release" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.4.0/R-4.4.0-x86_64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.4.1/R-4.4.1-x86_64.pkg"
         elif [ "$version" = "oldrel" ]; then
           URL="https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-x86_64.pkg"
         fi
@@ -47,7 +47,7 @@ runs:
         if ( $version -eq "devel" ) {
           $URL = "https://cloud.r-project.org/bin/windows/base/R-devel-win.exe"
         } elseif ( $version -eq "release" ) {
-          $URL = "https://github.com/r-universe-org/actions/releases/download/4.4.0/R-4.4.0-win.exe"
+          $URL = "https://github.com/r-universe-org/actions/releases/download/4.4.1/R-4.4.1-win.exe"
         } elseif ( $version -eq "oldrel" ) {
           $URL = "https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-win.exe"
         }
