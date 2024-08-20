@@ -64,20 +64,10 @@ runs:
       shell: bash
       run: R CMD check ${{inputs.sourcepkg}} --install-args="--build" ${{inputs.checkargs}}
       env:
+        R_CHECK_ENVIRON: ${{github.action_path}}/../check.Renviron
         LANG: en_US.UTF-8
-        R_BROWSER: echo
-        R_PDFVIEWER: echo
-        RGL_USE_NULL: TRUE
-        R_TEXI2DVICMD: emulation
-        NOT_CRAN: FALSE
         UserNM: nm --quiet
-        _R_CHECK_FORCE_SUGGESTS_: FALSE
-        _R_CHECK_CRAN_INCOMING_: FALSE
-        _R_CHECK_CRAN_INCOMING_REMOTE_: FALSE
-        _R_CHECK_DOC_SIZES_: FALSE
-        _R_CHECK_TOPLEVEL_FILES_: FALSE
         _R_SHLIB_STRIP_: TRUE
-        _R_CHECK_TIMINGS_: 5
 
     - name: Parse CMD check results
       if: always()

@@ -1,0 +1,18 @@
+# CRAN=https://github.com/r-devel/r-dev-web/blob/main/CRAN/QA/Kurt/.R/check.Renviron
+
+# Suppress some NOTEs that we dont care about
+_R_CHECK_PKG_SIZES_=FALSE
+_R_CHECK_FORCE_SUGGESTS_=FALSE
+_R_CHECK_CRAN_INCOMING_=FALSE
+_R_CHECK_CRAN_INCOMING_REMOTE_=FALSE
+_R_CHECK_DOC_SIZES_=FALSE
+_R_CHECK_TOPLEVEL_FILES_=FALSE
+_R_CHECK_TIMINGS_=5
+
+# Help some packages
+R_TEXI2DVICMD=emulation
+R_BROWSER=echo
+R_PDFVIEWER=echo
+RGL_USE_NULL=TRUE
+ARROW_R_DEV=TRUE
+NOT_CRAN=FALSE

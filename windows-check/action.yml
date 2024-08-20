@@ -81,17 +81,8 @@ runs:
       shell: cmd
       run: R CMD check ${{inputs.sourcepkg}} --install-args="--build" ${{inputs.checkargs}}
       env:
-        R_BROWSER: echo
-        R_PDFVIEWER: echo
-        RGL_USE_NULL: TRUE
-        ARROW_R_DEV: TRUE
-        R_TEXI2DVICMD: emulation
-        NOT_CRAN: FALSE
+        R_CHECK_ENVIRON: ${{github.action_path}}/../check.Renviron
         R_PROFILE_USER: .Rprofile
-        _R_CHECK_FORCE_SUGGESTS_: FALSE
-        _R_CHECK_CRAN_INCOMING_: FALSE
-        _R_CHECK_CRAN_INCOMING_REMOTE_: FALSE
-        _R_CHECK_TIMINGS_: 5
 
     - name: Parse CMD check results
       if: always()
