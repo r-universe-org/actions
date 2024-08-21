@@ -19,19 +19,18 @@ deps <- c(desc$Depends, desc$Imports, desc$LinkingTo, desc$Suggests, desc$Enhanc
 pkg_deps <- unique(trimws(sub("\\(.*\\)", "", unlist(strsplit(deps, ',')))))
 skiplist <- c("R", getOption('defaultPackages'))
 pkg_deps <- setdiff(pkg_deps, skiplist)
-installed <- row.names(installed.packages())
 
 # Update existing packages
 update.packages(oldPkgs = pkg_deps, ask = FALSE)
 
-# Install new packages that we can find
+# Install new packages
+installed <- row.names(installed.packages())
 needpkg <- setdiff(pkg_deps, installed)
-avail <- row.names(available.packages())
-install <- intersect(needpkg, avail)
-unavail <- setdiff(needpkg, avail)
-install.packages(install)
+install.packages(needpkg)
 
-# Last resort
+# Test again if any are missing, try with remotes
+installed <- row.names(installed.packages())
+unavail <- setdiff(pkg_deps, installed)
 if(length(unavail)) {
   warning("Installing from remotes: ", paste(unavail, collapse = ','))
   install.packages('remotes')
