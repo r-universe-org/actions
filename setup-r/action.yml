@@ -61,27 +61,23 @@ runs:
     - shell: bash
       run: R --version
 
-    - name: Start fake X11 server
+    - name: Start Xvfb and rJava
       shell: bash
       if: runner.os == 'macos'
       continue-on-error: true
       run: |
+        echo '::group::Start Xvfb and rJava'
         sudo nohup /opt/X11/bin/Xvfb :6 -screen 0 1280x1024x24 > ~/X.log &
         export DISPLAY=:6
         echo "Started Xvfb server on $DISPLAY"
         echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
-
-    - name: Setup rJava
-      shell: bash
-      if: runner.os == 'macos'
-      continue-on-error: true
-      run: |
         if [ "$(uname -m)" = "arm64" ]; then
           echo "JAVA_HOME=$JAVA_HOME_21_arm64" >> $GITHUB_ENV
         else
           echo "JAVA_HOME=$JAVA_HOME_21_X64" >> $GITHUB_ENV
         fi
         R CMD javareconf || true
+        echo "::endgroup::"
 
     - name: Setup rJava
       shell: bash
