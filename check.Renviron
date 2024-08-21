@@ -1,6 +1,7 @@
 # CRAN=https://github.com/r-devel/r-dev-web/blob/main/CRAN/QA/Kurt/.R/check.Renviron
 
 # Suppress some NOTEs that we dont care about
+_R_CHECK_XREFS_NOTE_MISSING_PACKAGE_ANCHORS_=true
 _R_CHECK_PKG_SIZES_=FALSE
 _R_CHECK_FORCE_SUGGESTS_=FALSE
 _R_CHECK_CRAN_INCOMING_=FALSE
