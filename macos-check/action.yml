@@ -31,24 +31,8 @@ runs:
   using: "composite"
   steps:
     - name: Install package dependencies
-      run: |
-        dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE, showWarnings = FALSE)
-        cat('::group::Install package dependencies\n')
-        install.packages('remotes')
-        pkg_deps <- remotes::local_package_deps("${{inputs.sourcepkg}}", dependencies = TRUE)
-        installed <- row.names(installed.packages())
-        update.packages(oldPkgs = pkg_deps, ask = FALSE)
-        needpkg <- setdiff(pkg_deps, installed)
-        avail <- row.names(available.packages())
-        install <- intersect(needpkg, avail)
-        unavail <- setdiff(needpkg, avail)
-        install.packages(install)
-        if(length(unavail)) {
-          warning("Installing from remotes: ", paste(unavail, collapse = ','))
-          remotes::install_deps("${{inputs.sourcepkg}}", dependencies = TRUE, upgrade = FALSE)
-        }
-        cat('::endgroup::\n')
-      shell: Rscript {0}
+      run: Rscript "${GITHUB_ACTION_PATH}/../getdeps.R" "${{inputs.sourcepkg}}"
+      shell: bash
       env:
         R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
         R_PROFILE_USER: ${{github.action_path}}/../Rprofile
