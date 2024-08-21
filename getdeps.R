@@ -16,7 +16,7 @@ untar(sourcepkg, filename, extras = '--strip=1')
 desc <- as.data.frame(read.dcf("DESCRIPTION"))
 unlink('DESCRIPTION')
 deps <- c(desc$Depends, desc$Imports, desc$LinkingTo, desc$Suggests, desc$Enhances)
-pkg_deps <- unique(trimws(sub("\\(.*\\)", "", unlist(strsplit(deps, ',')))))
+pkg_deps <- unique(trimws(sub("\\(.*\\)", "", unlist(strsplit(as.character(deps), ',')))))
 skiplist <- c("R", getOption('defaultPackages'))
 pkg_deps <- setdiff(pkg_deps, skiplist)
 
