@@ -20,6 +20,14 @@ pkg_deps <- unique(trimws(sub("\\(.*\\)", "", unlist(strsplit(deps, ',')))))
 skiplist <- c("R", getOption('defaultPackages'))
 pkg_deps <- setdiff(pkg_deps, skiplist)
 
+# Add Additional_repositories
+if(length(desc$Additional_repositories)){
+  addrepos <- trimws(strsplit(desc$Additional_repositories, ",", fixed=TRUE)[[1]])
+  addrepos <- grep('^https?://\\S+$', addrepos, value = TRUE)
+  message("Additional_repositories: ", paste(addrepos, collapse = ', '))
+  options(repos = c(getOption('repos'), addrepos))
+}
+
 # Update existing packages
 update.packages(oldPkgs = pkg_deps, ask = FALSE)
 
