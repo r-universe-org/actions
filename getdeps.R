@@ -6,6 +6,13 @@ print(as.list(getOption('repos')))
 cat(readLines(Sys.getenv('R_ENVIRON_USER')), sep = '\n')
 cat('::endgroup::\n')
 
+# Do not try to install base packages
+skiplist <- c("R", "base", "boot", "class", "cluster", "codetools",
+  "compiler", "datasets", "foreign", "graphics", "grDevices", "grid",
+  "KernSmooth", "lattice", "MASS", "Matrix", "methods", "mgcv",
+  "nlme", "nnet", "parallel", "rpart", "spatial", "splines", "stats",
+  "stats4", "survival", "tcltk", "tools", "utils")
+
 cat('::group::Install package dependencies\n')
 dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE, showWarnings = FALSE)
 sourcepkg <- commandArgs(TRUE)[1]
@@ -17,7 +24,6 @@ desc <- as.data.frame(read.dcf("DESCRIPTION"))
 unlink('DESCRIPTION')
 deps <- c(desc$Depends, desc$Imports, desc$LinkingTo, desc$Suggests, desc$Enhances)
 pkg_deps <- unique(trimws(sub("\\(.*\\)", "", unlist(strsplit(as.character(deps), ',')))))
-skiplist <- c("R", getOption('defaultPackages'))
 pkg_deps <- setdiff(pkg_deps, skiplist)
 
 # Add Additional_repositories
