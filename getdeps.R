@@ -35,13 +35,13 @@ if(length(desc$Additional_repositories)){
   options(repos = c(getOption('repos'), addrepos))
 }
 
-# Update existing packages
-update.packages(oldPkgs = pkg_deps, ask = FALSE)
-
 # Install new packages
 installed <- row.names(installed.packages())
 needpkg <- setdiff(pkg_deps, installed)
 install.packages(needpkg)
+
+# Update pre-installed and outdated binary packages
+update.packages(oldPkgs = pkg_deps, type = 'source', ask = FALSE)
 
 # Test again if any are missing, try with remotes
 installed <- row.names(installed.packages())
