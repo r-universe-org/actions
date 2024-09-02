@@ -32,6 +32,9 @@ outputs:
   maintainer_login:
     description: "Package maintainer GitHub username"
     value: ${{ steps.find-user.outputs.maintainer_login }}
+  maintainer_uuid:
+    description: "Package maintainer GitHub ID"
+    value: ${{ steps.find-user.outputs.maintainer_uuid }}
   build_docs:
     description: "If we should build pkgdown documentation"
     value: ${{ steps.git-log.outputs.build_docs }}
@@ -103,8 +106,14 @@ runs:
     - id: find-user
       shell: bash
       run: |
-        LOGIN=$(curl -s -D /dev/stderr --fail -H "Authorization: token ${{inputs.github-token}}" "https://api.github.com/repos/${{github.repository}}/commits/${COMMIT_ID}" | tee output.log | jq -r '.author.login')
+        curl -o commit.json -s -D /dev/stderr --fail -H "Authorization: token ${{inputs.github-token}}" "https://api.github.com/repos/${{github.repository}}/commits/${COMMIT_ID}"
+        LOGIN=$(jq -r '.author.login' commit.json)
+        UUID=$(jq -r '.author.id' commit.json)
         if [ "$LOGIN" ] && [ "$LOGIN" != "null" ]; then
-          echo "Package maintainer github login: $LOGIN"
+          echo "Package maintainer github login: $LOGIN ($UUID)"
           echo "maintainer_login=$LOGIN" >> $GITHUB_OUTPUT
+          echo "maintainer_uuid=$UUID" >> $GITHUB_OUTPUT
+        else
+          echo "No GitHub user found for this commit"
         fi
+        rm -f commit.json
