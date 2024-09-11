@@ -22,7 +22,7 @@ runs:
         echo "FILE='${{ inputs.FILE }}'" >> pkgdata.txt
         echo "TARGET='${{ inputs.TARGET }}'" >> pkgdata.txt
         echo "CHECKSTATUS='${{ inputs.CHECKSTATUS }}'" >> pkgdata.txt
-        echo "STOREDATE=$(date '+%Y-%m-%d')" >> pkgdata.txt
+        echo "STOREDATE=$(date '+%Y%m%d')" >> pkgdata.txt
 
     - shell: bash
       run: |
