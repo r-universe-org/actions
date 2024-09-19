@@ -79,6 +79,8 @@ runs:
           echo "Done installing Fortran!"
           echo "::endgroup::"
         fi
+        mkdir -p ~/.R
+        cp -f ${{github.action_path}}/Makevars-$ARCH ~/.R/Makevars
         echo "/opt/gfortran/bin" >> $GITHUB_PATH
 
     - shell: bash

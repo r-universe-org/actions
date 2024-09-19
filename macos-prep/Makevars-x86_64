@@ -1,0 +1,2 @@
+# CF: https://stat.ethz.ch/pipermail/r-sig-mac/2024-May/014987.html
+FLIBS = -L/Library/Frameworks/R.framework/Resources/lib -lgfortran.5 -lquadmath.0
