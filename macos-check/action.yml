@@ -42,7 +42,7 @@ runs:
       run: R CMD check ${{inputs.sourcepkg}} --install-args="--build" ${{inputs.checkargs}}
       env:
         MACOSX_DEPLOYMENT_TARGET: 11.0
-        SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk
+#        SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk
         R_CHECK_ENVIRON: ${{github.action_path}}/../check.Renviron
         R_PROFILE_USER: ${{github.action_path}}/../Rprofile
 
