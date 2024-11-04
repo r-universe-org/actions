@@ -35,6 +35,16 @@ if(length(desc$Additional_repositories)){
   options(repos = c(getOption('repos'), addrepos))
 }
 
+# Install sysdeps (Linux only)
+if(grepl("linux", R.Version()$platform)) {
+  sysreqs <- desc[['Config/pak/sysreqs']]
+  if(length(sysreqs)){
+    cat("Installing sysreqs:", sysreqs, "\n")
+    system("apt-get update")
+    system(paste("apt-get install -y", sysreqs))
+  }
+}
+
 # Install new packages
 installed <- row.names(installed.packages())
 needpkg <- setdiff(pkg_deps, installed)
