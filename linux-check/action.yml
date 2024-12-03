@@ -53,11 +53,8 @@ runs:
     - name: Parse CMD check results
       if: always()
       id: conclude
-      run: |
-        results <- tools:::check_packages_in_dir_results('.')
-        writeLines(paste0('CHECKSTATUS=',results[[1]]$status),Sys.getenv("GITHUB_OUTPUT"))
-        writeLines(results[[1]]$lines, 'checkresults.txt')
-      shell: Rscript {0}
+      run: Rscript "${GITHUB_ACTION_PATH}/../results.R"
+      shell: bash
 
     - name: Inspect check outputs
       if: always()
