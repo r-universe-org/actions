@@ -46,15 +46,9 @@ runs:
 
     - name: Build and check package
       shell: bash
-      run: R CMD check ${{inputs.sourcepkg}} --install-args="--build" ${{inputs.checkargs}}
+      run: R CMD check ${{inputs.sourcepkg}} --install-args="--build" ${{inputs.checkargs}} || true
       env:
         R_CHECK_ENVIRON: ${{github.action_path}}/../check.Renviron
-
-    - name: Parse CMD check results
-      if: always()
-      id: conclude
-      run: Rscript "${GITHUB_ACTION_PATH}/../results.R"
-      shell: bash
 
     - name: Inspect check outputs
       if: always()
@@ -73,3 +67,15 @@ runs:
         fi
         find . -regex '.*\.R*out' | while read f; do echo "::group::$f"; echo " ===== $f ====="; tail -n1000 $f; echo "::endgroup::"; done
         find . -regex '.*\.fail' | while read f; do echo "::group::$f"; echo " ===== $f ====="; tail -n1000 $f; echo "::endgroup::"; done
+
+    - name: Parse CMD check results
+      id: conclude
+      run: Rscript "${GITHUB_ACTION_PATH}/../results.R"
+      shell: bash
+
+# Fail manually instead of 'exit 1' to avoid annotation: https://stackoverflow.com/a/73532770/318752 
+    - name: Set failed conclusion
+      if: steps.conclude.outputs.CHECKSTATUS == 'ERROR'
+      uses: actions/github-script@v7
+      with:
+        script: core.setFailed()
