@@ -13,6 +13,9 @@ inputs:
   jags:
     description: 'Package depends on JAGS'
     required: false
+  quarto:
+    description: 'Package depends on Quarto'
+    required: false
 
 runs:
   using: "composite"
@@ -104,6 +107,20 @@ runs:
         pkg-config --list-all
         echo "Done installing CRAN bundle!"
         echo "::endgroup::"
+
+    - shell: bash
+      if: inputs.quarto
+      run: |
+        if quarto --version 2>/dev/null; then
+          echo "Skipping quarto installation"
+        else
+          echo "::group::Installing Quarto"
+          pkgfile="quarto-1.6.39-macos.pkg"
+          curl --retry 3 -fOL https://github.com/quarto-dev/quarto-cli/releases/download/v1.6.39/$pkgfile
+          sudo installer -pkg $pkgfile -target /
+          rm -f $pkgfile
+          echo "::endgroup::"
+        fi
 
     - shell: bash
       run: |

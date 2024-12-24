@@ -7,6 +7,9 @@ inputs:
   jags:
     description: 'Package depends on JAGS'
     required: false
+  quarto:
+    description: 'Package depends on Quarto'
+    required: false
 
 runs:
   using: "composite"
