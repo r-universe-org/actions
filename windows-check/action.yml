@@ -33,6 +33,7 @@ runs:
       env:
         R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
         R_PROFILE_USER: ${{github.action_path}}/../Rprofile
+        R_COMPILE_AND_INSTALL_PACKAGES: never
     - name: Build and check package
       shell: cmd
       run: R CMD check ${{inputs.sourcepkg}} --install-args="--build" ${{inputs.checkargs}} || true
