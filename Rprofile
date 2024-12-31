@@ -3,7 +3,13 @@ if(grepl("4.4", getRversion())) Sys.setenv(R_BIOC_VERSION='3.20')
 if(grepl("4.5", getRversion())) Sys.setenv(R_BIOC_VERSION='3.20')
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 options(BioC_mirror = "https://bioc.cran.dev")
-utils::setRepositories(ind = 1:3)
+
+if(identical('bioc', Sys.getenv('UNIVERSE_NAME'))){
+  utils::setRepositories(ind = 1:4)
+} else {
+  utils::setRepositories(ind = 1:2)
+}
+
 #options(repos = c(pppm = "https://p3m.dev/cran/latest", getOption("repos")))
 if(nchar(Sys.getenv("MY_UNIVERSE"))){
   options(repos = c(universe = Sys.getenv("MY_UNIVERSE"), getOption("repos")))
