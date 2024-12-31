@@ -45,12 +45,15 @@ if(grepl("linux", R.Version()$platform)) {
   }
 }
 
+# Hack for bioc mess
+if(identical('bioc', Sys.getenv('UNIVERSE_NAME'))){
+  pkg_deps <- c(pkg_deps, "zlibbioc")
+}
+
 # Install new packages
 installed <- row.names(installed.packages())
 needpkg <- setdiff(pkg_deps, installed)
-Sys.setenv(R_COMPILE_AND_INSTALL_PACKAGES='never')
 install.packages(needpkg)
-Sys.unsetenv('R_COMPILE_AND_INSTALL_PACKAGES')
 
 # Update pre-installed and outdated binary packages
 update.packages(oldPkgs = pkg_deps, type = 'source', ask = FALSE)

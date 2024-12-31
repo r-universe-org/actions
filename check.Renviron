@@ -23,3 +23,6 @@ RGL_USE_NULL=TRUE
 ARROW_R_DEV=TRUE
 NOT_CRAN=FALSE
 
+# Get the latest available binary for dependencies
+# On bioc it often happens a devel version does not build on Win or Mac.
+R_COMPILE_AND_INSTALL_PACKAGES=never
