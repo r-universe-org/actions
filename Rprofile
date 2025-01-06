@@ -7,7 +7,7 @@ options(BioC_mirror = "https://bioc.cran.dev")
 if(identical('bioc', Sys.getenv('UNIVERSE_NAME'))){
   utils::setRepositories(ind = 1:4)
 } else {
-  utils::setRepositories(ind = 1:2)
+  utils::setRepositories(ind = 1:3)
 }
 
 #options(repos = c(pppm = "https://p3m.dev/cran/latest", getOption("repos")))
