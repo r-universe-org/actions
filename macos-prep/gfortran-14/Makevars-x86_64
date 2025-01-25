@@ -1,0 +1,2 @@
+# CF: https://stat.ethz.ch/pipermail/r-sig-mac/2024-May/014987.html
+FLIBS = /opt/gfortran/lib/gcc/x86_64-apple-darwin20.0/14.2.0/libemutls_w.a /opt/gfortran/lib/gcc/x86_64-apple-darwin20.0/14.2.0/libheapt_w.a -L/Library/Frameworks/R.framework/Resources/lib -lgfortran.5 -lquadmath.0
