@@ -25,4 +25,4 @@ NOT_CRAN=FALSE
 
 # Get the latest available binary for dependencies
 # On bioc it often happens a devel version does not build on Win or Mac.
-R_COMPILE_AND_INSTALL_PACKAGES=never
+# R_COMPILE_AND_INSTALL_PACKAGES=never

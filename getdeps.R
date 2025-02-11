@@ -51,11 +51,15 @@ if(identical('bioc', Sys.getenv('UNIVERSE_NAME'))){
 }
 
 # Install new packages
+#options(install.packages.check.source = "no")
+options("install.packages.compile.from.source"="never")
 installed <- row.names(installed.packages())
 needpkg <- setdiff(pkg_deps, installed)
 install.packages(needpkg)
 
 # Update pre-installed and outdated binary packages
+#options(install.packages.check.source = NULL)
+options("install.packages.compile.from.source"="interactive")
 update.packages(oldPkgs = pkg_deps, type = 'source', ask = FALSE)
 
 # Test again if any are missing, try with remotes
