@@ -44,6 +44,10 @@ outputs:
   is_rebuild:
     description: "If this is a rebuild of an older commit"
     value: ${{ steps.git-log.outputs.is_rebuild }}
+  cran_version:
+    description: "Optional date of CRAN snapshot"
+    value: ${{ steps.git-log.outputs.cran_version }}
+
 runs:
   using: "composite"
   steps: 
@@ -101,6 +105,13 @@ runs:
         fi
         if [ "$GITHUB_REPOSITORY" == "r-universe/cran" ]; then
           echo "skip_binaries=true" >> $GITHUB_OUTPUT
+        fi
+        if [ -f ".config.json" ]; then
+          CRAN_VERSION=$(jq -r '.cran_version // empty' .config.json)
+          if [ "$CRAN_VERSION" ]; then
+            echo "Found config.json with cran_version $CRAN_VERSION"
+            echo "cran_version=$CRAN_VERSION" >> $GITHUB_OUTPUT
+          fi
         fi
         echo "COMMIT_ID=${COMMIT_ID}" >> $GITHUB_ENV
     - id: find-user
