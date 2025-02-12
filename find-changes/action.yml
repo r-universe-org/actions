@@ -47,6 +47,9 @@ outputs:
   cran_version:
     description: "Optional date of CRAN snapshot"
     value: ${{ steps.git-log.outputs.cran_version }}
+  registry_metadata:
+    description: "Optional registry metadata for this package"
+    value: ${{ steps.git-log.outputs.registry_metadata }}
 
 runs:
   using: "composite"
@@ -111,6 +114,13 @@ runs:
           if [ "$CRAN_VERSION" ]; then
             echo "Found config.json with cran_version $CRAN_VERSION"
             echo "cran_version=$CRAN_VERSION" >> $GITHUB_OUTPUT
+          fi
+        fi
+        if [ -f ".metadata.json" ]; then
+          METADATA=$(jq -r ".[] | select(.package == \"${REPO_NAME}\") | .metadata | tostring" .metadata.json)
+          if [ "$METADATA" ]; then
+            echo "Found package metadata: $METADATA"
+            echo "registry_metadata=$METADATA" >> $GITHUB_OUTPUT
           fi
         fi
         echo "COMMIT_ID=${COMMIT_ID}" >> $GITHUB_ENV
