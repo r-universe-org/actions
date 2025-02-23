@@ -174,4 +174,5 @@ runs:
           echo "Done installing GO!"
           echo "::endgroup::"
         fi
+        echo "/usr/local/go/bin" >> $GITHUB_PATH
       if: inputs.golang
