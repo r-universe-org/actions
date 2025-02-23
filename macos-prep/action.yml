@@ -164,9 +164,9 @@ runs:
         else
           echo "::group::Installing GO"
           if [ "$ARCH" = "arm64" ]; then
-          installgo="go1.22.5.darwin-arm64.pkg"
+          installgo="go1.24.0.darwin-arm64.pkg"
           else
-          installgo="go1.22.5.darwin-amd64.pkg"
+          installgo="go1.24.0.darwin-amd64.pkg"
           fi
           curl --retry 3 -fLOSs https://go.dev/dl/$installgo
           sudo installer -pkg $installgo -target /
