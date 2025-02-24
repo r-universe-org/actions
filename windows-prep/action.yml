@@ -27,7 +27,7 @@ runs:
 
     - name: "Install JAGS if needed"
       run: |
-        curl -o JAGS.exe -L https://github.com/r-windows/files/releases/download/JAGS/JAGS-4.3.1.exe
+        curl -o JAGS.exe -L https://github.com/r-universe-org/actions/releases/download/JAGS-4.3.1/JAGS-4.3.1.exe
         Start-Process "JAGS.exe" -argumentlist "/S" -wait
         Remove-Item JAGS.exe
       shell: pwsh
