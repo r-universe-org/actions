@@ -1,6 +1,8 @@
 inputs:
   name:
     required: true
+  overwrite:
+    default: false
   JOB_STATUS: 
     description: 'Build success status'
   DISTRO: 
@@ -39,3 +41,4 @@ runs:
           ${{ inputs.FILE }}
           pkgdata.txt
           checkresults.*
+        overwrite: ${{ inputs.overwrite }}
