@@ -36,8 +36,10 @@ runs:
         R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
         R_PROFILE_USER: ${{github.action_path}}/../Rprofile
 
+    # TODO: fix error annotation here
+    # TODO: use bash for now because 'cmd' did not fail on error
     - name: Build the package
-      shell: cmd
+      shell: bash
       run: R CMD INSTALL ${{inputs.sourcepkg}} --library=mylib --build 2>&1 | tee install.log
       env:
         R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
