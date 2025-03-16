@@ -36,14 +36,21 @@ runs:
       env:
         R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
         R_PROFILE_USER: ${{github.action_path}}/../Rprofile
-#        R_COMPILE_AND_INSTALL_PACKAGES: never
 
-    - name: Build and check package
+    - name: Build the package
       shell: bash
-      run: R CMD check ${{inputs.sourcepkg}} --install-args="--build" ${{inputs.checkargs}} || true
+      run: |
+        mkdir -p mylib
+        R CMD INSTALL ${{inputs.sourcepkg}} --library=mylib --build 2>&1 | tee install.log
       env:
         MACOSX_DEPLOYMENT_TARGET: 11.0
-#        SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk
+        _R_SHLIB_STRIP_: 1
+
+    - name: Check package
+      shell: bash
+      if: always()
+      run: R CMD check ${{inputs.sourcepkg}} --library=mylib --install=check:install.log ${{inputs.checkargs}} || true
+      env:
         R_CHECK_ENVIRON: ${{github.action_path}}/../check.Renviron
         R_PROFILE_USER: ${{github.action_path}}/../Rprofile
 
