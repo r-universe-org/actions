@@ -10,9 +10,11 @@ _R_CHECK_DOC_SIZES_=FALSE
 _R_CHECK_TOPLEVEL_FILES_=FALSE
 _R_CHECK_TIMINGS_=5
 
-# Remove debugging symbols (if they were compiled in the first place).
-# On Unix this also supresses NOTEs about non-api endpoints.
+# Try to remove debugging symbols (if they were compiled).
 _R_SHLIB_STRIP_=TRUE
+
+# If this is unset, R will check .so instead of .o files, which leads to different results
+_R_SHLIB_BUILD_OBJECTS_SYMBOL_TABLES_=TRUE
 
 # Help some packages
 R_DEFAULT_INTERNET_TIMEOUT=150

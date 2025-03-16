@@ -22,7 +22,7 @@ outputs:
     value: ${{steps.results.outputs.binarypkg}}
   checkstatus:
     description: 'Final status of CMD check'
-    value: ${{steps.conclude.outputs.CHECKSTATUS}}
+    value: ${{steps.check.outputs.CHECKSTATUS}}
   hasplatform:
     description: 'The build is only for one architecture'
     value: ${{steps.results.outputs.hasplatform}}
@@ -31,24 +31,32 @@ runs:
   using: "composite"
   steps:
     - name: Install package dependencies
-      run: Rscript "${GITHUB_ACTION_PATH}/../getdeps.R" "${{inputs.sourcepkg}}"
+      run: |
+        Rscript "${GITHUB_ACTION_PATH}/../getdeps.R" "${{inputs.sourcepkg}}"
+        mkdir -p mylib
       shell: bash
       env:
         R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
         R_PROFILE_USER: ${{github.action_path}}/../Rprofile
-#        R_COMPILE_AND_INSTALL_PACKAGES: never
 
-    - name: Build and check package
+    - name: Build the package
       shell: bash
-      run: R CMD check ${{inputs.sourcepkg}} --install-args="--build" ${{inputs.checkargs}} || true
+      run: R CMD INSTALL ${{inputs.sourcepkg}} --library=mylib --build 2>&1 | tee install.log
       env:
         MACOSX_DEPLOYMENT_TARGET: 11.0
-#        SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk
+        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
+
+    - name: Check package
+      id: check
+      shell: bash
+      run: |
+        R CMD check ${{inputs.sourcepkg}} --library=mylib --install=check:install.log ${{inputs.checkargs}} || true
+        Rscript "${GITHUB_ACTION_PATH}/../results.R"
+      env:
         R_CHECK_ENVIRON: ${{github.action_path}}/../check.Renviron
         R_PROFILE_USER: ${{github.action_path}}/../Rprofile
 
     - name: Inspect check outputs
-      if: always()
       id: results
       shell: bash
       run: |
@@ -67,14 +75,9 @@ runs:
         find . -regex '.*\.R*out' | while read f; do echo "::group::$f"; echo " ===== $f ====="; tail -n1000 $f; echo "::endgroup::"; done
         find . -regex '.*\.fail' | while read f; do echo "::group::$f"; echo " ===== $f ====="; tail -n1000 $f; echo "::endgroup::"; done
 
-    - name: Parse CMD check results
-      id: conclude
-      run: Rscript "${GITHUB_ACTION_PATH}/../results.R"
-      shell: bash
-
 # Fail manually instead of 'exit 1' to avoid annotation: https://stackoverflow.com/a/73532770/318752 
     - name: Set failed conclusion
-      if: steps.conclude.outputs.CHECKSTATUS == 'ERROR'
+      if: steps.check.outputs.CHECKSTATUS == 'ERROR'
       uses: actions/github-script@v7
       with:
         script: core.setFailed()
