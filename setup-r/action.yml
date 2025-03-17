@@ -51,7 +51,7 @@ runs:
         } elseif ( $version -eq "oldrel" ) {
           $URL = "https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-win.exe"
         }
-        curl -o Rinstall.exe -sSfL $URL
+        curl -o Rinstall.exe --max-time 300 --ssl-no-revoke -sSfL $URL
         echo "Starting R installer..."
         Start-Process "Rinstall.exe" -argumentlist "/VERYSILENT /SUPPRESSMSGBOXES /DIR=C:\\R" -wait
         echo "Done!"
