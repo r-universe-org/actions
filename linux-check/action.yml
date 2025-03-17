@@ -8,13 +8,6 @@ inputs:
     description: 'Extra args for R CMD check'
     default: --no-manual --no-vignettes
     required: false
-  java:
-    description: 'Package depends on rJava'
-    required: false
-  jags:
-    description: 'Package depends on JAGS'
-    required: false
-
 outputs:
   binarypkg:
     description: 'Filename of the output binary package'
@@ -29,29 +22,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Prep Linux
-      shell: bash
-      run: |
-        nohup Xvfb :6 -screen 0 1280x1024x24 > /tmp/X.log 2>&1 &
-        echo "DISPLAY=:6" >> $GITHUB_ENV
-        echo "LANG=en_US.UTF-8" >> $GITHUB_ENV
-        echo "UserNM=nm --quiet" >> $GITHUB_ENV
-
-      ## NOTE: ${{github.action_path}} does not work within container script, we need $GITHUB_ACTION_PATH
-    - name: Install package dependencies
-      run: |
-        Rscript "${GITHUB_ACTION_PATH}/../getdeps.R" "${{inputs.sourcepkg}}"
-        mkdir -p mylib
-      shell: bash
-      env:
-        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
-
-    - name: Build the package
-      shell: bash
-      run: R CMD INSTALL ${{inputs.sourcepkg}} --library=mylib --build 2>&1 | tee install.log
-      env:
-        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
-
     - name: Check package
       id: check
       shell: bash

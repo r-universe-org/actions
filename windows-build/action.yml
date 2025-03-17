@@ -1,0 +1,30 @@
+name: 'Build package'
+description: 'Prepare and build package'
+inputs:
+  sourcepkg:
+    description: 'File of the source package'
+    required: true
+  ostype:
+    description: 'Package OS_type value'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install package dependencies
+      run: |
+        Rscript ${{github.action_path}}/../getdeps.R "${{inputs.sourcepkg}}"
+        mkdir -p mylib
+      shell: cmd
+      env:
+        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
+        R_PROFILE_USER: ${{github.action_path}}/../Rprofile
+
+    # TODO: fix error annotation here
+    # TODO: use bash for now because 'cmd' did not fail on error
+    - name: Build the package
+      shell: bash
+      if: ${{inputs.ostype != 'unix'}}
+      run: R CMD INSTALL ${{inputs.sourcepkg}} --library=mylib --build 2>&1 | tee install.log
+      env:
+        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron

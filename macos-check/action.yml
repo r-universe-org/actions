@@ -9,13 +9,6 @@ inputs:
 #    default: --no-manual --no-build-vignettes # knitr has a bug for --no-build-vignettes
     default: --no-manual --no-vignettes
     required: true
-  java:
-    description: 'Package depends on rJava'
-    required: false
-  jags:
-    description: 'Package depends on JAGS'
-    required: false
-
 outputs:
   binarypkg:
     description: 'Filename of the output binary package'
@@ -30,22 +23,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Install package dependencies
-      run: |
-        Rscript "${GITHUB_ACTION_PATH}/../getdeps.R" "${{inputs.sourcepkg}}"
-        mkdir -p mylib
-      shell: bash
-      env:
-        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
-        R_PROFILE_USER: ${{github.action_path}}/../Rprofile
-
-    - name: Build the package
-      shell: bash
-      run: R CMD INSTALL ${{inputs.sourcepkg}} --library=mylib --build 2>&1 | tee install.log
-      env:
-        MACOSX_DEPLOYMENT_TARGET: 11.0
-        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
-
     - name: Check package
       id: check
       shell: bash
