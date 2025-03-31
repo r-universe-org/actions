@@ -21,5 +21,5 @@ runs:
       shell: bash
       run: R CMD INSTALL ${{inputs.sourcepkg}} --library=mylib --build 2>&1 | tee install.log
       env:
-        MACOSX_DEPLOYMENT_TARGET: 11.0
+        MACOSX_DEPLOYMENT_TARGET: "11.0"
         R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
