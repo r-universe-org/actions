@@ -176,3 +176,9 @@ runs:
         fi
         echo "/usr/local/go/bin" >> $GITHUB_PATH
       if: inputs.golang
+
+    - name: Get source package
+      uses: actions/download-artifact@v4
+      with:
+        name: package-source
+        path: .

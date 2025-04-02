@@ -1,0 +1,19 @@
+name: 'Prepare Linux'
+description: 'Prepare Linux'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Prep Linux
+      shell: bash
+      run: |
+        nohup Xvfb :6 -screen 0 1280x1024x24 > /tmp/X.log 2>&1 &
+        echo "DISPLAY=:6" >> $GITHUB_ENV
+        echo "LANG=en_US.UTF-8" >> $GITHUB_ENV
+        echo "UserNM=nm --quiet" >> $GITHUB_ENV
+
+    - name: Get source package
+      uses: actions/download-artifact@v4
+      with:
+        name: package-source
+        path: .
