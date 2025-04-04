@@ -45,7 +45,7 @@ runs:
       run: |
         $version = "${{inputs.r-version}}"
         if ( $version -eq "devel" ) {
-          $URL = "https://github.com/r-universe-org/actions/releases/download/4.5/R-4.5.0beta-win.exe"
+          $URL = "https://github.com/r-universe-org/actions/releases/download/4.5/R-4.5.0rc-win.exe"
         } elseif ( $version -eq "release" ) {
           $URL = "https://github.com/r-universe-org/actions/releases/download/4.4.3/R-4.4.3-win.exe"
         } elseif ( $version -eq "oldrel" ) {
