@@ -3,7 +3,7 @@ description: 'Find out which submodule has changed'
 inputs:
   github-token:
     description: GitHub token
-    default: ''
+    required: true
   package:
     description: Which package to build
     default: ''
