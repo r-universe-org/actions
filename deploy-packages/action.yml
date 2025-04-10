@@ -1,0 +1,17 @@
+name: 'Deploy packages'
+description: 'Deploy all the packages'
+outputs:
+  deployed_packages:
+    description: 'String with uploaded binaries'
+    value: ${{steps.deploy.outputs.deployed_packages}}
+
+runs:
+  using: "composite"
+  steps:
+#    - name: Prepare
+#      shell: bash
+#      run: sudo apt-get install -y curl openssl unzip git tar
+    - name: Deploy
+      id: deploy
+      shell: bash
+      run: ${GITHUB_ACTION_PATH}/action.sh
