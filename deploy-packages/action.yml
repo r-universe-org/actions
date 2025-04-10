@@ -11,6 +11,9 @@ runs:
 #    - name: Prepare
 #      shell: bash
 #      run: sudo apt-get install -y curl openssl unzip git tar
+    - name: Get jobs results
+      shell: bash
+      run: ${GITHUB_ACTION_PATH}/jobsdata.sh
     - name: Deploy
       id: deploy
       shell: bash

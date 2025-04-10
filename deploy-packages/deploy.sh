@@ -73,6 +73,9 @@ fi
 # Add status for binaries to source deploy
 if [ "$PKGTYPE" == "src" ]; then
 
+# TODO: this should replace all the STATUS variables below
+JOBSDATA=$(cat ../jobsdata.txt)
+
 if [ -d "../package-macos-release" ]; then
 MACOS_BINARY_STATUS=$(cd ../package-macos-release; (source pkgdata.txt; echo "$JOB_STATUS")) # no longer used
 elif [ -d "../package-macos-release-arm64" ]; then
@@ -123,6 +126,7 @@ upload_package_file(){
 		-H "Builder-Commit: ${COMMITINFO}" \
 		-H "Builder-Maintainer: ${MAINTAINERINFO}" \
 		-H "Builder-Distro: ${DISTRO}" \
+		-H "Builder-Jobs: ${JOBSDATA}" \
 		-H "Builder-Host: GitHub-Actions" \
 		-H "Builder-Status: ${JOB_STATUS}" \
 		-H "Builder-Check: ${CHECKSTATUS}" \
