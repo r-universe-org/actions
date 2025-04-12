@@ -35,7 +35,7 @@ runs:
           /opt/gfortran
           /opt/R/x86_64
           /opt/R/arm64
-        key: ${{ runner.os }}-${{ inputs.version }}-25
+        key: ${{ runner.os }}-${{ inputs.version }}-26
 
     - shell: bash
       run: |
@@ -70,12 +70,12 @@ runs:
 
     - shell: bash
       run: |
-        if [ "${{inputs.version}}" = "devel" ]; then
-          installer="https://github.com/R-macos/gcc-14-branch/releases/download/gcc-14.2-darwin-r2.1/gfortran-14.2-universal.pkg"
-          makevars="${{github.action_path}}/gfortran-14/Makevars-$ARCH"
-        else 
+        if [ "${{inputs.version}}" = "oldrel" ]; then
           installer="https://github.com/R-macos/gcc-12-branch/releases/download/12.2-darwin-r0.1/gfortran-12.2-universal.pkg"
           makevars="${{github.action_path}}/gfortran-12/Makevars-$ARCH"
+        else
+          installer="https://github.com/R-macos/gcc-14-branch/releases/download/gcc-14.2-darwin-r2.1/gfortran-14.2-universal.pkg"
+          makevars="${{github.action_path}}/gfortran-14/Makevars-$ARCH"
         fi
         if [ -d "/opt/gfortran/bin" ]; then
           echo "/opt/gfortran/bin exists. Skipping fortran installation"

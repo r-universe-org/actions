@@ -13,9 +13,9 @@ runs:
         if [ "$version" = "devel" ]; then
           URL="https://github.com/r-universe-org/actions/releases/download/4.5.0/R-4.5.0-arm64.pkg"
         elif [ "$version" = "release" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.4.3/R-4.4.3-arm64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.5.0/R-4.5.0-arm64.pkg"
         elif [ "$version" = "oldrel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-arm64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.4.3/R-4.4.3-arm64.pkg"
         fi
         echo "Installing from $URL"
         PKG=$(basename $URL)
@@ -30,9 +30,9 @@ runs:
         if [ "$version" = "devel" ]; then
           URL="https://github.com/r-universe-org/actions/releases/download/4.5.0/R-4.5.0-x86_64.pkg"
         elif [ "$version" = "release" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.4.3/R-4.4.3-x86_64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.5.0/R-4.5.0-x86_64.pkg"
         elif [ "$version" = "oldrel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-x86_64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.4.3/R-4.4.3-x86_64.pkg"
         fi
         echo "Installing from $URL"
         PKG=$(basename $URL)
@@ -45,11 +45,11 @@ runs:
       run: |
         $version = "${{inputs.r-version}}"
         if ( $version -eq "devel" ) {
-          $URL = "https://github.com/r-universe-org/actions/releases/download/4.5.0/R-4.5.0-win.exe"
+          $URL = "https://cran.r-project.org/bin/windows/base/R-devel-win.exe"
         } elseif ( $version -eq "release" ) {
-          $URL = "https://github.com/r-universe-org/actions/releases/download/4.4.3/R-4.4.3-win.exe"
+          $URL = "https://github.com/r-universe-org/actions/releases/download/4.5.0/R-4.5.0-win.exe"
         } elseif ( $version -eq "oldrel" ) {
-          $URL = "https://github.com/r-universe-org/actions/releases/download/4.3.3/R-4.3.3-win.exe"
+          $URL = "https://github.com/r-universe-org/actions/releases/download/4.4.3/R-4.4.3-win.exe"
         }
         curl -o Rinstall.exe --max-time 300 --ssl-no-revoke -sSfL $URL
         echo "Starting R installer..."

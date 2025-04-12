@@ -1,9 +1,9 @@
 ## This file is currently used on Win and Mac but NOT Linux
 ## Linux images have their own profile script
 
-if(grepl("4.3", getRversion())) Sys.setenv(R_BIOC_VERSION='3.18')
 if(grepl("4.4", getRversion())) Sys.setenv(R_BIOC_VERSION='3.20')
-if(grepl("4.5", getRversion())) Sys.setenv(R_BIOC_VERSION='3.20')
+if(grepl("4.5", getRversion())) Sys.setenv(R_BIOC_VERSION='3.21')
+#if(grepl("4.6", getRversion())) Sys.setenv(R_BIOC_VERSION='3.21')
 
 # If a specific cran version is set, use only that
 cran_version <- Sys.getenv("CRAN_VERSION")
