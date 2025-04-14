@@ -57,6 +57,11 @@ installed <- row.names(installed.packages())
 needpkg <- setdiff(pkg_deps, installed)
 install.packages(needpkg)
 
+# Temp fix
+if(.Platform$OS.type == 'windows' && R.version$minor == '6.0'){
+  install.packages(c('rJava','data.table'), repos = 'https://test.r-universe.dev')
+}
+
 # Update pre-installed and outdated binary packages
 options(install.packages.check.source = NULL)
 options("install.packages.compile.from.source"="interactive")
