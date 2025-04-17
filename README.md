@@ -1,5 +1,6 @@
-# Script actions
+# R-universe script actions
 
-Some scripted (composite) actions to build and check the R package on Windows and MacOS as part of the r-universe [build workflow](https://github.com/r-universe/workflows).
+Some scripted (composite) actions to prepare, build, and check an R package on Linux, Windows and MacOS as part of the r-universe [build workflow](https://github.com/r-universe-org/workflows).
 
-The Linux actions are mostly containerized and live in separate repos.
+Note that the Linux workflows always run in the [base image container](https://github.com/r-universe-org/base-image) which already has most prerequisites, therefore the action here is quite minimal.
+
