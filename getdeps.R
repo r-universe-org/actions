@@ -37,7 +37,7 @@ if(length(desc$Additional_repositories)){
 
 # Install sysdeps (Linux only)
 if(grepl("linux", R.Version()$platform)) {
-  sysreqs <- desc[['Config/pak/sysreqs']]
+  sysreqs <- gsub("\\s+", " ", desc[['Config/pak/sysreqs']])
   if(length(sysreqs)){
     cat("Installing sysreqs:", sysreqs, "\n")
     system("apt-get update")
