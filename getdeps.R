@@ -50,17 +50,17 @@ if(grepl("linux", R.Version()$platform)) {
 #  pkg_deps <- c(pkg_deps, "zlibbioc")
 #}
 
+# Temp fix
+if(.Platform$OS.type == 'windows' && R.version$minor == '6.0'){
+  install.packages(c('rJava','data.table'), repos = 'https://test.r-universe.dev')
+}
+
 # Install new packages
 options(install.packages.check.source = "no")
 options("install.packages.compile.from.source"="never")
 installed <- row.names(installed.packages())
 needpkg <- setdiff(pkg_deps, installed)
 install.packages(needpkg)
-
-# Temp fix
-if(.Platform$OS.type == 'windows' && R.version$minor == '6.0'){
-  install.packages(c('rJava','data.table'), repos = 'https://test.r-universe.dev')
-}
 
 # Update pre-installed and outdated binary packages
 options(install.packages.check.source = NULL)
