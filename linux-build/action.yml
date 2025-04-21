@@ -9,14 +9,6 @@ runs:
   using: "composite"
   steps:
       ## NOTE: ${{github.action_path}} does not work within container script, we need $GITHUB_ACTION_PATH
-    - name: Install package dependencies
-      run: |
-        Rscript "${GITHUB_ACTION_PATH}/../getdeps.R" "${{inputs.sourcepkg}}"
-        mkdir -p mylib
-      shell: bash
-      env:
-        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
-
     - name: Build the package
       shell: bash
       run: R CMD INSTALL ${{inputs.sourcepkg}} --library=mylib --build 2>&1 | tee install.log

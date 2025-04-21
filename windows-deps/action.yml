@@ -1,0 +1,23 @@
+name: 'Get package dependencies'
+description: 'Get package dependencies'
+inputs:
+  sourcepkg:
+    description: 'File of the source package'
+    required: true
+outputs:
+  rversion:
+    description: 'Version of R'
+    value: ${{steps.getdeps.outputs.rversion}}
+
+runs:
+  using: "composite"
+  steps:
+    - id: getdeps
+      name: Install package dependencies
+      run: |
+        Rscript ${{github.action_path}}/../getdeps.R "${{inputs.sourcepkg}}"
+        mkdir -p mylib
+      shell: cmd
+      env:
+        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
+        R_PROFILE_USER: ${{github.action_path}}/../Rprofile

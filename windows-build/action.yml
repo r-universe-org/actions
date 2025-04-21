@@ -11,15 +11,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install package dependencies
-      run: |
-        Rscript ${{github.action_path}}/../getdeps.R "${{inputs.sourcepkg}}"
-        mkdir -p mylib
-      shell: cmd
-      env:
-        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
-        R_PROFILE_USER: ${{github.action_path}}/../Rprofile
-
     # TODO: fix error annotation here
     # TODO: use bash for now because 'cmd' did not fail on error
     - name: Build the package

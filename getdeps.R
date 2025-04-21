@@ -1,10 +1,14 @@
-# This script can mostly be replaced by pak::pak(dependencies = "all") once pak is fixed.
 cat('::group::Show build environment\n')
 cat(Sys.which('gcc'), "\n")
 invisible(system("gcc --version"))
 print(as.list(getOption('repos')))
 cat(readLines(Sys.getenv('R_ENVIRON_USER')), sep = '\n')
 cat('::endgroup::\n')
+
+write_output <- function(key, value){
+  cat(paste0(key, '=', value, '\n'), file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
+}
+write_output('rversion', getRversion())
 
 # Do not try to install base packages
 skiplist <- c("R", "base", "boot", "class", "cluster", "codetools",
@@ -13,7 +17,7 @@ skiplist <- c("R", "base", "boot", "class", "cluster", "codetools",
   "nlme", "nnet", "parallel", "rpart", "spatial", "splines", "stats",
   "stats4", "survival", "tcltk", "tools", "utils")
 
-cat('::group::Install package dependencies\n')
+#cat('::group::Install package dependencies\n')
 dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE, showWarnings = FALSE)
 sourcepkg <- commandArgs(TRUE)[1]
 
@@ -76,4 +80,4 @@ if(length(unavail)) {
   remotes::install_deps(sourcepkg, dependencies = TRUE, upgrade = FALSE)
 }
 
-cat('::endgroup::\n')
+#cat('::endgroup::\n')

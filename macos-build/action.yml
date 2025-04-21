@@ -8,15 +8,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install package dependencies
-      run: |
-        Rscript "${GITHUB_ACTION_PATH}/../getdeps.R" "${{inputs.sourcepkg}}"
-        mkdir -p mylib
-      shell: bash
-      env:
-        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
-        R_PROFILE_USER: ${{github.action_path}}/../Rprofile
-
     - name: Build the package
       shell: bash
       run: R CMD INSTALL ${{inputs.sourcepkg}} --library=mylib --build 2>&1 | tee install.log

@@ -1,7 +1,10 @@
 first <- tools:::check_packages_in_dir_results('.')[1]
 package <- names(first)
 results <- first[[1]]
-writeLines(paste0('CHECKSTATUS=',results$status),Sys.getenv("GITHUB_OUTPUT"))
+write_output <- function(key, value){
+  cat(paste0(key, '=', value, '\n'), file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
+}
+write_output('CHECKSTATUS', results$status)
 writeLines(results$lines, 'checkresults.txt')
 
 if(results$status == 'ERROR'){
