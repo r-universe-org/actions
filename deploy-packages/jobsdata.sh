@@ -8,7 +8,7 @@ set -euo pipefail
 # The most important information to keep is job config and check result.
 echo "::group::getting jobs info"
 jq --version
-curl -s -D /dev/stderr -H "Authorization: token ${GITHUB_TOKEN}" --fail "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs" | \
+curl --retry 3 -s -D /dev/stderr -H "Authorization: token ${GITHUB_TOKEN}" --fail "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs" | \
   jq -r '[.jobs[] | {id, started_at, completed_at, result: .steps[] | select(.name | startswith("Conclude:")).name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3]}]' |
   gzip | openssl base64 -A -out jobsdata.txt
 echo "::endgroup::"
