@@ -87,7 +87,6 @@ upload_package_file(){
 		-H "Builder-Host: GitHub-Actions" \
 		-H "Builder-Status: ${JOB_STATUS}" \
 		-H "Builder-Check: ${CHECKSTATUS}" \
-		-H "Builder-Pkgdocs: ${PKGDOCS}" \
 		-H "Builder-Srconly: ${SKIP_BINARIES}" \
 		-H "Builder-Buildurl: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
 		-H 'Expect:' \
