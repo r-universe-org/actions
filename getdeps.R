@@ -56,7 +56,7 @@ if(grepl("linux", R.Version()$platform)) {
 
 # Temp fix
 if(.Platform$OS.type == 'windows' && R.version$minor == '6.0'){
-  install.packages(c('rJava','data.table'), repos = 'https://test.r-universe.dev')
+  install.packages('data.table', repos = 'https://test.r-universe.dev')
 }
 
 # Install new packages
