@@ -37,14 +37,11 @@ runs:
       run: |
         echo "DISTRO=$(lsb_release -sc)" >> $GITHUB_OUTPUT
         SOURCEPKG="${{ inputs.sourcepkg }}"
-        BINARYPKG="${SOURCEPKG%.tar.gz}_R_x86_64-pc-linux-gnu.tar.gz"
         PKGNAME=$(echo $SOURCEPKG | cut -d '_' -f1)
-        if [ -f "${BINARYPKG}" ]; then
+        for BINARYPKG in *-linux-gnu.tar.gz; do
           echo "Built binary package: $BINARYPKG"
           echo "BINARYPKG=$BINARYPKG" >> $GITHUB_OUTPUT
-        else
-          echo "No binary package $BINARYPKG found. Skipping deployment."
-        fi
+        done
         find . -regex '.*\.Rout' | while read f; do echo "::group::$f"; echo " ===== $f ====="; tail -n1000 $f; echo "::endgroup::"; done
         find . -regex '.*\.fail' | while read f; do echo "::group::$f"; echo " ===== $f ====="; tail -n1000 $f; echo "::endgroup::"; done
 
