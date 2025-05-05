@@ -5,9 +5,11 @@ set -euo pipefail
 
 save_jobs_data(){
   echo "::group::getting jobs info $1"
+  ENDPOINT="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs"
+  echo "Getting $ENDPOINT"
   jq --version
-  curl --retry 3 -s -D /dev/stderr -H "Authorization: token ${GITHUB_TOKEN}" --fail "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs" | \
-    jq -r '[.jobs[] | {id, started_at, completed_at, result: .steps[] | select(.name | startswith("Conclude:")).name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3]}]' |
+  curl --retry 3 -s -D /dev/stderr -H "Authorization: token ${GITHUB_TOKEN}" --fail $ENDPOINT | \
+    jq -r '[.jobs[] | {id, started_at, completed_at, result: .steps[] | select(.name | startswith("Conclude:")).name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3]}]' | tee /dev/stderr |
     gzip | openssl base64 -A -out jobsdata.txt
   echo "::endgroup::"
   exit 0
