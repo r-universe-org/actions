@@ -22,12 +22,14 @@ R_TEXI2DVICMD=emulation
 R_BROWSER=echo
 R_PDFVIEWER=echo
 RGL_USE_NULL=TRUE
-ARROW_R_DEV=TRUE
-NOT_CRAN=FALSE
 
 # Get the latest available binary for dependencies
 # On bioc it often happens a devel version does not build on Win or Mac.
 # R_COMPILE_AND_INSTALL_PACKAGES=never
 
-# Workaround for absl linking errors
+# Arrow config. This is similar to NOT_CRAN=true
+# GCS gives absl linking error on arm64
 ARROW_GCS=OFF
+ARROW_R_DEV=TRUE
+LIBARROW_BINARY=true
+LIBARROW_MINIMAL=false
