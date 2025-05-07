@@ -12,7 +12,11 @@ if(nchar(cran_version)){
 } else {
   options(repos = c(CRAN = "https://cloud.r-project.org"))
 }
-options(BioC_mirror = "https://bioc.cran.dev")
+if(grepl("development", R.version[['status']])) {
+  options(BioC_mirror = "https://bioc.cran.dev")
+} else {
+  options(BioC_mirror = "https://bioconductor.posit.co")
+}
 
 if(identical('bioc', Sys.getenv('UNIVERSE_NAME'))){
   utils::setRepositories(ind = 1:4)
