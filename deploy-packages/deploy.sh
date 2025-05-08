@@ -77,7 +77,7 @@ fi
 
 upload_package_file(){
 	echo "Submitting ${SERVERURL}/${SHASUM}"
-	curl $FORCE_SERVER_IP --max-time 60 --retry 3 -L --upload-file "${FILE}" --fail-with-body -u "${CRANLIKEPWD}" \
+	curl $FORCE_SERVER_IP --max-time 60 --retry 3 --retry-delay 30 -L --upload-file "${FILE}" --fail-with-body -u "${CRANLIKEPWD}" \
 		-H "Builder-Upstream: ${REPO_URL}" \
 		-H "Builder-Registered: ${REPO_REGISTERED}" \
 		-H "Builder-Commit: ${COMMITINFO}" \
