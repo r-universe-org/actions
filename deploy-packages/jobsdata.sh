@@ -9,7 +9,7 @@ save_jobs_data(){
   echo "Getting $ENDPOINT"
   jq --version
   curl --retry 3 -s -D /dev/stderr -H "Authorization: token ${GITHUB_TOKEN}" --fail $ENDPOINT | \
-    jq -r '[.jobs[] | {id, started_at, completed_at, result: .steps[] | select(.name | startswith("Conclude:")).name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3]}]' | tee /dev/stderr |
+    jq -r '[.jobs[] | {id, started_at, completed_at, result: .steps[] | select((.name | startswith("Conclude:")) and .conclusion != "cancelled").name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3]}]' | tee /dev/stderr |
     gzip | openssl base64 -A -out jobsdata.txt
   echo "::endgroup::"
   exit 0
