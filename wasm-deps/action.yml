@@ -1,0 +1,25 @@
+name: 'Get package dependencies'
+description: 'Get package dependencies'
+inputs:
+  sourcepkg:
+    description: 'File of the source package'
+    required: true
+outputs:
+  rversion:
+    description: 'Version of R'
+    value: ${{steps.getdeps.outputs.rversion}}
+
+runs:
+  using: "composite"
+  steps:
+      ## NOTE: ${{github.action_path}} does not work within container script, we need $GITHUB_ACTION_PATH
+    - id: getdeps
+      name: Install package dependencies
+      run: |
+        cat(paste0('rversion=', getRversion(), '\n'), file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
+        options(repos = c(getOption("repos"), universe = Sys.getenv("MY_UNIVERSE")))
+        pak::pak('deps::./${{inputs.sourcepkg}}')
+        dir.create("mylib")
+      shell: Rscript {0}
+      env:
+        R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
