@@ -9,10 +9,17 @@ save_jobs_data(){
   echo "Getting $ENDPOINT"
   jq --version
   curl --retry 3 -s -D /dev/stderr -H "Authorization: token ${GITHUB_TOKEN}" --fail $ENDPOINT | \
-    jq -r '[.jobs[] | {id, started_at, completed_at, result: .steps[] | select((.name | startswith("Conclude:")) and .conclusion != "cancelled").name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3]}]' | tee /dev/stderr |
-    gzip | openssl base64 -A -out jobsdata.txt
+    jq -r '[.jobs[] | {id, started_at, completed_at, result: .steps[] | select((.name | startswith("Conclude:")) and .conclusion != "cancelled").name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3]}]' | tee jobsdata.json
   echo "::endgroup::"
-  exit 0
+
+  # Only succeed if file is non empty
+  if [ -s "jobsdata.json" ]; then
+    echo "Converting jobsdata.json to base64-json..."
+    cat jobsdata.json | gzip | openssl base64 -A -out jobsdata.txt
+    exit 0
+  else
+    return 1
+  fi
 }
 
 # Sometimes this randomly fails. Retry 3 times.
