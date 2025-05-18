@@ -43,6 +43,11 @@ case "${TARGET}" in
 	;;
 esac
 
+# Add jobs metadata to source/fail deploys
+if [ "$PKGTYPE" = "src" ] || [ "$PKGTYPE" = "failure" ]; then
+JOBSDATA=$(cat ../jobsdata.txt)
+fi
+
 SERVERURL="https://${UNIVERSE_NAME}.r-universe.dev/api/packages/${PACKAGE}/${VERSION}/${PKGTYPE}"
 
 #FORCE_SERVER_IP="--resolve *:443:165.227.211.221"
@@ -56,6 +61,7 @@ if [ "$PKGTYPE" == "failure" ]; then
 		-d "Builder-Commit=${COMMITINFO}" \
 		-d "Builder-Maintainer=${MAINTAINERINFO}" \
 		-d "Builder-Distro=${DISTRO}" \
+		-d "Builder-Jobs=${JOBSDATA}" \
 		-d "Builder-Host=GitHub-Actions" \
 		-d "Builder-Buildurl=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
 		"${SERVERURL}"
@@ -68,11 +74,6 @@ if [ -f "$FILE" ]; then
 else
 	echo "ERROR: file $FILE not found!"
 	exit 1
-fi
-
-# Add status for binaries to source deploy
-if [ "$PKGTYPE" == "src" ]; then
-JOBSDATA=$(cat ../jobsdata.txt)
 fi
 
 upload_package_file(){
