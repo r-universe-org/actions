@@ -64,7 +64,9 @@ options(install.packages.check.source = "no")
 options("install.packages.compile.from.source"="never")
 installed <- row.names(installed.packages())
 needpkg <- setdiff(pkg_deps, installed)
-install.packages(needpkg)
+
+# Somehow 'install.packages.check.source=no' still installs packages w/o compiled code from src
+install.packages(needpkg, type = ifelse(.Platform$OS.type == 'windows', 'win.binary', getOption('pkgType')))
 
 # Update pre-installed and outdated binary packages
 options(install.packages.check.source = NULL)
