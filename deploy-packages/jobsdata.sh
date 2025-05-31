@@ -5,14 +5,16 @@ set -euo pipefail
 
 save_jobs_data(){
   echo "::group::getting jobs info $1"
-  ENDPOINT="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs"
+  ENDPOINT="/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs"
   echo "Getting $ENDPOINT"
   jq --version
-  curl --retry 3 -s -D /dev/stderr -H "Authorization: token ${GITHUB_TOKEN}" --fail $ENDPOINT > input.json
+  gh api "$ENDPOINT" > input.json
   missingsteps=$(cat input.json | jq -r '[.jobs[] | select(.conclusion != "skipped").steps | length ] | min')
   if [ "$missingsteps" = "0" ]; then
     echo "Some jobs have missing steps. Falling back on getting all old jobsdata"
-    curl --retry 3 -s -D /dev/stderr -H "Authorization: token ${GITHUB_TOKEN}" --fail "$ENDPOINT?filter=all&per_page=100" > input.json
+    # TODO: --paginate --slurp does not work for this API it seems
+    gh api "$ENDPOINT?filter=all&per_page=100" > input.json
+    cat input.json
   else
     echo "Jobs data from API seems complete"
   fi
@@ -30,9 +32,9 @@ save_jobs_data(){
 }
 
 # Sometimes this randomly fails. Retry 3 times.
-for x in 1 2 3; do
-  save_jobs_data "$x" || echo "Something went wrong. Waiting 30 seconds to retry..."
-  sleep 30
+for x in 30 60 0; do
+  save_jobs_data "$x" || echo "Something went wrong. Waiting $x seconds to retry..."
+  sleep $x
 done
 
 echo "Failed to get jobs data from API"
