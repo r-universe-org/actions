@@ -5,11 +5,18 @@ set -euo pipefail
 
 save_jobs_data(){
   echo "::group::getting jobs info $1"
-  ENDPOINT="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs?filter=all&per_page=100"
+  ENDPOINT="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs"
   echo "Getting $ENDPOINT"
   jq --version
-  curl --retry 3 -s -D /dev/stderr -H "Authorization: token ${GITHUB_TOKEN}" --fail $ENDPOINT | \
-    jq -r '[.jobs[] | {id, started_at, completed_at, result: .steps[] | select((.name | startswith("Conclude:")) and .conclusion != "cancelled").name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3]}] | sort_by(-.job) | unique_by(.config)' | tee jobsdata.json
+  curl --retry 3 -s -D /dev/stderr -H "Authorization: token ${GITHUB_TOKEN}" --fail $ENDPOINT > input.json
+  missingsteps=$(cat input.json | jq -r '[.jobs[] | select(.conclusion != "skipped").steps | length ] | min')
+  if [ "$missingsteps" = "0" ]; then
+    echo "Some jobs have missing steps. Falling back on getting all old jobsdata"
+    curl --retry 3 -s -D /dev/stderr -H "Authorization: token ${GITHUB_TOKEN}" --fail "$ENDPOINT?filter=all&per_page=100" > input.json
+  else
+    echo "Jobs data from API seems complete"
+  fi
+  cat input.json | jq -r '[.jobs[] | {id, started_at, completed_at, result: .steps[] | select((.name | startswith("Conclude:")) and .conclusion != "cancelled").name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3]}] | sort_by(-.job) | unique_by(.config)' | tee jobsdata.json
   echo "::endgroup::"
 
   # Only succeed if file is non empty
