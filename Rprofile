@@ -18,8 +18,8 @@ if(grepl("development", R.version[['status']])) {
   options(BioC_mirror = "https://bioconductor.posit.co")
 }
 
-if(identical('bioc', Sys.getenv('UNIVERSE_NAME'))){
-  utils::setRepositories(ind = 1:4)
+if(grepl("bioc", Sys.getenv('UNIVERSE_NAME'))){
+  utils::setRepositories(ind = 1:5)
 } else {
   utils::setRepositories(ind = 1:3)
 }
