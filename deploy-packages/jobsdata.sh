@@ -4,7 +4,7 @@
 set -euo pipefail
 
 save_jobs_data(){
-  echo "::group::getting jobs info $1"
+  echo "::group::getting jobs info"
   ENDPOINT="/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs"
   echo "Getting $ENDPOINT"
   jq --version
