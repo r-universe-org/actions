@@ -71,7 +71,8 @@ install.packages(needpkg, type = ifelse(.Platform$OS.type == 'windows', 'win.bin
 # Update pre-installed and outdated binary packages
 options(install.packages.check.source = NULL)
 options("install.packages.compile.from.source"="interactive")
-update.packages(oldPkgs = pkg_deps, type = 'source', ask = FALSE)
+all_deps <- unique(c(pkg_deps, unlist(unname(tools::package_dependencies(pkg_deps, recursive = TRUE)))))
+update.packages(oldPkgs = all_deps, type = 'source', ask = FALSE)
 
 # Test again if any are missing, try with remotes
 installed <- row.names(installed.packages())
