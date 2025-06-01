@@ -8,17 +8,15 @@ save_jobs_data(){
   ENDPOINT="/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs"
   echo "Getting $ENDPOINT"
   jq --version
-  gh api "$ENDPOINT" > input.json
-  missingsteps=$(cat input.json | jq -r '[.jobs[] | select(.conclusion != "skipped").steps | length ] | min')
+  gh api "$ENDPOINT" | jq '.jobs' > input.json
+  missingsteps=$(cat input.json | jq -r '[.[] | select(.conclusion != "skipped").steps | length ] | min')
   if [ "$missingsteps" = "0" ]; then
     echo "Some jobs have missing steps. Falling back on getting all old jobsdata"
-    # TODO: --paginate --slurp does not work for this API it seems
-    gh api "$ENDPOINT?filter=all&per_page=100" > input.json
-    cat input.json
+    gh api --paginate --slurp "$ENDPOINT?filter=all&per_page=100" | jq '[.[].jobs[]]' > input.json
   else
     echo "Jobs data from API seems complete"
   fi
-  cat input.json | jq -r '[.jobs[] | {id, started_at, completed_at, result: .steps[] | select((.name | startswith("Conclude:")) and .conclusion != "cancelled").name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3]}] | sort_by(-.job) | unique_by(.config)' | tee jobsdata.json
+  cat input.json | jq -r '[.[] | {id, started_at, completed_at, result: .steps[] | select((.name | startswith("Conclude:")) and .conclusion != "cancelled").name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3]}] | sort_by(-.job) | unique_by(.config)' | tee jobsdata.json
   echo "::endgroup::"
 
   # Only succeed if file is non empty
