@@ -19,7 +19,7 @@ if(grepl("development", R.version[['status']])) {
 }
 
 if(grepl("bioc", Sys.getenv('UNIVERSE_NAME'))){
-  utils::setRepositories(ind = 1:5)
+  utils::setRepositories(ind = 1:4)
 } else {
   utils::setRepositories(ind = 1:3)
 }
