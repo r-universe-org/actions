@@ -10,7 +10,7 @@ save_jobs_data(){
   jq --version
   gh api "$ENDPOINT" | jq '.jobs' > input.json
   missingsteps=$(cat input.json | jq -r '[.[] | select(.conclusion != "skipped").steps | length ] | min')
-  if [ "$missingsteps" = "0" ]; then
+  if [ -z "$missingsteps" ] || [ "$missingsteps" = "0" ]; then
     echo "Some jobs have missing steps. Falling back on getting all old jobsdata"
     gh api --paginate --slurp "$ENDPOINT?filter=all&per_page=100" | jq '[.[].jobs[]]' > input.json
   else
