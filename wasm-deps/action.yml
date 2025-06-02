@@ -1,5 +1,5 @@
 name: 'Get package dependencies'
-description: 'Get package dependencies'
+description: 'Install native package and dependencies'
 inputs:
   sourcepkg:
     description: 'File of the source package'
@@ -12,14 +12,12 @@ outputs:
 runs:
   using: "composite"
   steps:
-      ## NOTE: ${{github.action_path}} does not work within container script, we need $GITHUB_ACTION_PATH
     - id: getdeps
-      name: Install package dependencies
+      name: Install native package and dependencies
       run: |
-        cat(paste0('rversion=', getRversion(), '\n'), file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
-        options(repos = c(getOption("repos"), universe = Sys.getenv("MY_UNIVERSE")))
-        pak::pak('deps::./${{inputs.sourcepkg}}')
         dir.create("mylib")
+        cat(paste0('rversion=', getRversion(), '\n'), file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
+        pak::pak('deps::./${{inputs.sourcepkg}}')
       shell: Rscript {0}
       env:
         R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron

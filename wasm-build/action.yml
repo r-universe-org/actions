@@ -1,0 +1,39 @@
+name: 'Build WASM binary'
+description: 'Build binary for WebAssembly'
+inputs:
+  sourcepkg:
+    description: 'File of the source package'
+    required: true
+outputs:
+  binarypkg:
+    description: 'Filename of the output binary package'
+    value: ${{steps.build.outputs.binarypkg}}
+
+runs:
+  using: "composite"
+  steps:
+      ## NOTE: ${{github.action_path}} does not work within container script, we need $GITHUB_ACTION_PATH
+    - id: information
+      name: Show some info
+      run: |
+        echo "::group::List installed R packages"
+        R -e ".libPaths(); installed.packages()[,1:3]"
+        echo "::endgroup::"
+
+        echo "::group::List available wasm libraries"
+        PKG_CONFIG_LIBDIR="${WEBR_ROOT}/wasm/lib/pkgconfig" pkg-config --list-all
+        echo "::endgroup::"
+
+        echo "::group::Test that pkg-config works"
+        PKG_CONFIG_LIBDIR="${WEBR_ROOT}/wasm/lib/pkgconfig" pkg-config --libs --cflags gdal
+        echo "::endgroup::"
+      shell: bash
+ 
+    - id: build
+      name: Build the WebAssembly Binary
+      run: |
+        SOURCEPKG="${{inputs.sourcepkg}}"
+        R -e "rwasm::build('./${SOURCEPKG}')"
+        BINARYPKG=${SOURCEPKG/.tar.gz/.tgz}
+        echo "binarypkg=$BINARYPKG" >> $GITHUB_OUTPUT
+      shell: bash
