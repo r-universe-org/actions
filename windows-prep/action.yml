@@ -27,7 +27,9 @@ runs:
         else
           echo "No rtools installation found!"
         fi
-        echo "_R_INSTALL_TIME_PATCHES_=https://www.r-project.org/nosvn/winutf8/ucrt3/" >> $GITHUB_ENV
+        if [ "$UNIVERSE_NAME" = "cran" ] || [ "$UNIVERSE_NAME" = "bioc" ]; then
+          echo "_R_INSTALL_TIME_PATCHES_=https://www.r-project.org/nosvn/winutf8/ucrt3/" >> $GITHUB_ENV
+        fi
       shell: bash
 
     - name: "Install JAGS if needed"
