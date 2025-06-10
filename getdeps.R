@@ -66,7 +66,15 @@ installed <- row.names(installed.packages())
 needpkg <- setdiff(pkg_deps, installed)
 
 # Somehow 'install.packages.check.source=no' still installs packages w/o compiled code from src
-install.packages(needpkg, type = ifelse(.Platform$OS.type == 'windows', 'win.binary', getOption('pkgType')))
+# But we also need transitive deps that are not available as binary such as bioconductor data packages
+if(.Platform$OS.type == 'windows'){
+  install.packages(needpkg, type = 'win.binary')
+  alldeps <- unique(unname(c(needpkg, unlist(tools::package_dependencies(needpkg, recursive = TRUE)))))
+  missingdeps <- setdiff(alldeps, c(skiplist, row.names(installed.packages())))
+  install.packages(missingdeps)
+} else {
+  install.packages(needpkg)
+}
 
 # Update pre-installed and outdated binary packages
 options(install.packages.check.source = NULL)
