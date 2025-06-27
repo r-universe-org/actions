@@ -81,11 +81,6 @@ options(install.packages.check.source = NULL)
 options("install.packages.compile.from.source"="interactive")
 update.packages(oldPkgs = pkg_deps, type = 'source', ask = FALSE)
 
-# Workaround broken devel callr
-if('callr' %in% row.names(installed.packages())){
-  install.packages('callr', repos = getOption('repos')['CRAN'])
-}
-
 # Test again if any are missing, try with remotes
 installed <- row.names(installed.packages())
 unavail <- setdiff(pkg_deps, installed)
