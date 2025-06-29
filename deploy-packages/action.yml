@@ -4,16 +4,20 @@ outputs:
   deployed_packages:
     description: 'String with uploaded binaries'
     value: ${{steps.deploy.outputs.deployed_packages}}
+  version_change:
+    description: 'If the version number was changed'
+    value: ${{steps.version.outputs.version_change}}
 
 runs:
   using: "composite"
   steps:
-#    - name: Prepare
-#      shell: bash
-#      run: sudo apt-get install -y curl openssl unzip git tar
     - name: Get jobs results
       shell: bash
       run: ${GITHUB_ACTION_PATH}/jobsdata.sh
+    - name: Check for changed version number
+      id: version
+      shell: bash
+      run: ${GITHUB_ACTION_PATH}/version.sh
     - name: Deploy
       id: deploy
       shell: bash
