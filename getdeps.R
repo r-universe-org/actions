@@ -11,11 +11,7 @@ write_output <- function(key, value){
 write_output('rversion', getRversion())
 
 # Do not try to install base packages
-skiplist <- c("R", "base", "boot", "class", "cluster", "codetools",
-  "compiler", "datasets", "foreign", "graphics", "grDevices", "grid",
-  "KernSmooth", "lattice", "MASS", "Matrix", "methods", "mgcv",
-  "nlme", "nnet", "parallel", "rpart", "spatial", "splines", "stats",
-  "stats4", "survival", "tcltk", "tools", "utils")
+skiplist <- c("R", row.names(installed.packages(priority="base")))
 
 #cat('::group::Install package dependencies\n')
 dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE, showWarnings = FALSE)
@@ -62,18 +58,16 @@ if(grepl("linux", R.Version()$platform)) {
 # Install new packages
 options(install.packages.check.source = "no")
 options("install.packages.compile.from.source"="never")
-installed <- row.names(installed.packages())
-needpkg <- setdiff(pkg_deps, installed)
 
 # Somehow 'install.packages.check.source=no' still installs packages w/o compiled code from src
 # But we also need transitive deps that are not available as binary such as bioconductor data packages
 if(.Platform$OS.type == 'windows'){
-  install.packages(needpkg, type = 'win.binary')
-  alldeps <- unique(unname(c(needpkg, unlist(tools::package_dependencies(needpkg, recursive = TRUE)))))
+  install.packages(pkg_deps, type = 'win.binary')
+  alldeps <- unique(unname(c(pkg_deps, unlist(tools::package_dependencies(pkg_deps, recursive = TRUE)))))
   missingdeps <- setdiff(alldeps, c(skiplist, row.names(installed.packages())))
   install.packages(missingdeps)
 } else {
-  install.packages(needpkg)
+  install.packages(pkg_deps)
 }
 
 # Update pre-installed and outdated binary packages
