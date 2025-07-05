@@ -20,7 +20,7 @@ save_jobs_data(){
   echo "::endgroup::"
 
   # Only succeed if file is non empty
-  if [ -s "jobsdata.json" ]; then
+  if [ -s "jobsdata.json" ] && [ $(cat jobsdata.json | jq -r 'length') != "0" ]; then
     echo "Converting jobsdata.json to base64-json..."
     cat jobsdata.json | gzip | openssl base64 -A -out jobsdata.txt
     exit 0
