@@ -30,7 +30,7 @@ save_jobs_data(){
 }
 
 # Sometimes this randomly fails. Retry 3 times.
-for x in 30 60 0; do
+for x in 60 300 600 0; do
   save_jobs_data "$x" || echo "Something went wrong. Waiting $x seconds to retry..."
   sleep $x
 done
