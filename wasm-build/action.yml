@@ -33,7 +33,7 @@ runs:
       name: Build the WebAssembly Binary
       run: |
         SOURCEPKG="${{inputs.sourcepkg}}"
-        R -e "rwasm::build('./${SOURCEPKG}')"
+        R -e "rwasm::build('./${SOURCEPKG}')" 2>&1 | tee build.log
         BINARYPKG=${SOURCEPKG/.tar.gz/.tgz}
         echo "binarypkg=$BINARYPKG" >> $GITHUB_OUTPUT
       shell: bash

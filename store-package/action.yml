@@ -40,5 +40,9 @@ runs:
         path: |
           ${{ inputs.FILE }}
           pkgdata.txt
-          checkresults.*
+          build.log
+          *.Rcheck/00install.out
+          *.Rcheck/00check.log
+          *.Rcheck/**/*.fail
+          *.Rcheck/**/*.Rout
         overwrite: ${{ inputs.overwrite }}
