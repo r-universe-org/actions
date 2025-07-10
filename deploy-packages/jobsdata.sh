@@ -16,7 +16,7 @@ save_jobs_data(){
   else
     echo "Jobs data from API seems complete"
   fi
-  cat input.json | jq -r '[.[] | {id, started_at, completed_at, result: .steps[] | select((.name | startswith("Conclude:")) and .conclusion != "cancelled").name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3]}] | sort_by(-.job) | unique_by(.config)' | tee jobsdata.json
+  cat input.json | jq -r '[.[] | {id, started_at, completed_at, result: .steps[] | select((.name | startswith("Conclude:")) and .conclusion != "cancelled").name | split(": ") } | {job: .id, time: ((.completed_at | fromdate) - (.started_at | fromdate)), config: .result[1], r: .result[2], check: .result[3], artifact: .result[4]}] | sort_by(-.job) | unique_by(.config)' | tee jobsdata.json
   echo "::endgroup::"
 
   # Only succeed if file is non empty
