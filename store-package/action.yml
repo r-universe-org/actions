@@ -13,6 +13,13 @@ inputs:
     description: 'One of source, win, mac, wasm'
   CHECKSTATUS:
     description: 'Output status of CMD-check'
+outputs:
+  artifact-id:
+    description: 'ID of uploaded artifact'
+    value: ${{steps.upload.outputs.artifact-id}}
+  artifact-url:
+    description: 'Download URL for artifact'
+    value: ${{steps.upload.outputs.artifact-url}}
 
 runs:
   using: "composite"
@@ -34,6 +41,7 @@ runs:
         fi
 
     - name: "Save source package"
+      id: upload
       uses: actions/upload-artifact@v4
       with:
         name:  ${{ inputs.name }}
