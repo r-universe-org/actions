@@ -13,6 +13,10 @@ save_jobs_data(){
   if [ -z "$missingsteps" ] || [ "$missingsteps" = "0" ]; then
     echo "Some jobs have missing steps. Falling back on getting all old jobsdata"
     gh api --paginate --slurp "$ENDPOINT?filter=all&per_page=100" | jq '[.[].jobs[]]' > input.json
+    if [ $? -ne 0 ]; then
+      echo "GitHub API failure retrieving logs. Might need full rebuild."
+      exit 1
+    fi
   else
     echo "Jobs data from API seems complete"
   fi
