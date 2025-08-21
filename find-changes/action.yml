@@ -117,7 +117,7 @@ runs:
           fi
         fi
         if [ -f ".metadata.json" ]; then
-          METADATA=$(jq -r ".[] | select(.package == \"${REPO_NAME}\") | .metadata | tostring" .metadata.json)
+          METADATA=$(jq -r ".[] | select(.package == \"${REPO_NAME}\") | .metadata | tostring" .metadata.json | head -n1)
           if [ "$METADATA" ]; then
             echo "Found package metadata: $METADATA"
             echo "registry_metadata=$METADATA" >> $GITHUB_OUTPUT
