@@ -47,7 +47,7 @@ runs:
 
 # Fail manually instead of 'exit 1' to avoid annotation: https://stackoverflow.com/a/73532770/318752 
     - name: Set failed conclusion
-      if: steps.check.outputs.CHECKSTATUS == 'ERROR'
+      if: steps.check.outputs.CHECKSTATUS == 'ERROR' || steps.check.outputs.CHECKSTATUS == 'FAILURE'
       uses: actions/github-script@v7
       with:
         script: core.setFailed()
