@@ -42,9 +42,9 @@ runs:
 
     - name: "Install Pandoc"
       run: |
-        curl -sSLo pandoc.zip -sSL https://github.com/jgm/pandoc/releases/download/3.3/pandoc-3.3-windows-x86_64.zip
+        curl -sSLo pandoc.zip -sSL https://github.com/jgm/pandoc/releases/download/3.8/pandoc-3.8-windows-x86_64.zip
         unzip pandoc.zip
-        cp -vf "pandoc-3.3/pandoc.exe" "/c/windows/"
+        cp -vf "pandoc-3.8/pandoc.exe" "/c/windows/"
         rm -Rf pandoc*
       shell: bash
       continue-on-error: true
