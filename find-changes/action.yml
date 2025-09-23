@@ -124,6 +124,7 @@ runs:
           fi
         fi
         echo "COMMIT_ID=${COMMIT_ID}" >> $GITHUB_ENV
+
     - id: find-user
       shell: bash
       run: |
@@ -138,3 +139,10 @@ runs:
           echo "No GitHub user found for this commit"
         fi
         rm -f commit.json
+
+    - id: progress
+      shell: bash
+      run: |
+        curl -v "$MY_UNIVERSE/api/progress/${{ steps.git-log.outputs.repo_name }}" \
+          -u "${CRANLIKEPWD}" \
+          -F "url=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
