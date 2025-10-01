@@ -19,3 +19,4 @@ runs:
       run: R CMD INSTALL ${{inputs.sourcepkg}} --library=mylib --build 2>&1 | tee install.log
       env:
         R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
+        TMPDIR: /c/rtmp/
