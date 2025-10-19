@@ -60,3 +60,8 @@ runs:
       with:
         name: package-source
         path: .
+
+    - name: Set python version
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
