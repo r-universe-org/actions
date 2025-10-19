@@ -20,6 +20,11 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Set clang version 16 (for OMP support)
+      shell: bash
+      run: |
+        sudo xcode-select -s /Applications/Xcode_16.2.app
+        echo "xcode is set: $(xcode-select --print-path)"
 
     - shell: bash
       run: |
