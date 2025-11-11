@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ "$UNIVERSE_NAME" == "cran" ] || [ "$UNIVERSE_NAME" == "bioc" ]; then
+if [ "$UNIVERSE_NAME" == "cran" ] || [ "$UNIVERSE_NAME" == "bioc" ] || [ "$UNIVERSE_NAME" == "bioc-release" ]; then
 echo "Skipping version bump check for cran/bioc repos."
 exit 0
 fi
