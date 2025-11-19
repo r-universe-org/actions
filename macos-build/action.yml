@@ -14,4 +14,5 @@ runs:
       env:
         MACOSX_DEPLOYMENT_TARGET: "11.0"
         R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
-        SDKROOT: /Applications/Xcode_16.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+# SDKROOT is set in 'prepare' step now
+#       SDKROOT: /Applications/Xcode_16.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
