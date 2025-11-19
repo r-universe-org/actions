@@ -1,0 +1,27 @@
+name: 'Run Bioc Check'
+description: 'Run Bioc Check on a package'
+inputs:
+  sourcepkg:
+    description: 'File of the source package'
+    required: true
+outputs:
+  checkstatus:
+    description: 'Final status of CMD check'
+    value: ${{steps.check.outputs.CHECKSTATUS}}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run BiocCheck
+      id: check
+      shell: bash
+      run: Rscript "${GITHUB_ACTION_PATH}/bioccheck.R" "${{inputs.sourcepkg}}"
+      env:
+        R_CHECK_ENVIRON: ${{github.action_path}}/../check.Renviron
+
+# Fail manually instead of 'exit 1' to avoid annotation: https://stackoverflow.com/a/73532770/318752 
+    - name: Set failed conclusion
+      if: steps.check.outputs.CHECKSTATUS == 'ERROR' || steps.check.outputs.CHECKSTATUS == 'FAILURE'
+      uses: actions/github-script@v7
+      with:
+        script: core.setFailed()
