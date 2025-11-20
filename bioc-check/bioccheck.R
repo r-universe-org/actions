@@ -5,7 +5,17 @@ cat("::group::Install BiocCheck\n")
 install.packages('BiocCheck')
 cat('::endgroup::\n')
 
+
+# BiocCheck warns about non-standard repos
+options(BiocManager.check_repositories = FALSE)
+if(Sys.getenv("UNIVERSE_NAME") == 'bioc-release'){
+  Sys.setenv(R_BIOC_VERSION = as.character(BiocManager:::.version_bioc("release")))
+} else {
+  Sys.setenv(R_BIOC_VERSION = as.character(BiocManager:::.version_bioc("devel")))
+}
+
 try({
+	library(BiocManager)
 	library(BiocCheck)
 	results <- BiocCheck(sourcepkg, 'no-check-R-ver' = TRUE)
 	if(length(results$error)){
