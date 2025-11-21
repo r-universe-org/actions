@@ -45,6 +45,7 @@ esac
 
 # Add jobs metadata to source/fail deploys
 if [ "$PKGTYPE" = "src" ] || [ "$PKGTYPE" = "failure" ]; then
+BIOCDATA="$BIOC_CHECKS"
 JOBSDATA=$(cat ../jobsdata.txt)
 fi
 
@@ -85,6 +86,7 @@ upload_package_file(){
 		-H "Builder-Maintainer: ${MAINTAINERINFO}" \
 		-H "Builder-Distro: ${DISTRO}" \
 		-H "Builder-Jobs: ${JOBSDATA}" \
+		-H "Builder-Bioccheck: ${BIOCDATA}" \
 		-H "Builder-Host: GitHub-Actions" \
 		-H "Builder-Status: ${JOB_STATUS}" \
 		-H "Builder-Check: ${CHECKSTATUS}" \

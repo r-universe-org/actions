@@ -6,8 +6,11 @@ inputs:
     required: true
 outputs:
   checkstatus:
-    description: 'Final status of CMD check'
+    description: 'Final status of Bioc check'
     value: ${{steps.check.outputs.CHECKSTATUS}}
+  checkresults:
+    description: 'Results of Bioc check'
+    value: ${{steps.check.outputs.CHECKRESULTS}}
 
 runs:
   using: "composite"

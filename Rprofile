@@ -1,6 +1,7 @@
 ## This file is currently used on Win and Mac but NOT Linux
 ## Linux images have their own profile script
 
+# This is mostly for binaries for the annotation/data packages
 if(grepl("4.4", getRversion())) Sys.setenv(R_BIOC_VERSION='3.20')
 if(grepl("4.5", getRversion())) Sys.setenv(R_BIOC_VERSION='3.22')
 if(grepl("4.6", getRversion())) Sys.setenv(R_BIOC_VERSION='3.23')

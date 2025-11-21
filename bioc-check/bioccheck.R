@@ -2,9 +2,12 @@ status <- 'FAILURE'
 sourcepkg <- commandArgs(TRUE)[1]
 
 cat("::group::Install BiocCheck\n")
-install.packages('BiocCheck')
+install.packages(c('BiocCheck', 'jsonlite'))
 cat('::endgroup::\n')
 
+write_output <- function(key, value){
+  cat(paste0(key, '=', value, '\n'), file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
+}
 
 # BiocCheck warns about non-standard repos
 options(BiocManager.check_repositories = FALSE)
@@ -27,10 +30,8 @@ try({
 	} else {
 		status <- 'OK'
 	}
+	restxt <- jsonlite::as_gzjson_b64(as.list(results$getNum()), auto_unbox = TRUE)
+	write_output('CHECKRESULTS', restxt)
 })
-
-write_output <- function(key, value){
-  cat(paste0(key, '=', value, '\n'), file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
-}
 
 write_output('CHECKSTATUS', status)
