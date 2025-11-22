@@ -18,7 +18,11 @@ runs:
     - name: Run BiocCheck
       id: check
       shell: bash
-      run: Rscript "${GITHUB_ACTION_PATH}/bioccheck.R" "${{inputs.sourcepkg}}"
+      run: |
+        Rscript "${GITHUB_ACTION_PATH}/prep.R" 
+        Rscript "${GITHUB_ACTION_PATH}/bioccheck.R" "${{inputs.sourcepkg}}" 2> >(tee -a output.log >&2)
+        sed -e 's/\x1b\[[0-9;]*m//g' -i.bak output.log
+        cp -f output.log *.BiocCheck
       env:
         R_CHECK_ENVIRON: ${{github.action_path}}/../check.Renviron
 

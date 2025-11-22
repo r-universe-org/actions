@@ -1,10 +1,6 @@
 status <- 'FAILURE'
 sourcepkg <- commandArgs(TRUE)[1]
 
-cat("::group::Install BiocCheck\n")
-install.packages(c('BiocCheck', 'jsonlite'))
-cat('::endgroup::\n')
-
 write_output <- function(key, value){
   cat(paste0(key, '=', value, '\n'), file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
 }
