@@ -1,9 +1,9 @@
 name: 'Deploy packages'
 description: 'Deploy all the packages'
 outputs:
-  deployed_packages:
-    description: 'String with uploaded binaries'
-    value: ${{steps.deploy.outputs.deployed_packages}}
+  jobdata:
+    description: 'JSON blob with jobs data'
+    value: ${{steps.jobsdata.outputs.jobdata}}
   version_change:
     description: 'If the version number was changed'
     value: ${{steps.version.outputs.version_change}}
@@ -12,6 +12,7 @@ runs:
   using: "composite"
   steps:
     - name: Get jobs results
+      id: jobsdata
       shell: bash
       run: ${GITHUB_ACTION_PATH}/jobsdata.sh
     - name: Check for changed version number

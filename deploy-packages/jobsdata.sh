@@ -27,6 +27,7 @@ save_jobs_data(){
   if [ -s "jobsdata.json" ] && [ $(cat jobsdata.json | jq -r 'length') != "0" ]; then
     echo "Converting jobsdata.json to base64-json..."
     cat jobsdata.json | gzip | openssl base64 -A -out jobsdata.txt
+    echo "jobdata=$(cat jobsdata.txt)" >> $GITHUB_OUTPUT
     exit 0
   else
     return 1

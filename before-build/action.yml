@@ -1,0 +1,57 @@
+name: 'Prepare build'
+description: 'Find package and metadata'
+inputs:
+  package:
+    description: Which package or commit to build (default is HEAD commit)
+    required: false
+outputs:
+  package:
+    description: "Name of the changed submodule"
+    value: ${{ steps.package.outputs.package }}
+  universe:
+    description: "Which R universe we are in"
+    value: ${{ steps.package.outputs.universe }}
+  repository:
+    description: "URL of the changed submodule"
+    value: ${{ steps.package.outputs.repository }}
+  ref:
+    description: "Commit of the changed submodule"
+    value: ${{ steps.package.outputs.ref }}
+  subdir:
+    description: "Subdirectory of the R package"
+    value: ${{ steps.package.outputs.subdir }}
+  binaries:
+    description: "If we should build win/mac binaries"
+    value: ${{ steps.package.outputs.binaries }}
+  organization:
+    description: "Name of organization to special case steps"
+    value: ${{ steps.package.outputs.organization }}
+  registered:
+    description: "If the package is registered (not remote)"
+    value: ${{ steps.package.outputs.registered }}
+  hasapp:
+    description: "If the repository has the r-universe app"
+    value: ${{ steps.package.outputs.hasapp }}
+  variables:
+    description: "Custom environment variables"
+    value: ${{ toJSON(steps.metadata.outputs) }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout monorepo
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 100
+
+    - name: Determine package to build
+      id: package
+      shell: bash
+      run: ${GITHUB_ACTION_PATH}/package.sh "${{inputs.package}}"
+
+    - name: Collect other metadata
+      id: metadata
+      shell: bash
+      run: ${GITHUB_ACTION_PATH}/metadata.sh
+      env:
+        GH_TOKEN: ${{ github.token }}

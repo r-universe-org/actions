@@ -13,8 +13,8 @@ fi
 if [ -z "$MAINTAINERINFO" ]; then
 	echo "Missing MAINTAINERINFO"; exit 1
 fi
-if [ -z "$UNIVERSE_NAME" ]; then
-	echo "Missing UNIVERSE_NAME"; exit 1
+if [ -z "$UNIVERSE" ]; then
+	echo "Missing UNIVERSE"; exit 1
 fi
 
 # What are we deploying
@@ -49,7 +49,7 @@ BIOCDATA="$BIOC_CHECKS"
 JOBSDATA=$(cat ../jobsdata.txt)
 fi
 
-SERVERURL="https://${UNIVERSE_NAME}.r-universe.dev/api/packages/${PACKAGE}/${VERSION}/${PKGTYPE}"
+SERVERURL="https://${UNIVERSE}.r-universe.dev/api/packages/${PACKAGE}/${VERSION}/${PKGTYPE}"
 
 #FORCE_SERVER_IP="--resolve *:443:165.227.211.221"
 
@@ -57,8 +57,8 @@ if [ "$PKGTYPE" == "failure" ]; then
   echo "Posting a build-failure for $PACKAGE to the package server!"
   echo "MAINTAINERINFO: $MAINTAINERINFO"
 	curl $FORCE_SERVER_IP --max-time 60 --retry 3 -vL --fail-with-body -u "${CRANLIKEPWD}" \
-		-F "Builder-Upstream=${REPO_URL}" \
-		-F "Builder-Registered=${REPO_REGISTERED}" \
+		-F "Builder-Upstream=${UPSTREAM}" \
+		-F "Builder-Registered=${REGISTERED}" \
 		-F "Builder-Commit=${COMMITINFO}" \
 		-F "Builder-Maintainer=${MAINTAINERINFO}" \
 		-F "Builder-Distro=${DISTRO}" \
@@ -80,8 +80,8 @@ fi
 upload_package_file(){
 	echo "Submitting ${SERVERURL}/${SHASUM}"
 	curl $FORCE_SERVER_IP --max-time 60 --retry 3 --retry-delay 30 -L --upload-file "${FILE}" --fail-with-body -u "${CRANLIKEPWD}" \
-		-H "Builder-Upstream: ${REPO_URL}" \
-		-H "Builder-Registered: ${REPO_REGISTERED}" \
+		-H "Builder-Upstream: ${UPSTREAM}" \
+		-H "Builder-Registered: ${REGISTERED}" \
 		-H "Builder-Commit: ${COMMITINFO}" \
 		-H "Builder-Maintainer: ${MAINTAINERINFO}" \
 		-H "Builder-Distro: ${DISTRO}" \
@@ -90,7 +90,6 @@ upload_package_file(){
 		-H "Builder-Host: GitHub-Actions" \
 		-H "Builder-Status: ${JOB_STATUS}" \
 		-H "Builder-Check: ${CHECKSTATUS}" \
-		-H "Builder-Srconly: ${SKIP_BINARIES}" \
 		-H "Builder-Buildurl: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
 		-H 'Expect:' \
 		"${SERVERURL}/${SHASUM}" &&\

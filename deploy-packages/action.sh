@@ -40,11 +40,7 @@ for dir in package-*; do
   echo "::endgroup::"
 done
 
-mv package-00source package-source
-
-DEPLOYED_PACKAGES=$(echo package-*)
-echo "DEPLOYED_PACKAGES: ${DEPLOYED_PACKAGES}"
-echo "deployed_packages=${DEPLOYED_PACKAGES}" >> $GITHUB_OUTPUT
+#mv package-00source package-source
 
 if [ "$FAILURE" ]; then
   exit 1
