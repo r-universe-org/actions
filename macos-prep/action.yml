@@ -23,7 +23,13 @@ runs:
     - name: Set clang version 16 (for OMP support)
       shell: bash
       run: |
-        sudo xcode-select -s /Applications/Xcode_16.2.app
+        if [ "${{inputs.version}}" = "devel" ] && [ "$(uname -m)" = "arm64" ]; then
+          sudo xcode-select -s /Applications/Xcode_26.0.app || true
+          echo "MACOSX_DEPLOYMENT_TARGET=14.0" >> $GITHUB_ENV
+        else
+          sudo xcode-select -s /Applications/Xcode_16.2.app || true
+          echo "MACOSX_DEPLOYMENT_TARGET=11.0" >> $GITHUB_ENV
+        fi
         echo "xcode is set: $(xcode-select --print-path)"
         echo "using SDK: $(xcrun --show-sdk-version)" || true
 
@@ -104,6 +110,10 @@ runs:
         CRANPATH="/opt/R/$ARCH"
         if [ -f "$CRANPATH/bin/pkg-config" ]; then
           echo "$CRANPATH/bin/pkg-config exists, skipping download"
+        elif [ "${{inputs.version}}" = "devel" ]; then
+          curl --retry 3 -fsSL https://github.com/r-universe-org/macos-libs/releases/download/2025-12-13/cranlibs-everything.tar.xz -o libs.tar.xz
+          sudo tar -xf libs.tar.xz -C / opt
+          rm -f libs.tar.xz
         else
           curl --retry 3 -fsSL https://github.com/r-universe-org/macos-libs/releases/download/2025-03-02/cranlibs-everything.tar.xz -o libs.tar.xz
           sudo tar -xf libs.tar.xz -C / opt

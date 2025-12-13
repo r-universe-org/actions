@@ -11,11 +11,11 @@ runs:
       run: |
         version="${{inputs.r-version}}"
         if [ "$version" = "devel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.5.2/R-4.5.2-arm64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/devel/R-devel-arm64.pkg"
         elif [ "$version" = "release" ]; then
           URL="https://github.com/r-universe-org/actions/releases/download/4.5.2/R-4.5.2-arm64.pkg"
         elif [ "$version" = "oldrel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.4.3/R-4.4.3-arm64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.5.2/R-4.5.2-arm64.pkg"
         fi
         echo "Installing from $URL"
         PKG=$(basename $URL)
@@ -28,11 +28,11 @@ runs:
       run: |
         version="${{inputs.r-version}}"
         if [ "$version" = "devel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.5.2/R-4.5.2-x86_64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/devel/R-devel-x86_64.pkg"
         elif [ "$version" = "release" ]; then
           URL="https://github.com/r-universe-org/actions/releases/download/4.5.2/R-4.5.2-x86_64.pkg"
         elif [ "$version" = "oldrel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.4.3/R-4.4.3-x86_64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.5.2/R-4.5.2-x86_64.pkg"
         fi
         echo "Installing from $URL"
         PKG=$(basename $URL)

@@ -12,7 +12,7 @@ runs:
       shell: bash
       run: R CMD INSTALL ${{inputs.sourcepkg}} --library=mylib --build 2>&1 | tee install.log
       env:
-        MACOSX_DEPLOYMENT_TARGET: "11.0"
         R_ENVIRON_USER: ${{github.action_path}}/../check.Renviron
-# SDKROOT is set in 'prepare' step now
+#       MACOSX_DEPLOYMENT_TARGET: "11.0"
+# SDKROOT and MACOSX_DEPLOYMENT_TARGET set in 'prepare' step now
 #       SDKROOT: /Applications/Xcode_16.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
