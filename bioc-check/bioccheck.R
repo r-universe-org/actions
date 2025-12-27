@@ -16,7 +16,8 @@ if(Sys.getenv("UNIVERSE_NAME") == 'bioc-release'){
 try({
 	library(BiocManager)
 	library(BiocCheck)
-	results <- BiocCheck(sourcepkg, 'no-check-R-ver' = TRUE)
+	# check-bioc-help seems to require some sort of admin access? Not really clear to me.
+	results <- BiocCheck(sourcepkg, 'no-check-R-ver' = TRUE, 'no-check-bioc-help' = TRUE)
 	if(length(results$error)){
 		status <- 'ERROR'
 	} else if(length(results$warning)){
