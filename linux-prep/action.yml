@@ -13,7 +13,7 @@ runs:
         echo "UserNM=nm --quiet" >> $GITHUB_ENV
 
     - name: Get source package
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: package-source
         path: .
