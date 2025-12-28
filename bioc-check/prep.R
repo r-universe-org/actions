@@ -1,3 +1,3 @@
 cat("::group::Install BiocCheck\n")
-install.packages(c('BiocCheck', 'jsonlite'))
+install.packages(c('BiocCheck', 'jsonlite', 'commonmark', 'xml2'))
 cat('::endgroup::\n')
