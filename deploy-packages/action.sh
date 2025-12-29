@@ -19,9 +19,16 @@ ls -lR
 
 # Submit system failures as well, such that they get retried
 if [ ! -d "package-source" ]; then
+
+# Workaround for download-artifact@v7 not creating subdir
+# https://github.com/actions/download-artifact/issues/455
+if [ -f "pkgdata.txt" ]; then
+mkdir package-source && mv pkgdata.txt package-source/
+else
 echo "No source package exists? Could be a systsem failure in GitHub Actions."
 TARGET=failure ${GITHUB_ACTION_PATH}/deploy.sh
 exit 1
+fi
 fi
 
 # Upload source first
