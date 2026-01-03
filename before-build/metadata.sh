@@ -28,9 +28,15 @@ if [ -f ".metadata.json" ]; then
 fi
 
 # Get maintainer metadata
-gh api "/repos/${GITHUB_REPOSITORY}/commits?path=$PACKAGE" > commit.json
-MAINTAINERLOGIN=$(jq -r '.[0].author.login' commit.json)
-MAINTAINERUUID=$(jq -r '.[0].author.id' commit.json)
+gh api "/repos/${GITHUB_REPOSITORY}/commits?path=$PACKAGE" | jq '.[0]' > commit.json || APIFAIL=true
+if [ "$APIFAIL" ]; then
+  echo "GitHub API call failed (probably very old commit). Falling back on fetching monorepo..."
+  git fetch --unshallow
+  COMMIT_ID=$(git log -n 1 --pretty=format:%H -- ${PACKAGE})
+  gh api "/repos/${GITHUB_REPOSITORY}/commits/${COMMIT_ID}" > commit.json
+fi
+MAINTAINERLOGIN=$(jq -r '.author.login' commit.json)
+MAINTAINERUUID=$(jq -r '.author.id' commit.json)
 if [ "$MAINTAINERLOGIN" ] && [ "$MAINTAINERLOGIN" != "null" ]; then
   echo "Package maintainer github login: $MAINTAINERLOGIN ($MAINTAINERUUID)"
   echo "MAINTAINERLOGIN=$MAINTAINERLOGIN" | tee -a $GITHUB_OUTPUT
