@@ -84,4 +84,8 @@ if(length(unavail)) {
   remotes::install_deps(sourcepkg, dependencies = TRUE, upgrade = FALSE)
 }
 
-#cat('::endgroup::\n')
+# Clear PATH for some weird pkg
+if(grepl("Rgraphviz", sourcepkg) && nchar(Sys.getenv("R_ENVIRON_USER"))){
+  message("Clearing PATH for Rgraphviz")
+  writeLines("PATH=C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem", Sys.getenv("R_ENVIRON_USER"))
+}

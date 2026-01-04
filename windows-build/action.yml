@@ -11,8 +11,8 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # TODO: fix error annotation here
-    # TODO: use bash for now because 'cmd' did not fail on error
+    # TODO: 2025: better use bash for now because 'cmd' did does fail on error?
+    # TODO: 2026: however Rgraphviz does not work with bash because spaces in PATH
     - name: Build the package
       shell: bash
       if: ${{inputs.ostype != 'unix'}}
