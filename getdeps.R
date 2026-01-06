@@ -11,7 +11,9 @@ write_output <- function(key, value){
 write_output('rversion', getRversion())
 
 # Do not try to install base packages
-skiplist <- c("R", row.names(installed.packages(priority="base")))
+too_big <- c('SNPlocs.Hsapiens.dbSNP155.GRCh38', 'SNPlocs.Hsapiens.dbSNP155.GRCh37',
+  'MafDb.gnomAD.r2.1.GRCh38', 'MafDb.gnomAD.r2.1.hs37d5')
+skiplist <- c("R", too_big, row.names(installed.packages(priority="base")), too_big)
 
 #cat('::group::Install package dependencies\n')
 dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE, showWarnings = FALSE)
