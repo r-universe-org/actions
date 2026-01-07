@@ -20,9 +20,9 @@ outputs:
   subdir:
     description: "Subdirectory of the R package"
     value: ${{ steps.package.outputs.subdir }}
-  binaries:
-    description: "If we should build win/mac binaries"
-    value: ${{ steps.package.outputs.binaries }}
+  nobinaries:
+    description: "If we should skip win/mac binaries"
+    value: ${{ steps.package.outputs.nobinaries }}
   organization:
     description: "Name of organization to special case steps"
     value: ${{ steps.package.outputs.organization }}
