@@ -12,6 +12,12 @@ runs:
         echo "LANG=en_US.UTF-8" >> $GITHUB_ENV
         echo "UserNM=nm --quiet" >> $GITHUB_ENV
 
+# Needed for e.g. 'GRaNIE'
+    - name: Free extra disk space for BioConductor
+      if: ${{ github.repository == 'r-universe/bioc' || github.repository == 'r-universe/bioc-release' }}
+      shell: bash
+      run: rm -Rf /host/usr/share/dotnet /host/usr/local/lib/android
+
     - name: Get source package
       uses: actions/download-artifact@v7
       with:
