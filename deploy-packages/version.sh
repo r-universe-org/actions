@@ -5,7 +5,7 @@ exit 0
 fi
 
 OLDVERSION=$(curl -sSf "https://${UNIVERSE}.r-universe.dev/api/packages/${PACKAGE}" | jq -r '.Version')
-if [ "$OLDVERSION" ] && [ "$OLDVERSION" != "$VERSION" ]; then
+if [ "$OLDVERSION" ] && [ "$VERSION" ] && [ "$OLDVERSION" != "$VERSION" ]; then
   echo "Version change from $OLDVERSION to $VERSION"
   echo "version_change=true" >> $GITHUB_OUTPUT
 else
