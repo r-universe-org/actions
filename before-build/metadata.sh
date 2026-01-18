@@ -56,7 +56,7 @@ UPSTREAMBRANCH=$(git config -f .gitmodules --get "submodule.${PACKAGE}.branch" |
 echo "UPSTREAMBRANCH=$UPSTREAMBRANCH" | tee -a $GITHUB_OUTPUT
 
 # This requires a GitHub session token...
-if [ "$DUMMY_SESSION" ]; then
+if [ "$DUMMY_SESSION" ] && [ "$REGISTERED" != "false" ]; then
   echo "Looking up blackbird count..."
   ENDPOINT="https://github.com/search/blackbird_count?saved_searches=&q=%22library%28${PACKAGE}%29%22"
   AGENT="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
