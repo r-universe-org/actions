@@ -57,14 +57,14 @@ if [ "$PKGTYPE" == "failure" ]; then
   echo "Posting a build-failure for $PACKAGE to the package server!"
   echo "MAINTAINERINFO: $MAINTAINERINFO"
 	curl $FORCE_SERVER_IP --max-time 60 --retry 3 -vL --fail-with-body -u "${CRANLIKEPWD}" \
-		-F "Builder-Upstream=${UPSTREAM}" \
-		-F "Builder-Registered=${REGISTERED}" \
-		-F "Builder-Commit=${COMMITINFO}" \
-		-F "Builder-Maintainer=${MAINTAINERINFO}" \
-		-F "Builder-Distro=${DISTRO}" \
-		-F "Builder-Jobs=${JOBSDATA}" \
-		-F "Builder-Host=GitHub-Actions" \
-		-F "Builder-Buildurl=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+		-d "Builder-Upstream=${UPSTREAM}" \
+		-d "Builder-Registered=${REGISTERED}" \
+		-d "Builder-Commit=${COMMITINFO}" \
+		-d "Builder-Maintainer=${MAINTAINERINFO}" \
+		-d "Builder-Distro=${DISTRO}" \
+		-d "Builder-Jobs=${JOBSDATA}" \
+		-d "Builder-Host=GitHub-Actions" \
+		-d "Builder-Buildurl=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
 		"${SERVERURL}"
 	exit 0;
 fi
