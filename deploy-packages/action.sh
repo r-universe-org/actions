@@ -23,7 +23,7 @@ if [ ! -d "package-source" ]; then
 # Workaround for download-artifact@v7 not creating subdir
 # https://github.com/actions/download-artifact/issues/455
 if [ -f "pkgdata.txt" ]; then
-mkdir package-source && mv pkgdata.txt package-source/
+mkdir package-source && mv pkgdata.txt *.tar.gz package-source/ || true
 else
 echo "No source package exists? Could be a systsem failure in GitHub Actions."
 TARGET=failure ${GITHUB_ACTION_PATH}/deploy.sh
