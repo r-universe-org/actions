@@ -12,19 +12,18 @@ local({
     "https://cloud.r-project.org"
   }
   bioc_ver <- if(universe == 'bioc-release') {
-    'release'
+    bioc_soft <- "https://bioconductor.posit.co/packages/release/bioc"
+    bioc_anno <- "https://bioconductor.posit.co/packages/release/data/annotation"
+    bioc_exp  <- "https://bioconductor.posit.co/packages/release/data/experiment"
   } else if(universe == 'bioc') {
-    'devel'
-  } else if(grepl("4.6", getRversion())) {
-    '3.23'
-  } else if(grepl("4.5", getRversion())) {
-    '3.22'
-  } else if(grepl("4.4", getRversion())) {
-    '3.20'
+    bioc_soft <- "https://bioconductor.posit.co/packages/devel/bioc"
+    bioc_anno <- "https://bioconductor.posit.co/packages/devel/data/annotation"
+    bioc_exp  <- "https://bioconductor.posit.co/packages/devel/data/experiment"
+  } else {
+    bioc_soft <- "https://bioc.r-universe.dev"
+    bioc_anno <- sprintf("https://bioconductor.posit.co/packages/%s/data/annotation", utils:::.BioC_version_associated_with_R_version())
+    bioc_exp  <- NULL
   }
-  bioc_soft <- sprintf("https://bioconductor.org/packages/%s/bioc", bioc_ver)
-  bioc_anno <- sprintf("https://bioconductor.org/packages/%s/data/annotation", bioc_ver)
-  bioc_exp <- sprintf("https://bioconductor.org/packages/%s/data/experiment", bioc_ver)
   options(repos = c(
     universe = universe_url,
     CRAN = cran_url,
