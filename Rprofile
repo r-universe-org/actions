@@ -1,39 +1,38 @@
 ## This file is currently used on Win and Mac but NOT Linux
 ## Linux images have their own profile script
 
-# This is mostly for binaries for the annotation/data packages
-if(grepl("4.4", getRversion())) Sys.setenv(R_BIOC_VERSION='3.20')
-if(grepl("4.5", getRversion())) Sys.setenv(R_BIOC_VERSION='3.22')
-if(grepl("4.6", getRversion())) Sys.setenv(R_BIOC_VERSION='3.23')
-
-# If a specific cran version is set, use only that
-cran_version <- Sys.getenv("CRAN_VERSION")
-if(nchar(cran_version)){
-  options(repos = c(CRAN = sprintf("https://p3m.dev/cran/%s", cran_version)))
-} else {
-  options(repos = c(CRAN = "https://cloud.r-project.org"))
-}
-#if(grepl("development", R.version[['status']])) {
-#  options(BioC_mirror = "https://bioc.cran.dev")
-#} else {
-  options(BioC_mirror = "https://bioconductor.posit.co")
-#}
-
-if(grepl("^bioc", Sys.getenv('UNIVERSE_NAME'))){
-  utils::setRepositories(ind = 1:4)
-  if(Sys.getenv('UNIVERSE_NAME') == 'bioc-release'){
-    options(repos = sub("/packages/[0-9.]+/", "/packages/release/", getOption('repos')))
+local({
+  universe <- Sys.getenv('UNIVERSE_NAME')
+  universe_url <- if(nchar(universe)){
+    sprintf("https://%s.r-universe.dev", universe)
   }
-  if(Sys.getenv('UNIVERSE_NAME') == 'bioc'){
-    options(repos = sub("/packages/[0-9.]+/", "/packages/devel/", getOption('repos')))
+  cran_url <- if(nchar(Sys.getenv("CRAN_VERSION"))){
+    sprintf("https://p3m.dev/cran/%s", Sys.getenv("CRAN_VERSION"))
+  } else {
+    "https://cloud.r-project.org"
   }
-} else {
-  utils::setRepositories(ind = 1:3)
-}
-
-if(nchar(Sys.getenv("MY_UNIVERSE"))){
-  options(repos = c(universe = Sys.getenv("MY_UNIVERSE"), getOption("repos")))
-}
-options(Ncpus = 2, crayon.enabled = TRUE)
-options(HTTPUserAgent = paste0(getOption("HTTPUserAgent"), "; r-universe"))
-Sys.unsetenv(c("CI", "GITHUB_ACTIONS"))
+  bioc_ver <- if(universe == 'bioc-release') {
+    'release'
+  } else if(universe == 'bioc') {
+    'devel'
+  } else if(grepl("4.6", getRversion())) {
+    '3.23'
+  } else if(grepl("4.5", getRversion())) {
+    '3.22'
+  } else if(grepl("4.4", getRversion())) {
+    '3.20'
+  }
+  bioc_soft <- sprintf("https://bioconductor.org/packages/%s/bioc", bioc_ver)
+  bioc_anno <- sprintf("https://bioconductor.org/packages/%s/data/annotation", bioc_ver)
+  bioc_exp <- sprintf("https://bioconductor.org/packages/%s/data/experiment", bioc_ver)
+  options(repos = c(
+    universe = universe_url,
+    CRAN = cran_url,
+    BioCsoft = bioc_soft,
+    BioCann = bioc_anno,
+    BioCexp = bioc_exp
+  ))
+  options(Ncpus = 2, crayon.enabled = TRUE)
+  options(HTTPUserAgent = paste0(getOption("HTTPUserAgent"), "; r-universe"))
+  Sys.unsetenv(c("CI", "GITHUB_ACTIONS"))
+})
