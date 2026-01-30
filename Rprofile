@@ -21,6 +21,12 @@ if(nchar(cran_version)){
 
 if(grepl("^bioc", Sys.getenv('UNIVERSE_NAME'))){
   utils::setRepositories(ind = 1:4)
+  if(Sys.getenv('UNIVERSE_NAME') == 'bioc-release'){
+    options(repos = sub("/packages/[0-9.]+/", "/packages/release/", getOption('repos')))
+  }
+  if(Sys.getenv('UNIVERSE_NAME') == 'bioc'){
+    options(repos = sub("/packages/[0-9.]+/", "/packages/devel/", getOption('repos')))
+  }
 } else {
   utils::setRepositories(ind = 1:3)
 }
