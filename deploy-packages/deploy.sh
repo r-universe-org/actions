@@ -99,9 +99,9 @@ upload_package_file(){
 
 # Sometimes deploys randomly drop a connection (server restart?)
 # Retry 3 times (curl --retry does not always work)
-for x in 1 2 3; do
-	upload_package_file || echo "Something went wrong. Waiting 10 seconds to retry..."
-	sleep 10
+for x in 10 20 40; do
+	upload_package_file || echo "Something went wrong. Waiting $x seconds to retry..."
+	sleep $x
 done
 
 echo "Package deploy failed"
