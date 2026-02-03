@@ -5,6 +5,9 @@ print(as.list(getOption('repos')))
 cat(readLines(Sys.getenv('R_ENVIRON_USER')), sep = '\n')
 cat('::endgroup::\n')
 
+# Print warnings immediately
+options(warn = 1)
+
 write_output <- function(key, value){
   cat(paste0(key, '=', value, '\n'), file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
 }

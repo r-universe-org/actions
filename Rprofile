@@ -11,6 +11,12 @@ local({
   } else {
     "https://cloud.r-project.org"
   }
+
+  # tempo solution for flaky mac mirroring
+  cranmac <- if(grepl('darwin', R.version$platform)){
+    "https://mac.r-project.org"
+  }
+
   bioc_ver <- if(universe == 'bioc-release') {
     bioc_soft <- "https://bioconductor.posit.co/packages/release/bioc"
     bioc_anno <- "https://bioconductor.posit.co/packages/release/data/annotation"
@@ -27,6 +33,7 @@ local({
   options(repos = c(
     universe = universe_url,
     CRAN = cran_url,
+    cranmac = cranmac,
     BioCsoft = bioc_soft,
     BioCann = bioc_anno,
     BioCexp = bioc_exp
