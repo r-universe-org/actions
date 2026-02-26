@@ -90,7 +90,7 @@ if(length(unavail)) {
 }
 
 # Clear PATH for some weird pkg
-if(grepl("Rgraphviz", sourcepkg) && nchar(Sys.getenv("R_ENVIRON_USER"))){
+if(.Platform$OS.type == 'windows' && grepl("Rgraphviz", sourcepkg) && nchar(Sys.getenv("R_ENVIRON_USER"))){
   message("Clearing PATH for Rgraphviz")
   writeLines("PATH=C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem", Sys.getenv("R_ENVIRON_USER"))
 }
