@@ -16,14 +16,14 @@ runs:
   steps:
     - name: Install rtools
       run: |
-        if [ "$RTOOLS45_HOME" ]; then
+        if [ "$RTOOLS46_HOME" ]; then
+          echo "Found preinstalled toolchain in $RTOOLS46_HOME"
+          echo "RTOOLS45_HOME=$RTOOLS46_HOME" >> $GITHUB_ENV
+          echo "RTOOLS44_HOME=$RTOOLS46_HOME" >> $GITHUB_ENV
+        elif [ "$RTOOLS45_HOME" ]; then
           echo "Found preinstalled toolchain in $RTOOLS45_HOME"
-          echo "RTOOLS43_HOME=$RTOOLS45_HOME" >> $GITHUB_ENV
+          echo "RTOOLS46_HOME=$RTOOLS45_HOME" >> $GITHUB_ENV
           echo "RTOOLS44_HOME=$RTOOLS45_HOME" >> $GITHUB_ENV
-        elif [ "$RTOOLS44_HOME" ]; then
-          echo "Found preinstalled toolchain in $RTOOLS44_HOME"
-          echo "RTOOLS43_HOME=$RTOOLS44_HOME" >> $GITHUB_ENV
-          echo "RTOOLS45_HOME=$RTOOLS44_HOME" >> $GITHUB_ENV
         else
           echo "No rtools installation found!"
         fi

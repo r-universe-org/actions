@@ -41,7 +41,7 @@ runs:
         rm -f $PKG
 
     - shell: pwsh
-      if: runner.os == 'windows'
+      if: runner.os == 'windows' && runner.arch != 'arm64'
       run: |
         $version = "${{inputs.r-version}}"
         if ( $version -eq "devel" ) {
@@ -50,6 +50,22 @@ runs:
           $URL = "https://github.com/r-universe-org/actions/releases/download/4.5.2/R-4.5.2-win.exe"
         } elseif ( $version -eq "oldrel" ) {
           $URL = "https://github.com/r-universe-org/actions/releases/download/4.4.3/R-4.4.3-win.exe"
+        }
+        curl -o Rinstall.exe --max-time 300 --retry 3 --ssl-no-revoke -sSfL $URL
+        echo "Starting R installer..."
+        Start-Process "Rinstall.exe" -argumentlist "/VERYSILENT /SUPPRESSMSGBOXES /DIR=C:\\R" -wait
+        echo "Done!"
+        Remove-Item Rinstall.exe
+        echo "C:\\R\\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - shell: pwsh
+      if: runner.os == 'windows' && runner.arch == 'arm64'
+      run: |
+        $version = "${{inputs.r-version}}"
+        if ( $version -eq "devel" ) {
+          $URL = "https://www.r-project.org/nosvn/winutf8/aarch64/prerelease/R-devel_2026-02-25_r89481-aarch64.exe"
+        } elseif ( $version -eq "release" ) {
+          $URL = "https://www.r-project.org/nosvn/winutf8/aarch64/prerelease/R-patched_2026-02-25_r89481-aarch64.exe"
         }
         curl -o Rinstall.exe --max-time 300 --retry 3 --ssl-no-revoke -sSfL $URL
         echo "Starting R installer..."
