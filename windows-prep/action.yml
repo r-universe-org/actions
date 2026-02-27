@@ -14,7 +14,18 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install rtools
+    - name: Install Rtools on ARM64
+      run: |
+        if ($null -eq $env:RTOOLS45_AARCH64_HOME) {
+          curl -o rtools45.exe -L https://github.com/r-windows/rtools-chocolatey/releases/download/6768/rtools45-aarch64-6768-6492.exe
+          Start-Process "rtools45.exe" -argumentlist "/VERYSILENT /SUPPRESSMSGBOXES" -wait
+          Remove-Item rtools45.exe
+        }
+        "R_PLATFORM_PKGTYPE=windows.binary.clang-aarch64" >> $env:GITHUB_ENV
+      shell: pwsh
+      if: runner.arch == 'arm64'
+
+    - name: Normalize Rtools
       run: |
         if [ "$RTOOLS46_HOME" ]; then
           echo "Found preinstalled toolchain in $RTOOLS46_HOME"
@@ -24,13 +35,12 @@ runs:
           echo "Found preinstalled toolchain in $RTOOLS45_HOME"
           echo "RTOOLS46_HOME=$RTOOLS45_HOME" >> $GITHUB_ENV
           echo "RTOOLS44_HOME=$RTOOLS45_HOME" >> $GITHUB_ENV
-        else
-          echo "No rtools installation found!"
         fi
         if [ "$UNIVERSE_NAME" = "cran" ] || [ "$UNIVERSE_NAME" = "bioc" ]; then
           echo "_R_INSTALL_TIME_PATCHES_=https://www.r-project.org/nosvn/winutf8/ucrt3/" >> $GITHUB_ENV
         fi
       shell: bash
+      if: runner.arch != 'arm64'
 
     - name: "Install JAGS if needed"
       run: |
