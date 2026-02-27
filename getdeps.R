@@ -66,8 +66,8 @@ options("install.packages.compile.from.source"="never")
 
 # Somehow 'install.packages.check.source=no' still installs packages w/o compiled code from src
 # But we also need transitive deps that are not available as binary such as bioconductor data packages
-if(.Platform$OS.type == 'windows' && identical(.Platform$r_arch, 'x64')){
-  install.packages(pkg_deps, type = 'win.binary')
+if(R.version$platform == "x86_64-w64-mingw32"){
+  install.packages(pkg_deps, type = .Platform$pkgType)
   alldeps <- unique(unname(c(pkg_deps, unlist(tools::package_dependencies(pkg_deps, recursive = TRUE)))))
   missingdeps <- setdiff(alldeps, c(skiplist, row.names(installed.packages())))
   install.packages(missingdeps)

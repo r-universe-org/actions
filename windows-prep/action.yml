@@ -14,13 +14,24 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Cache Rtools
+      uses: actions/cache@v5
+      with:
+        path: |
+          c:\rtools45-aarch64
+        key: ${{ runner.os }}-${{ runner.arch }}
+      if: runner.arch == 'arm64'
+
     - name: Install Rtools on ARM64
       run: |
-        if ($null -eq $env:RTOOLS45_AARCH64_HOME) {
+        if (Test-Path -path "c:\rtools45-aarch64") {
+          Write-Output "Found cached c:\rtools45-aarch64"
+        } else {
           curl -o rtools45.exe -L https://github.com/r-windows/rtools-chocolatey/releases/download/6768/rtools45-aarch64-6768-6492.exe
           Start-Process "rtools45.exe" -argumentlist "/VERYSILENT /SUPPRESSMSGBOXES" -wait
           Remove-Item rtools45.exe
         }
+        "RTOOLS45_AARCH64_HOME=C:\rtools45-aarch64" >> $env:GITHUB_ENV
         "R_PLATFORM_PKGTYPE=windows.binary.clang-aarch64" >> $env:GITHUB_ENV
       shell: pwsh
       if: runner.arch == 'arm64'
