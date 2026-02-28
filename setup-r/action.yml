@@ -19,7 +19,7 @@ runs:
         fi
         echo "Installing from $URL"
         PKG=$(basename $URL)
-        curl --max-time 300 --retry 3 -sSfLO $URL
+        curl --max-time 300 --retry 3 --fail-with-body -sSLO $URL
         sudo installer -pkg "$PKG" -target /
         rm -f $PKG
 
@@ -36,7 +36,7 @@ runs:
         fi
         echo "Installing from $URL"
         PKG=$(basename $URL)
-        curl --max-time 300 --retry 3 -sSfLO $URL
+        curl --max-time 300 --retry 3 --fail-with-body -sSLO $URL
         sudo installer -pkg "$PKG" -target /
         rm -f $PKG
 
@@ -51,7 +51,7 @@ runs:
         } elseif ( $version -eq "oldrel" ) {
           $URL = "https://github.com/r-universe-org/actions/releases/download/4.4.3/R-4.4.3-win.exe"
         }
-        curl -o Rinstall.exe --max-time 300 --retry 3 --ssl-no-revoke -sSfL $URL
+        curl -o Rinstall.exe --max-time 300 --retry 3 --fail-with-body --ssl-no-revoke -sSL $URL
         echo "Starting R installer..."
         Start-Process "Rinstall.exe" -argumentlist "/VERYSILENT /SUPPRESSMSGBOXES /DIR=C:\\R" -wait
         echo "Done!"
@@ -63,7 +63,7 @@ runs:
       run: |
         $version = "${{inputs.r-version}}"
         $URL = "https://www.r-project.org/nosvn/winutf8/aarch64/prerelease/R-devel_2026-02-25_r89481-aarch64.exe"
-        curl -o Rinstall.exe --max-time 300 --retry 3 --ssl-no-revoke -sSfL $URL
+        curl -o Rinstall.exe --max-time 300 --retry 3 --fail-with-body --ssl-no-revoke -sSL $URL
         echo "Starting R installer..."
         Start-Process "Rinstall.exe" -argumentlist "/VERYSILENT /SUPPRESSMSGBOXES /DIR=C:\\R" -wait
         echo "Done!"

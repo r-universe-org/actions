@@ -73,7 +73,7 @@ runs:
         else
           echo "::group::Installing XQuartz"
           echo "Downloading XQuartz..."
-          curl --retry 3 -fLO https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.5/XQuartz-2.8.5.pkg
+          curl --retry 3 --fail-with-body -LO https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.5/XQuartz-2.8.5.pkg
           sudo installer -pkg "XQuartz-2.8.5.pkg" -target /
           rm -f XQuartz-2.8.5.pkg
           echo "Done installing XQuartz!"
@@ -94,7 +94,7 @@ runs:
         else
           echo "::group::Installing Fortran"
           echo "Downloading Fortran..."
-          curl --retry 3 -fsSL $installer -o gfortran.pkg
+          curl --retry 3 --fail-with-body -sSL $installer -o gfortran.pkg
           sudo installer -pkg "gfortran.pkg" -target /
           rm -f gfortran.pkg
           echo "Done installing Fortran!"
@@ -111,11 +111,11 @@ runs:
         if [ -f "$CRANPATH/bin/pkg-config" ]; then
           echo "$CRANPATH/bin/pkg-config exists, skipping download"
         elif [ "${{inputs.version}}" = "devel" ]; then
-          curl --retry 3 -fsSL https://github.com/r-universe-org/macos-libs/releases/download/2025-12-13/cranlibs-everything.tar.xz -o libs.tar.xz
+          curl --retry 3 --fail-with-body -sSL https://github.com/r-universe-org/macos-libs/releases/download/2025-12-13/cranlibs-everything.tar.xz -o libs.tar.xz
           sudo tar -xf libs.tar.xz -C / opt
           rm -f libs.tar.xz
         else
-          curl --retry 3 -fsSL https://github.com/r-universe-org/macos-libs/releases/download/2025-03-02/cranlibs-everything.tar.xz -o libs.tar.xz
+          curl --retry 3 --fail-with-body -sSL https://github.com/r-universe-org/macos-libs/releases/download/2025-03-02/cranlibs-everything.tar.xz -o libs.tar.xz
           sudo tar -xf libs.tar.xz -C / opt
           rm -f libs.tar.xz
         fi
@@ -138,7 +138,7 @@ runs:
         else
           echo "::group::Installing Quarto"
           pkgfile="quarto-1.8.24-macos.pkg"
-          curl --retry 3 -fOL https://github.com/quarto-dev/quarto-cli/releases/download/v1.8.24/$pkgfile
+          curl --retry 3 --fail-with-body -OL https://github.com/quarto-dev/quarto-cli/releases/download/v1.8.24/$pkgfile
           sudo installer -pkg $pkgfile -target /
           rm -f $pkgfile
           echo "::endgroup::"
@@ -151,7 +151,7 @@ runs:
         else
           echo "::group::Installing Pandoc"
           pkgfile="pandoc-3.6.3-$ARCH-macOS.pkg"
-          curl --retry 3 -fOL https://github.com/jgm/pandoc/releases/download/3.6.3/$pkgfile
+          curl --retry 3 --fail-with-body -OL https://github.com/jgm/pandoc/releases/download/3.6.3/$pkgfile
           sudo installer -pkg $pkgfile -target /
           rm -f $pkgfile
           cp -f /usr/local/bin/pandoc /opt/R/$ARCH/bin/  #Copy to cache
@@ -162,7 +162,7 @@ runs:
       shell: bash
       run: |
         echo "::group::Installing JAGS"
-        curl --retry 3 -fLO https://github.com/autobrew/bundler/releases/download/jags-4.3.2/JAGS-4.3.2.pkg
+        curl --retry 3 --fail-with-body -LO https://github.com/autobrew/bundler/releases/download/jags-4.3.2/JAGS-4.3.2.pkg
         sudo installer -pkg JAGS-4.3.2.pkg -target /
         rm -f JAGS-4.3.2.pkg
         if [ -d "/opt/R/arm64/lib/pkgconfig" ]; then
@@ -184,7 +184,7 @@ runs:
           else
           installgo="go1.24.0.darwin-amd64.pkg"
           fi
-          curl --retry 3 -fLOSs https://go.dev/dl/$installgo
+          curl --retry 3 --fail-with-body -LOSs https://go.dev/dl/$installgo
           sudo installer -pkg $installgo -target /
           rm -f $installgo
           echo "Done installing GO!"
