@@ -14,7 +14,8 @@ local({
 
   # tempo solution for flaky mac mirroring
   cranmac <- if(grepl('darwin', R.version$platform)){
-    "https://mac.r-project.org"
+#    "https://mac.r-project.org"
+     "https://mac.cran.dev"
   }
 
   bioc_ver <- if(universe == 'bioc-release') {
