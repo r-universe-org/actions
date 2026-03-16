@@ -55,10 +55,6 @@ if(grepl("linux", R.Version()$platform)) {
 #  pkg_deps <- c(pkg_deps, "zlibbioc")
 #}
 
-# Temp fix
-# if(.Platform$OS.type == 'windows' && R.version$minor == '6.0'){
-#  install.packages('data.table', repos = 'https://test.r-universe.dev')
-# }
 
 # Install new packages
 options(install.packages.check.source = "no")
@@ -88,6 +84,14 @@ if(length(unavail)) {
   install.packages('remotes')
   remotes::install_deps(sourcepkg, dependencies = TRUE, upgrade = FALSE)
 }
+
+# Temp fix for broken CRAN binaries
+if(identical(.Platform$pkgType, 'mac.binary.big-sur-x86_64') && R.version$minor == '6.0'){
+  if('data.table' %in% installed){
+    install.packages('data.table', repos = 'https://test.r-universe.dev')
+  }
+}
+
 
 # Clear PATH for some weird pkg
 if(.Platform$OS.type == 'windows' && grepl("Rgraphviz", sourcepkg) && nchar(Sys.getenv("R_ENVIRON_USER"))){
