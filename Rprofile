@@ -6,16 +6,14 @@ local({
   universe_url <- if(nchar(universe)){
     sprintf("https://%s.r-universe.dev", universe)
   }
-  cran_url <- if(nchar(Sys.getenv("CRAN_VERSION"))){
-    sprintf("https://p3m.dev/cran/%s", Sys.getenv("CRAN_VERSION"))
+  if(nchar(Sys.getenv("CRAN_VERSION"))){
+    cran_url <- sprintf("https://p3m.dev/cran/%s", Sys.getenv("CRAN_VERSION"))
+    cranmac <- NULL
   } else {
-    "https://cloud.r-project.org"
-  }
-
-  # tempo solution for flaky mac mirroring
-  cranmac <- if(grepl('darwin', R.version$platform)){
-#    "https://mac.r-project.org"
-     "https://mac.cran.dev"
+    cran_url <- "https://cloud.r-project.org"
+    cranmac <- if(grepl('darwin', R.version$platform)){
+       "https://mac.cran.dev"
+    }
   }
 
   bioc_ver <- if(universe == 'bioc-release') {
