@@ -66,7 +66,9 @@ if(R.version$platform == "x86_64-w64-mingw32"){
   install.packages(pkg_deps, type = .Platform$pkgType)
   alldeps <- unique(unname(c(pkg_deps, unlist(tools::package_dependencies(pkg_deps, recursive = TRUE)))))
   missingdeps <- setdiff(alldeps, c(skiplist, row.names(installed.packages())))
-  install.packages(missingdeps)
+  message("Try building from source: ", paste(missingdeps, collapse = ', '))
+  # Needed when some binaries are 404
+  install.packages(missingdeps, type = 'source')
 } else {
   install.packages(pkg_deps)
 }

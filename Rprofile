@@ -6,13 +6,17 @@ local({
   universe_url <- if(nchar(universe)){
     sprintf("https://%s.r-universe.dev", universe)
   }
+  cran_url <- "https://cloud.r-project.org"
+  fallback <- NULL
+
   if(nchar(Sys.getenv("CRAN_VERSION"))){
     cran_url <- sprintf("https://p3m.dev/cran/%s", Sys.getenv("CRAN_VERSION"))
-    cranmac <- NULL
   } else {
-    cran_url <- "https://cloud.r-project.org"
-    cranmac <- if(grepl('darwin', R.version$platform)){
-       "https://mac.cran.dev"
+    if(grepl('darwin', R.version$platform)){
+      fallback <- "https://mac.cran.dev"
+    }
+    if(grepl('x86_64-w64-mingw32', R.version$platform)){
+      fallback <- "https://win.cran.dev"
     }
   }
 
@@ -32,7 +36,7 @@ local({
   options(repos = c(
     universe = universe_url,
     CRAN = cran_url,
-    cranmac = cranmac,
+    fallback = fallback,
     BioCsoft = bioc_soft,
     BioCann = bioc_anno,
     BioCexp = bioc_exp
