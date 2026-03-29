@@ -20,15 +20,15 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Set clang version 16 (for OMP support)
+    - name: Set SDK version
       shell: bash
       run: |
-        if [ "${{inputs.version}}" = "devel" ] && [ "$(uname -m)" = "arm64" ]; then
-          sudo xcode-select -s /Applications/Xcode_26.0.app || true
-          echo "MACOSX_DEPLOYMENT_TARGET=14.0" >> $GITHUB_ENV
-        else
+        if [ "${{inputs.version}}" = "oldrel" ] || [ "$(uname -m)" = "x86_64" ]; then
           sudo xcode-select -s /Applications/Xcode_16.2.app || true
           echo "MACOSX_DEPLOYMENT_TARGET=11.0" >> $GITHUB_ENV
+        else
+          sudo xcode-select -s /Applications/Xcode_26.0.app || true
+          echo "MACOSX_DEPLOYMENT_TARGET=14.0" >> $GITHUB_ENV
         fi
         echo "xcode is set: $(xcode-select --print-path)"
         echo "using SDK: $(xcrun --show-sdk-version)" || true
@@ -47,7 +47,7 @@ runs:
           /opt/gfortran
           /opt/R/x86_64
           /opt/R/arm64
-        key: ${{ runner.os }}-${{ inputs.version }}-26
+        key: ${{ runner.os }}-${{ inputs.version }}-27
 
     - shell: bash
       run: |
@@ -82,13 +82,8 @@ runs:
 
     - shell: bash
       run: |
-        if [ "${{inputs.version}}" = "oldrel" ]; then
-          installer="https://github.com/R-macos/gcc-12-branch/releases/download/12.2-darwin-r0.1/gfortran-12.2-universal.pkg"
-          makevars="${{github.action_path}}/gfortran-12/Makevars-$ARCH"
-        else
-          installer="https://github.com/R-macos/gcc-14-branch/releases/download/gcc-14.2-darwin-r2.1/gfortran-14.2-universal.pkg"
-          makevars="${{github.action_path}}/gfortran-14/Makevars-$ARCH"
-        fi
+        installer="https://github.com/R-macos/gcc-14-branch/releases/download/gcc-14.2-darwin-r2.1/gfortran-14.2-universal.pkg"
+        makevars="${{github.action_path}}/gfortran-14/Makevars-$ARCH"
         if [ -d "/opt/gfortran/bin" ]; then
           echo "/opt/gfortran/bin exists. Skipping fortran installation"
         else
@@ -110,12 +105,12 @@ runs:
         CRANPATH="/opt/R/$ARCH"
         if [ -f "$CRANPATH/bin/pkg-config" ]; then
           echo "$CRANPATH/bin/pkg-config exists, skipping download"
-        elif [ "${{inputs.version}}" = "devel" ]; then
-          curl --retry 3 --fail-with-body -sSL https://github.com/r-universe-org/macos-libs/releases/download/2025-12-13/cranlibs-everything.tar.xz -o libs.tar.xz
+        elif [ "${{inputs.version}}" = "oldrel" ]; then
+          curl --retry 3 --fail-with-body -sSL https://github.com/r-universe-org/macos-libs/releases/download/2025-03-02/cranlibs-everything.tar.xz -o libs.tar.xz
           sudo tar -xf libs.tar.xz -C / opt
           rm -f libs.tar.xz
         else
-          curl --retry 3 --fail-with-body -sSL https://github.com/r-universe-org/macos-libs/releases/download/2025-03-02/cranlibs-everything.tar.xz -o libs.tar.xz
+          curl --retry 3 --fail-with-body -sSL https://github.com/r-universe-org/macos-libs/releases/download/2025-12-13/cranlibs-everything.tar.xz -o libs.tar.xz
           sudo tar -xf libs.tar.xz -C / opt
           rm -f libs.tar.xz
         fi

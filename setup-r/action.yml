@@ -11,9 +11,9 @@ runs:
       run: |
         version="${{inputs.r-version}}"
         if [ "$version" = "devel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/devel/R-devel-arm64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.6.0/R-4.6-branch-arm64.pkg"
         elif [ "$version" = "release" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.5.3/R-4.5.3-arm64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.6.0/R-4.6-branch-arm64.pkg"
         elif [ "$version" = "oldrel" ]; then
           URL="https://github.com/r-universe-org/actions/releases/download/4.5.3/R-4.5.3-arm64.pkg"
         fi
@@ -28,9 +28,9 @@ runs:
       run: |
         version="${{inputs.r-version}}"
         if [ "$version" = "devel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/devel/R-devel-x86_64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.6.0/R-4.6-branch-x86_64.pkg"
         elif [ "$version" = "release" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.5.3/R-4.5.3-x86_64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.6.0/R-4.6-branch-x86_64.pkg"
         elif [ "$version" = "oldrel" ]; then
           URL="https://github.com/r-universe-org/actions/releases/download/4.5.3/R-4.5.3-x86_64.pkg"
         fi
@@ -45,9 +45,9 @@ runs:
       run: |
         $version = "${{inputs.r-version}}"
         if ( $version -eq "devel" ) {
-          $URL = "https://github.com/r-universe-org/actions/releases/download/devel/R-devel-win.exe"
+          $URL = "https://cran.r-project.org/bin/windows/base/R-devel-win.exe"
         } elseif ( $version -eq "release" ) {
-          $URL = "https://github.com/r-universe-org/actions/releases/download/4.5.3/R-4.5.3-win.exe"
+          $URL = "https://github.com/r-universe-org/actions/releases/download/4.6.0/R-4.6.0alpha-win.exe"
         } elseif ( $version -eq "oldrel" ) {
           $URL = "https://github.com/r-universe-org/actions/releases/download/4.5.3/R-4.5.3-win.exe"
         }
