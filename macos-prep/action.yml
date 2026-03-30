@@ -137,8 +137,8 @@ runs:
           echo "Skipping quarto installation"
         else
           echo "::group::Installing Quarto"
-          pkgfile="quarto-1.8.24-macos.pkg"
-          curl --retry 3 --fail-with-body -OL https://github.com/quarto-dev/quarto-cli/releases/download/v1.8.24/$pkgfile
+          pkgfile="quarto-1.9.36-macos.pkg"
+          curl --retry 3 --fail-with-body -OL https://github.com/quarto-dev/quarto-cli/releases/download/v1.9.36/$pkgfile
           sudo installer -pkg $pkgfile -target /
           rm -f $pkgfile
           echo "::endgroup::"
@@ -150,11 +150,11 @@ runs:
           echo "Skipping pandoc installation"
         else
           echo "::group::Installing Pandoc"
-          pkgfile="pandoc-3.6.3-$ARCH-macOS.pkg"
-          curl --retry 3 --fail-with-body -OL https://github.com/jgm/pandoc/releases/download/3.6.3/$pkgfile
+          pkgfile="pandoc-3.9.0.2-$ARCH-macOS.pkg"
+          curl --retry 3 --fail-with-body -OL https://github.com/jgm/pandoc/releases/download/3.9.0.2/$pkgfile
           sudo installer -pkg $pkgfile -target /
           rm -f $pkgfile
-          cp -f /usr/local/bin/pandoc /opt/R/$ARCH/bin/  #Copy to cache
+          cp -f $(readlink -f /usr/local/bin/pandoc) /opt/R/$ARCH/bin/  #Copy to cache
           echo "::endgroup::"
         fi
 
@@ -180,9 +180,9 @@ runs:
         else
           echo "::group::Installing GO"
           if [ "$ARCH" = "arm64" ]; then
-          installgo="go1.24.0.darwin-arm64.pkg"
+          installgo="go1.26.1.darwin-arm64.pkg"
           else
-          installgo="go1.24.0.darwin-amd64.pkg"
+          installgo="go1.26.1.darwin-amd64.pkg"
           fi
           curl --retry 3 --fail-with-body -LOSs https://go.dev/dl/$installgo
           sudo installer -pkg $installgo -target /
