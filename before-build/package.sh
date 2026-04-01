@@ -33,7 +33,7 @@ REGISTERED=$(git config -f .gitmodules --get "submodule.${PACKAGE}.registered" |
 # Custom organization hooks
 if [ "$REGISTERED" != "false" ]; then
 ORGANIZATION="$UNIVERSE"
-if [ "$ORGANIZATION" = "bioc-release" ] || [ "$ORGANIZATION" = "bioc" ]; then
+if [ "$ORGANIZATION" = "bioc-release" ] || [ "$ORGANIZATION" = "bioc" ] || [ "$ORGANIZATION" = "tempbioc" ]; then
 ORGANIZATION="bioconductor"
 fi
 if [ "$ORGANIZATION" = "r-multiverse" ]; then
