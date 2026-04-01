@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
+echo "::group::Print artifacts"
 ls -lR
+echo "::endgroup::"
 
 # trap 'catch $? $LINENO' EXIT
 # catch() {
