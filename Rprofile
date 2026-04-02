@@ -31,7 +31,7 @@ local({
   } else {
     bioc_soft <- "https://bioc.r-universe.dev"
     bioc_anno <- sprintf("https://bioconductor.posit.co/packages/%s/data/annotation", utils:::.BioC_version_associated_with_R_version())
-    bioc_exp  <- NULL
+    bioc_exp  <- sprintf("https://bioconductor.posit.co/packages/%s/data/experiment", utils:::.BioC_version_associated_with_R_version())
   }
   options(repos = c(
     universe = universe_url,
