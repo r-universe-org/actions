@@ -88,11 +88,11 @@ if(length(unavail)) {
 }
 
 # Temp fix for broken CRAN binaries
-if(identical(.Platform$pkgType, 'mac.binary.big-sur-x86_64') && R.version$minor == '6.0'){
-  if('data.table' %in% installed){
-    install.packages('data.table', repos = 'https://test.r-universe.dev')
-  }
-}
+#if(identical(.Platform$pkgType, 'mac.binary.big-sur-x86_64') && R.version$minor == '6.0'){
+#  if('data.table' %in% installed){
+#    install.packages('data.table', repos = 'https://test.r-universe.dev')
+#  }
+#}
 
 
 # Clear PATH for some weird pkg
