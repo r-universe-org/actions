@@ -94,6 +94,11 @@ if(length(unavail)) {
 #  }
 #}
 
+# Workaround bug in R-4.6-alpha, fixed in 89810
+if(R.version$minor == '6.0' && isTRUE(R.version[["svn rev"]] < "89810")) {
+  broken <- R.home("include/R_ext/RStartup.h")
+  readLines(broken) |> sub(pattern="new)", replacement="newval)", fixed = TRUE) |> writeLines(broken)
+}
 
 # Clear PATH for some weird pkg
 if(.Platform$OS.type == 'windows' && grepl("Rgraphviz", sourcepkg) && nchar(Sys.getenv("R_ENVIRON_USER"))){
