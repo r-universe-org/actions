@@ -87,12 +87,15 @@ if(length(unavail)) {
   remotes::install_deps(sourcepkg, dependencies = TRUE, upgrade = FALSE)
 }
 
-# Temp fix for broken CRAN binaries
+# Temp fixes for broken CRAN binaries
 #if(identical(.Platform$pkgType, 'mac.binary.big-sur-x86_64') && R.version$minor == '6.0'){
 #  if('data.table' %in% installed){
 #    install.packages('data.table', repos = 'https://test.r-universe.dev')
 #  }
 #}
+if('Rcpp' %in% installed){
+  install.packages('Rcpp', repos = 'https://rcppcore.r-universe.dev')
+}
 
 # Workaround bug in R-4.6-alpha, fixed in 89810
 if(R.version$minor == '6.0' && isTRUE(R.version[["svn rev"]] < "89810")) {
