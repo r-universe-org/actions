@@ -66,6 +66,7 @@ if [ "$PKGTYPE" == "failure" ]; then
 		--data-urlencode "Builder-Host=GitHub-Actions" \
 		--data-urlencode "Builder-Buildurl=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
 		"${SERVERURL}"
+	echo "DEPLOY=OK" >> pkgdata.txt
 	exit 0;
 fi
 
@@ -94,6 +95,7 @@ upload_package_file(){
 		-H 'Expect:' \
 		"${SERVERURL}/${SHASUM}" &&\
   echo " === Complete! === " &&\
+  echo "DEPLOY=OK" >> pkgdata.txt
   exit 0
 }
 
@@ -105,4 +107,5 @@ for x in 30 60 150 0; do
 done
 
 echo "Package deploy failed"
+echo "DEPLOY=FAIL" >> pkgdata.txt
 exit 1
