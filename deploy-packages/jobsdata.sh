@@ -28,10 +28,19 @@ save_jobs_data(){
     echo "Converting jobsdata.json to base64-json..."
     cat jobsdata.json | gzip | openssl base64 -A -out jobsdata.txt
     echo "jobdata=$(cat jobsdata.txt)" >> $GITHUB_OUTPUT
+    print_jobs_summary
     exit 0
   else
     return 1
   fi
+}
+
+print_jobs_summary(){
+  echo "### Check results" | tee -a $GITHUB_STEP_SUMMARY
+  echo "" | tee -a $GITHUB_STEP_SUMMARY
+  echo "| Target | R | Result | Total time |" | tee -a $GITHUB_STEP_SUMMARY
+  echo "|--------|---|--------|------------|"  | tee -a $GITHUB_STEP_SUMMARY
+  jq -r '.[] | [.config, .r, .check, .time] | join(" | ") | "| \(.) |"' jobsdata.json  | tee -a $GITHUB_STEP_SUMMARY
 }
 
 # Sometimes this randomly fails. Retry 3 times.

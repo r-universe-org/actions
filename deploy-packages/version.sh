@@ -6,8 +6,9 @@ fi
 
 OLDVERSION=$(curl -sSf "https://${UNIVERSE}.r-universe.dev/api/packages/${PACKAGE}" | jq -r '.Version')
 if [ "$OLDVERSION" ] && [ "$VERSION" ] && [ "$OLDVERSION" != "$VERSION" ]; then
-  echo "Version change from $OLDVERSION to $VERSION"
   echo "version_change=true" >> $GITHUB_OUTPUT
+  echo "### Version bump!" | tee -a $GITHUB_STEP_SUMMARY
+  echo "Version changed from $OLDVERSION to $VERSION" | tee -a $GITHUB_STEP_SUMMARY
 else
   echo "Version $VERSION has not changed."
 fi
