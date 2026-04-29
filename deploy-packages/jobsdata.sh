@@ -28,7 +28,7 @@ save_jobs_data(){
     echo "Converting jobsdata.json to base64-json..."
     cat jobsdata.json | gzip | openssl base64 -A -out jobsdata.txt
     echo "jobdata=$(cat jobsdata.txt)" >> $GITHUB_OUTPUT
-    print_jobs_summary
+    print_jobs_summary || true
     exit 0
   else
     return 1
@@ -36,11 +36,13 @@ save_jobs_data(){
 }
 
 print_jobs_summary(){
-  echo "### Check results" | tee -a $GITHUB_STEP_SUMMARY
+  echo "## Deployment! 🚀" | tee -a $GITHUB_STEP_SUMMARY
+  echo "Deploying the following files and results to https://${UNIVERSE}.r-universe.dev/${PACKAGE}" | tee -a $GITHUB_STEP_SUMMARY
   echo "" | tee -a $GITHUB_STEP_SUMMARY
-  echo "| Target | R | Result | Total time |" | tee -a $GITHUB_STEP_SUMMARY
-  echo "|--------|---|--------|------------|"  | tee -a $GITHUB_STEP_SUMMARY
-  jq -r '.[] | [.config, .r, .check, .time] | join(" | ") | "| \(.) |"' jobsdata.json  | tee -a $GITHUB_STEP_SUMMARY
+  echo "| Target Job | R | CMD check | Elapsed time | Binaries and check logs |" | tee -a $GITHUB_STEP_SUMMARY
+  echo "|------------|---|-----------|--------------|-------------------------|"  | tee -a $GITHUB_STEP_SUMMARY
+  cat jobsdata.json | jq -r --arg run_id "$GITHUB_RUN_ID" '.[] | [("[\(.config)](\($run_id)/job/\(.job))"), .r, .check, .time, (.artifact | if . and . != "" then "[download](\($run_id)/artifacts/\(.))" else "" end)] | join(" | ") | "| \(.) |"' | tee -a $GITHUB_STEP_SUMMARY
+  echo "" | tee -a $GITHUB_STEP_SUMMARY
 }
 
 # Sometimes this randomly fails. Retry 3 times.
