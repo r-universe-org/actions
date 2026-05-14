@@ -63,7 +63,7 @@ runs:
         echo "Done removing homebrew!"
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
         ln -sf /usr/local/bin/rustup-init $HOME/.cargo/bin/rustup
-        cargo --version
+        cargo --version || true
         echo "::endgroup::"
 
     - shell: bash
