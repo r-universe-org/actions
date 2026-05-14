@@ -53,17 +53,17 @@ runs:
       run: |
         echo "::group::Removing Homebrew"
         cp $(which gtar git-lfs rustup-init) .
-        brew unlink $(brew list --formula) || true
+        brew unlink $(brew list --formula | grep -v rustup-init) || true
         brewdir=$(brew --repo)
         sudo mv $(brew --prefix)/Cellar $(brew --prefix)/Cellar.old
         sudo rm -vf $(which brew)
         sudo mv $brewdir $brewdir.old
-        cp -f gtar git-lfs rustup-init /usr/local/bin/
-        hash -r
+        cp -fv gtar git-lfs rustup-init /usr/local/bin/
         echo "Done removing homebrew!"
-        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-        ln -sf /usr/local/bin/rustup-init $HOME/.cargo/bin/rustup
-        cargo --version
+        echo "$HOME/.cargo/bin" | tee -a $GITHUB_PATH
+        ln -sfv /usr/local/bin/rustup-init $HOME/.cargo/bin/rustup
+        hash -r
+        PATH="$HOME/.cargo/bin:$PATH" cargo --version
         echo "::endgroup::"
 
     - shell: bash
