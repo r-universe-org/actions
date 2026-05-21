@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-# Temporary solution to not reupload old source packges
-# TODO: actually compare $STOREDATE to date here
-if [ -z "$STOREDATE" ]; then
-	echo "Skipping redeploy of old file"; exit 0
+# Skip re-uploading of files more than 3 days old
+# CUTDATE=$(date -v-3d '+%Y%m%d')
+if [ "${TARGET}" != "source" ] && [ "$STOREDATE" -lt "20260522" ]; then
+	echo "Skipping redeploy of old binary"; exit 0
 fi
 
 if [ -z "$COMMITINFO" ]; then
