@@ -102,6 +102,10 @@ if(length(unavail)) {
 #  readLines(broken) |> sub(pattern="new)", replacement="newval)", fixed = TRUE) |> writeLines(broken)
 #}
 
+if('gh' %in% installed){
+  install.packages('gh', repos = 'https://r-lib.r-universe.dev')
+}
+
 # Clear PATH for some weird pkg
 if(.Platform$OS.type == 'windows' && grepl("Rgraphviz", sourcepkg) && nchar(Sys.getenv("R_ENVIRON_USER"))){
   message("Clearing PATH for Rgraphviz")
