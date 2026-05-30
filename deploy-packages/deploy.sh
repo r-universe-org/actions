@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-# Skip re-uploading of files more than 3 days old
-# CUTDATE=$(date -v-3d '+%Y%m%d')
-if [ "${TARGET}" != "source" ] && [ "$STOREDATE" -lt "20260530" ]; then
+# Skip re-uploading of binaries more than 3 days old
+CUTDATE=$(date -d "2 days ago" '+%Y%m%d')
+if [ "${TARGET}" != "source" ] && [ "$STOREDATE" -lt "$CUTDATE" ]; then
 	echo "Skipping redeploy of old binary"; exit 0
 fi
 
