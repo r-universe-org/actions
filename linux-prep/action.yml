@@ -19,7 +19,7 @@ runs:
       run: rm -Rf /host/usr/share/dotnet /host/usr/local/lib/android
 
     - name: Get source package
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: package-source
         path: .
