@@ -93,9 +93,10 @@ if(length(unavail)) {
 #    install.packages('data.table', repos = 'https://test.r-universe.dev')
 #  }
 #}
-#if('Rcpp' %in% installed){
-#  install.packages('Rcpp', repos = 'https://rcppcore.r-universe.dev')
-#}
+if(all(c('Rcpp', 'rwasm') %in% installed)){
+  pak::pak('RcppCore/Rcpp#1482')
+}
+
 # Workaround bug in R-4.6-alpha, fixed in 89810
 #if(R.version$minor == '6.0' && isTRUE(R.version[["svn rev"]] < "89810")) {
 #  broken <- R.home("include/R_ext/RStartup.h")
