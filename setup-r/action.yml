@@ -11,9 +11,9 @@ runs:
       run: |
         version="${{inputs.r-version}}"
         if [ "$version" = "devel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.6.0/R-4.6.0-arm64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.6.1/R-4.6.1-arm64.pkg"
         elif [ "$version" = "release" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.6.0/R-4.6.0-arm64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.6.1/R-4.6.1-arm64.pkg"
         elif [ "$version" = "oldrel" ]; then
           URL="https://github.com/r-universe-org/actions/releases/download/4.5.3/R-4.5.3-arm64.pkg"
         fi
@@ -28,9 +28,9 @@ runs:
       run: |
         version="${{inputs.r-version}}"
         if [ "$version" = "devel" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.6.0/R-4.6.0-x86_64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.6.1/R-4.6.1-x86_64.pkg"
         elif [ "$version" = "release" ]; then
-          URL="https://github.com/r-universe-org/actions/releases/download/4.6.0/R-4.6.0-x86_64.pkg"
+          URL="https://github.com/r-universe-org/actions/releases/download/4.6.1/R-4.6.1-x86_64.pkg"
         elif [ "$version" = "oldrel" ]; then
           URL="https://github.com/r-universe-org/actions/releases/download/4.5.3/R-4.5.3-x86_64.pkg"
         fi
@@ -47,7 +47,7 @@ runs:
         if ( $version -eq "devel" ) {
           $URL = "https://cloud.r-project.org/bin/windows/base/R-devel-win.exe"
         } elseif ( $version -eq "release" ) {
-          $URL = "https://github.com/r-universe-org/actions/releases/download/4.6.0/R-4.6.0-win.exe"
+          $URL = "https://github.com/r-universe-org/actions/releases/download/4.6.1/R-4.6.1-win.exe"
         } elseif ( $version -eq "oldrel" ) {
           $URL = "https://github.com/r-universe-org/actions/releases/download/4.5.3/R-4.5.3-win.exe"
         }
@@ -62,7 +62,11 @@ runs:
       if: runner.os == 'windows' && runner.arch == 'arm64'
       run: |
         $version = "${{inputs.r-version}}"
-        $URL = "https://www.r-project.org/nosvn/winutf8/aarch64/prerelease/R-devel_2026-02-25_r89481-aarch64.exe"
+        if ( $version -eq "devel" ) {
+          $URL = "https://github.com/r-devel/actions/releases/download/devel/R-devel-aarch64.exe"
+        } elseif ( $version -eq "release" ) {
+          $URL = "https://github.com/r-devel/actions/releases/download/4.6.1/R-4.6.1-aarch64.exe"
+        }
         curl -o Rinstall.exe --max-time 300 --retry 3 --fail-with-body --ssl-no-revoke -sSL $URL
         echo "Starting R installer..."
         Start-Process "Rinstall.exe" -argumentlist "/VERYSILENT /SUPPRESSMSGBOXES /DIR=C:\\R" -wait
