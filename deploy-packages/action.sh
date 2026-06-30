@@ -38,7 +38,11 @@ mv package-source package-00source
 
 for dir in package-*; do
   echo "::group::DEPLOYING ${dir}"
-  (cd "${dir}"; eval $(cat pkgdata.txt) ${GITHUB_ACTION_PATH}/deploy.sh) || FAILURE=1
+  if [ "$UNIVERSE" = "jeroen" ]; then
+    (cd "${dir}"; eval $(cat pkgdata.txt) ${GITHUB_ACTION_PATH}/deploy-r2.sh) || FAILURE=1
+  else
+    (cd "${dir}"; eval $(cat pkgdata.txt) ${GITHUB_ACTION_PATH}/deploy.sh) || FAILURE=1
+  fi
   echo "::endgroup::"
 done
 
