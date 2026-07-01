@@ -36,9 +36,17 @@ fi
 # Upload source first
 mv package-source package-00source
 
+# Flip here if we deploy to R2 or not
+if [ "$AWS_SECRET_ACCESS_KEY" ]; then
+  case "$UNIVERSE" in
+    jeroen|ropensci|r-lib|r-multiverse|cran)
+      DEPLOY_TO_R2_CDN=TRUE ;;
+  esac
+fi
+
 for dir in package-*; do
   echo "::group::DEPLOYING ${dir}"
-  if [ "$UNIVERSE" = "jeroen" ] || [ "$UNIVERSE" = "ropensci" ] || [ "$UNIVERSE" = "r-lib" ] || [ "$UNIVERSE" = "r-multiverse" ]; then
+  if [ "$DEPLOY_TO_R2_CDN" ]; then
     (cd "${dir}"; eval $(cat pkgdata.txt) ${GITHUB_ACTION_PATH}/deploy-r2.sh) || FAILURE=1
   else
     (cd "${dir}"; eval $(cat pkgdata.txt) ${GITHUB_ACTION_PATH}/deploy.sh) || FAILURE=1
