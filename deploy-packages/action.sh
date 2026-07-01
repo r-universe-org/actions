@@ -38,7 +38,7 @@ mv package-source package-00source
 
 for dir in package-*; do
   echo "::group::DEPLOYING ${dir}"
-  if [ "$UNIVERSE" = "jeroen" ]; then
+  if [ "$UNIVERSE" = "jeroen" ] || [ "$UNIVERSE" = "ropensci" ] || [ "$UNIVERSE" = "r-lib" ] || [ "$UNIVERSE" = "r-multiverse" ]; then
     (cd "${dir}"; eval $(cat pkgdata.txt) ${GITHUB_ACTION_PATH}/deploy-r2.sh) || FAILURE=1
   else
     (cd "${dir}"; eval $(cat pkgdata.txt) ${GITHUB_ACTION_PATH}/deploy.sh) || FAILURE=1
