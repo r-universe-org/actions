@@ -37,11 +37,8 @@ fi
 mv package-source package-00source
 
 # Flip here if we deploy to R2 or not
-if [ "$AWS_SECRET_ACCESS_KEY" ]; then
-  case "$UNIVERSE" in
-    jeroen|ropensci|r-lib|r-multiverse|cran)
-      DEPLOY_TO_R2_CDN=TRUE ;;
-  esac
+if [ "$AWS_SECRET_ACCESS_KEY" ] && [ "$UNIVERSE" != "bioc" ] && [ "$UNIVERSE" != "bioc-release" ] && [ "$UNIVERSE" != "biocstaging" ]; then
+  DEPLOY_TO_R2_CDN=TRUE
 fi
 
 for dir in package-*; do
