@@ -122,7 +122,7 @@ upload_to_r2(){
 			--cache-control "public, max-age=31536000, immutable" \
 			--metadata "universe=${UNIVERSE},pkgtype=${PKGTYPE},file=${FILE},runid=${GITHUB_RUN_ID}" \
 			--output json) || { echo "ERROR: failed to upload ${FILE} to R2"; return 1; }
-		echo "Uploaded to CDN: ${DOWNLOADURL}"
+		echo "Uploaded to CDN: ${SHASUM}"
 	fi
 
 	# Both head-object and put-object return the lifecycle expiration (if any) in
@@ -133,6 +133,15 @@ upload_to_r2(){
 	if [ -z "$EXPIRATION" ]; then
 		echo "Upload OK but failed to get expiration. Something wrong."
 		exit 1
+	fi
+
+	# VERIFY that file public now
+	SHACDN=$(curl --no-progress-meter --max-time 30 --fail-with-body "$DOWNLOADURL" | openssl dgst -sha256 |  awk '{print $2}')
+	if [ "$SHACDN" = "$SHASUM" ]; then
+		echo "CDN file OK: $DOWNLOADURL"
+	else
+		echo "File not (yet) found on $DOWNLOADURL..."
+		return 1
 	fi
 }
 
