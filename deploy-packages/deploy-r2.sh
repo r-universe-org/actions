@@ -123,6 +123,7 @@ upload_to_r2(){
 			--metadata "universe=${UNIVERSE},pkgtype=${PKGTYPE},file=${FILE},runid=${GITHUB_RUN_ID}" \
 			--output json) || { echo "ERROR: failed to upload ${FILE} to R2"; return 1; }
 		echo "Uploaded to CDN: ${SHASUM}"
+		sleep 1
 	fi
 
 	# Both head-object and put-object return the lifecycle expiration (if any) in
@@ -136,11 +137,12 @@ upload_to_r2(){
 	fi
 
 	# VERIFY that file public now
-	SHACDN=$(curl --no-progress-meter --max-time 30 --fail-with-body "$DOWNLOADURL" | openssl dgst -sha256 |  awk '{print $2}')
+	# R2 sometimes gives HTTP 520 while it is processing a fresh upload.
+	SHACDN=$(curl --no-progress-meter --max-time 30 --retry 3 --retry-delay 5 --retry-all-errors --fail-with-body "$DOWNLOADURL" | openssl dgst -sha256 |  awk '{print $2}')
 	if [ "$SHACDN" = "$SHASUM" ]; then
 		echo "CDN file OK: $DOWNLOADURL"
 	else
-		echo "File not (yet) found on $DOWNLOADURL..."
+		echo "File not (yet) found on $DOWNLOADURL"
 		return 1
 	fi
 }
