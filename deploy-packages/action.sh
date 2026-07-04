@@ -37,9 +37,9 @@ fi
 mv package-source package-00source
 
 # Flip here if we deploy to R2 or not
-if [ "$AWS_SECRET_ACCESS_KEY" ] && [ "$UNIVERSE" != "bioc" ] && [ "$UNIVERSE" != "bioc-release" ] && [ "$UNIVERSE" != "biocstaging" ]; then
-  DEPLOY_TO_R2_CDN=TRUE
-fi
+#if [ "$UNIVERSE" != "bioc-release" ]; then
+DEPLOY_TO_R2_CDN=TRUE
+#fi
 
 for dir in package-*; do
   echo "::group::DEPLOYING ${dir}"

@@ -10,14 +10,16 @@ R2_BUCKET="r-universe-cdn"
 # R2 credentials are read from envvars by the aws cli
 export AWS_DEFAULT_REGION="auto" # required by s3 client
 if [ -z "$AWS_SECRET_ACCESS_KEY" ] || [ -z "$AWS_ACCESS_KEY_ID" ]; then
-	echo "ERROR: missing R2 AWS credentials"; exit 1
+	R2INFO=$(curl -X POST --no-progress-meter --fail-with-body -u "${CRANLIKEPWD}" "https://${UNIVERSE}.r-universe.dev/api/r2info")
+	export AWS_ACCESS_KEY_ID=$(echo "$R2INFO" | cut -d ":" -f 1)
+	export AWS_SECRET_ACCESS_KEY=$(echo "$R2INFO" | cut -d ":" -f 2)
 fi
 
 # Skip re-uploading of binaries more than 3 days old
-CUTDATE=$(date -d "2 days ago" '+%Y%m%d')
-if [ "${TARGET}" != "source" ] && [ "$STOREDATE" -lt "$CUTDATE" ]; then
-	echo "Skipping redeploy of old binary"; exit 0
-fi
+#CUTDATE=$(date -d "2 days ago" '+%Y%m%d')
+#if [ "${TARGET}" != "source" ] && [ "$STOREDATE" -lt "$CUTDATE" ]; then
+#	echo "Skipping redeploy of old binary"; exit 0
+#fi
 
 if [ -z "$COMMITINFO" ]; then
 	echo "Missing COMMITINFO"; exit 1
