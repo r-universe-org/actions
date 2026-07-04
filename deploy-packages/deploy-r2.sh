@@ -9,10 +9,8 @@ R2_BUCKET="r-universe-cdn"
 
 # R2 credentials are read from envvars by the aws cli
 export AWS_DEFAULT_REGION="auto" # required by s3 client
-if [ -z "$AWS_SECRET_ACCESS_KEY" ] || [ -z "$AWS_ACCESS_KEY_ID" ]; then
-	R2INFO=$(curl -X POST --no-progress-meter --max-time 30 --retry 3 --retry-delay 5 --retry-all-errors --fail-with-body -u "${CRANLIKEPWD}" "https://${UNIVERSE}.r-universe.dev/api/r2info")
-	export AWS_ACCESS_KEY_ID=$(echo "$R2INFO" | cut -d ":" -f 1)
-	export AWS_SECRET_ACCESS_KEY=$(echo "$R2INFO" | cut -d ":" -f 2)
+if [ "${#AWS_SECRET_ACCESS_KEY}" != "64" ]; then
+	echo "ERROR: missing R2 AWS credentials"; exit 1
 fi
 
 # Skip re-uploading of binaries more than 3 days old
