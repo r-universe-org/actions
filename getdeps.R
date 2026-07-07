@@ -97,9 +97,9 @@ if(length(unavail)) {
 #    install.packages('data.table', repos = 'https://test.r-universe.dev')
 #  }
 #}
-if(all(c('Rcpp', 'rwasm') %in% installed)){
-  pak::pak('RcppCore/Rcpp')
-}
+#if(all(c('Rcpp', 'rwasm') %in% installed)){
+#  pak::pak('RcppCore/Rcpp')
+#}
 
 # Workaround bug in R-4.6-alpha, fixed in 89810
 #if(R.version$minor == '6.0' && isTRUE(R.version[["svn rev"]] < "89810")) {
