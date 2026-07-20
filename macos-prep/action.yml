@@ -110,7 +110,7 @@ runs:
           sudo tar -xf libs.tar.xz -C / opt
           rm -f libs.tar.xz
         else
-          curl --retry 3 --fail-with-body -sSL https://github.com/r-universe-org/macos-libs/releases/download/2025-12-13/cranlibs-everything.tar.xz -o libs.tar.xz
+          curl --retry 3 --fail-with-body -sSL https://github.com/r-universe-org/macos-libs/releases/download/2026-07-21/cranlibs-everything.tar.xz -o libs.tar.xz
           sudo tar -xf libs.tar.xz -C / opt
           rm -f libs.tar.xz
         fi
