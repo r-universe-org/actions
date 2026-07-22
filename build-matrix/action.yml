@@ -27,10 +27,10 @@ runs:
             r: ["release", "oldrel"],
             arch: (if $compiled != "" then ["x86_64", "arm64"] else ["arm64"] end)
           },
-          windows: {
+          windows: ({
             r: (if $universe == "cran" then ["devel"] else ["devel", "release", "oldrel"] end),
             arch: ["x86_64"]
-          },
+          } + (if $compiled != "" and $universe == "cran" then {include: [{r: "devel", arch: "arm64"}]} else {} end)),
           wasm: { r: ["release"] }
         }')
         echo "matrix=$matrix" >> $GITHUB_OUTPUT
