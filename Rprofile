@@ -20,7 +20,7 @@ local({
     }
   }
 
-  bioc_ver <- if(universe == 'bioc-release') {
+  if(universe == 'bioc-release') {
     bioc_soft <- "https://bioconductor.posit.co/packages/release/bioc"
     bioc_anno <- "https://bioconductor.posit.co/packages/release/data/annotation"
     bioc_exp  <- "https://bioconductor.posit.co/packages/release/data/experiment"
@@ -33,6 +33,13 @@ local({
     bioc_anno <- sprintf("https://bioconductor.posit.co/packages/%s/data/annotation", utils:::.BioC_version_associated_with_R_version())
     bioc_exp  <- sprintf("https://bioconductor.posit.co/packages/%s/data/experiment", utils:::.BioC_version_associated_with_R_version())
   }
+
+  # Always use our own binary repos on arm64-windows
+  if(R.version$platform == "aarch64-w64-mingw32"){
+    cran_url <- "https://cran.r-universe.dev"
+    bioc_soft <- "https://bioc.r-universe.dev"
+  }
+
   options(repos = c(
     universe = universe_url,
     CRAN = cran_url,
