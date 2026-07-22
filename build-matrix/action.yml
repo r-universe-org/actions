@@ -1,0 +1,36 @@
+name: 'Build matrix'
+description: 'Determine R versions and architectures to build for each platform'
+inputs:
+  compiled:
+    description: If the package needs compilation
+    required: false
+  universe:
+    description: Name of the universe we are building for
+    required: false
+outputs:
+  matrix:
+    description: "Object with the build matrix for each platform: linux, macos, windows, wasm"
+    value: ${{ steps.matrix.outputs.matrix }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: matrix
+      shell: bash
+      run: |
+        matrix=$(jq -cn --arg compiled "${{ inputs.compiled }}" --arg universe "${{ inputs.universe }}" '{
+          linux: {
+            r: ["devel", "release"],
+            arch: (if $compiled != "" then ["x86_64", "arm64"] else ["x86_64"] end)
+          },
+          macos: {
+            r: ["release", "oldrel"],
+            arch: (if $compiled != "" then ["x86_64", "arm64"] else ["arm64"] end)
+          },
+          windows: {
+            r: (if $universe == "cran" then ["devel"] else ["devel", "release", "oldrel"] end),
+            arch: ["x86_64"]
+          },
+          wasm: { r: ["release"] }
+        }')
+        echo "matrix=$matrix" >> $GITHUB_OUTPUT
