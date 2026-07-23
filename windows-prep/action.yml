@@ -10,6 +10,9 @@ inputs:
   quarto:
     description: 'Package depends on Quarto'
     required: false
+  cargo:
+    description: 'Package depends on Rust'
+    required: false
 
 runs:
   using: "composite"
@@ -33,6 +36,7 @@ runs:
         }
         "RTOOLS45_AARCH64_HOME=C:\rtools45-aarch64" >> $env:GITHUB_ENV
         "R_PLATFORM_PKGTYPE=windows.binary.clang-aarch64" >> $env:GITHUB_ENV
+
       shell: pwsh
       if: runner.arch == 'arm64'
 
@@ -47,11 +51,17 @@ runs:
           echo "RTOOLS46_HOME=$RTOOLS45_HOME" >> $GITHUB_ENV
           echo "RTOOLS44_HOME=$RTOOLS45_HOME" >> $GITHUB_ENV
         fi
-        if [ "$UNIVERSE_NAME" = "cran" ] || [ "$UNIVERSE_NAME" = "bioc" ]; then
-          echo "_R_INSTALL_TIME_PATCHES_=https://www.r-project.org/nosvn/winutf8/ucrt3/" >> $GITHUB_ENV
-        fi
+        #if [ "$UNIVERSE_NAME" = "cran" ] || [ "$UNIVERSE_NAME" = "bioc" ]; then
+        #  echo "_R_INSTALL_TIME_PATCHES_=https://www.r-project.org/nosvn/winutf8/ucrt3/" >> $GITHUB_ENV
+        #fi
       shell: bash
       if: runner.arch != 'arm64'
+
+    - name: "Install Rust / Cargo"
+      run: |
+        rustup target add aarch64-pc-windows-gnullvm || true
+      shell: bash
+      if: inputs.cargo && runner.arch == 'arm64'
 
     - name: "Install JAGS if needed"
       run: |
