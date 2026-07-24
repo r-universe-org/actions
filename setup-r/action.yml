@@ -95,16 +95,6 @@ runs:
         R CMD javareconf || true
         echo "::endgroup::"
 
-    - name: Setup rJava (arm)
-      shell: bash
-      if: runner.os == 'windows' && runner.arch == 'arm64'
-      run: echo "JAVA_HOME=$JAVA_HOME_21_AARCH64" >> $GITHUB_ENV
-
-    - name: Setup rJava (x86_64)
-      shell: bash
-      if: runner.os == 'windows' && runner.arch != 'arm64'
-      run: echo "JAVA_HOME=$JAVA_HOME_21_X64" >> $GITHUB_ENV
-
     - name: Set Windows timezone
       if: runner.os == 'windows'
       run: |

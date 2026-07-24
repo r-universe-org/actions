@@ -57,6 +57,21 @@ runs:
       shell: bash
       if: runner.arch != 'arm64'
 
+    - name: Set some variables
+      shell: bash
+      run: |
+        if [[ "${{runner.arch}}" == "ARM64" ]]; then
+          echo "JAVA_HOME=$JAVA_HOME_21_AARCH64" >> $GITHUB_ENV
+        else
+          echo "JAVA_HOME=$JAVA_HOME_21_X64" >> $GITHUB_ENV
+        fi
+        
+        # Sources: https://github.com/r-universe-org/patches
+        # Format: https://www.r-project.org/nosvn/winutf8/ucrt3/patches_aarch64/
+        if [ "$UNIVERSE_NAME" = "cran" ] || [ "$UNIVERSE_NAME" = "bioc" ]; then
+          echo "_R_INSTALL_TIME_PATCHES_=http://patches.r-universe.dev" >> $GITHUB_ENV
+        fi
+
     - name: "Install Rust / Cargo"
       run: |
         rustup target add aarch64-pc-windows-gnullvm || true
