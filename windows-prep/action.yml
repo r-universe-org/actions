@@ -69,7 +69,7 @@ runs:
         Start-Process "JAGS.exe" -argumentlist "/S" -wait
         Remove-Item JAGS.exe
       shell: pwsh
-      if: inputs.jags
+      if: inputs.jags && runner.arch != 'arm64'
 
     - name: "Install Pandoc"
       run: |
