@@ -80,11 +80,17 @@ runs:
 
     - name: "Install JAGS if needed"
       run: |
-        curl -o JAGS.exe -L https://github.com/r-universe-org/actions/releases/download/JAGS-4.3.1/JAGS-4.3.1.exe
-        Start-Process "JAGS.exe" -argumentlist "/S" -wait
-        Remove-Item JAGS.exe
+        if ("${{runner.arch}}" -eq "ARM64") {
+            $url = "https://github.com/r-universe-org/actions/releases/download/JAGS-4.3.2/JAGS-4.3.2-aarch64.exe"
+        } else {
+            $url = "https://github.com/r-universe-org/actions/releases/download/JAGS-4.3.1/JAGS-4.3.1.exe"
+        }
+        $jags = Join-Path $env:RUNNER_TEMP 'JAGS.exe'
+        curl.exe -sSL -o $jags $url
+        Start-Process $jags -ArgumentList '/S','/AllUsers' -Wait
+        if (-not (Test-Path 'C:\Program Files\JAGS\JAGS-*')) { throw 'JAGS did not install' }
       shell: pwsh
-      if: inputs.jags && runner.arch != 'arm64'
+      if: inputs.jags
 
     - name: "Install Pandoc"
       run: |
