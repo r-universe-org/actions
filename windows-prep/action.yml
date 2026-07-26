@@ -72,9 +72,13 @@ runs:
           echo "_R_INSTALL_TIME_PATCHES_=http://patches.r-universe.dev" >> $GITHUB_ENV
         fi
 
-    - name: "Install Rust / Cargo"
+    - name: "Shim Rust / Cargo on WINARM"
       run: |
         rustup target add aarch64-pc-windows-gnullvm || true
+        echo "HOST_CARGO=$(which cargo)" >> $GITHUB_ENV
+        echo "CARGO_BUILD_TARGET=aarch64-pc-windows-gnullvm" >> $GITHUB_ENV
+        echo "${GITHUB_ACTION_PATH}/shims" >> $GITHUB_PATH
+
       shell: bash
       if: inputs.cargo && runner.arch == 'arm64'
 

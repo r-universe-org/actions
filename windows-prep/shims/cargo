@@ -1,0 +1,44 @@
+#!/bin/sh
+# Many R packages set the wrong --target flag on ARM64.
+# This script overrides it with a warning.
+set -e
+
+args=()
+skip_next=false
+for arg in "$@"; do
+  if $skip_next; then
+    skip_next=false
+    target_orig="$arg"
+    continue
+  fi
+  case "$arg" in
+    --target)   skip_next=true ;;               # drop flag + its value
+    --target=*) target_orig="${arg:9}" ;;       # drop combined form
+    --manifest-path=*) manifest="${arg:16}" ;&  #fallthrough
+    *)          args+=("$arg") ;;
+  esac
+done
+
+# Path to real cargo is provided by R wrapper
+if [ -z "${HOST_CARGO}" ] || [ -z "${CARGO_BUILD_TARGET}" ]; then
+  echo "cargo not found"
+  exit 1
+fi
+
+echo "Compiling for $CARGO_BUILD_TARGET..."
+
+# If rustup is available, ensure we have the target toolchain
+if rustup --version; then
+  rustup target add $CARGO_BUILD_TARGET
+fi
+
+${HOST_CARGO} "${args[@]}"
+
+if [ "$1" = "build" ]; then
+  echo "Copying $CARGO_BUILD_TARGET artifacts to target dir"
+  cd "$(dirname ${manifest:-.})/target"
+  cp -Rf "$CARGO_BUILD_TARGET"/* . || true
+  if [ "$target_orig" ] && [ "$target_orig" != "$CARGO_BUILD_TARGET" ]; then
+    mkdir -p "./$target_orig" && cp -Rf "$CARGO_BUILD_TARGET"/* "./$target_orig/" || true
+  fi
+fi
