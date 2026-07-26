@@ -88,7 +88,12 @@ runs:
         $jags = Join-Path $env:RUNNER_TEMP 'JAGS.exe'
         curl.exe -sSL -o $jags $url
         Start-Process $jags -ArgumentList '/S','/AllUsers' -Wait
-        if (-not (Test-Path 'C:\Program Files\JAGS\JAGS-*')) { throw 'JAGS did not install' }
+        $dir = Get-ChildItem 'C:\Program Files\JAGS\JAGS-*' | Select-Object -First 1
+        if (-not $dir) { throw 'JAGS did not install' }
+        $short = (New-Object -ComObject Scripting.FileSystemObject).GetFolder($dir.FullName).ShortPath
+        Write-Host "Setting JAGS_ROOT=$short"
+        "JAGS_ROOT=$short" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+        "JAGS_HOME=$short" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
       shell: pwsh
       if: inputs.jags
 
