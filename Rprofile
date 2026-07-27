@@ -9,6 +9,11 @@ local({
   cran_url <- "https://cloud.r-project.org"
   fallback <- NULL
 
+  # Temp fix while they rebuild things for RcppParallel
+  if(R.version$platform == "x86_64-w64-mingw32"){
+    cran_url <- "https://p3m.dev/cran/latest"
+  }
+
   if(nchar(Sys.getenv("CRAN_VERSION"))){
     cran_url <- sprintf("https://p3m.dev/cran/%s", Sys.getenv("CRAN_VERSION"))
   } else {
