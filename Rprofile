@@ -42,7 +42,7 @@ local({
   # Always use our own binary repos on arm64-windows
   if(R.version$platform == "aarch64-w64-mingw32"){
     cran_url <- "https://cran.r-universe.dev"
-    bioc_soft <- "https://bioc.r-universe.dev"
+    #bioc_soft <- "https://bioc.r-universe.dev"
   }
 
   options(repos = c(
