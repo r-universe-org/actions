@@ -36,7 +36,7 @@ ${HOST_CARGO} "${args[@]}"
 
 if [ "$1" = "build" ]; then
   echo "Copying $CARGO_BUILD_TARGET artifacts to target dir"
-  cd "$(dirname ${manifest:-.})/target"
+  cd "$(dirname ${manifest:-.})/target" || true
   cp -Rf "$CARGO_BUILD_TARGET"/* . || true
   if [ "$target_orig" ] && [ "$target_orig" != "$CARGO_BUILD_TARGET" ]; then
     mkdir -p "./$target_orig" && cp -Rf "$CARGO_BUILD_TARGET"/* "./$target_orig/" || true
