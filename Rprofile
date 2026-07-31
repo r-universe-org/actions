@@ -11,7 +11,11 @@ local({
 
   # Temp fix while they rebuild things for RcppParallel
   if(R.version$platform == "x86_64-w64-mingw32"){
-    cran_url <- "https://p3m.dev/cran/latest"
+    if(getRversion() < "4.6"){
+      cran_url <- "https://p3m.dev/cran/latest"
+    } else {
+      cran_url <- "https://cran.r-universe.dev"
+    }
   }
 
   if(nchar(Sys.getenv("CRAN_VERSION"))){
