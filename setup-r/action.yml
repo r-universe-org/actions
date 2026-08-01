@@ -63,9 +63,9 @@ runs:
       run: |
         $version = "${{inputs.r-version}}"
         if ( $version -eq "devel" ) {
-          $URL = "https://github.com/r-devel/actions/releases/download/devel/R-devel-aarch64.exe"
+          $URL = "https://github.com/r-devel/windows-arm64/releases/download/devel/R-devel-aarch64.exe"
         } elseif ( $version -eq "release" ) {
-          $URL = "https://github.com/r-devel/actions/releases/download/4.6.1/R-4.6.1-aarch64.exe"
+          $URL = "https://github.com/r-devel/windows-arm64/releases/download/4.6.1/R-4.6.1-aarch64.exe"
         }
         curl -o Rinstall.exe --max-time 300 --retry 3 --fail-with-body --ssl-no-revoke -sSL $URL
         echo "Starting R installer..."
