@@ -6,18 +6,17 @@ local({
   universe_url <- if(nchar(universe)){
     sprintf("https://%s.r-universe.dev", universe)
   }
-  cran_url <- "https://cloud.r-project.org"
-  fallback <- NULL
 
-  # Temp fix while they rebuild things for RcppParallel
-  if(R.version$platform == "x86_64-w64-mingw32"){
-    if(getRversion() < "4.6"){
-      cran_url <- "https://p3m.dev/cran/latest"
-    } else {
-      cran_url <- "https://cran.r-universe.dev"
-    }
+  # P3m windows does better job with building revdeps quickly than CRAN but does not have R-devel
+  cran_url <- if(R.version$platform == "aarch64-w64-mingw32" || grepl("unstable", R.version$status)){
+    "https://cran.r-universe.dev"
+  } else if(R.version$platform == "x86_64-w64-mingw32"){
+    "https://p3m.dev/cran/latest"
+  } else {
+    "https://cloud.r-project.org"
   }
 
+  fallback <- NULL
   if(nchar(Sys.getenv("CRAN_VERSION"))){
     cran_url <- sprintf("https://p3m.dev/cran/%s", Sys.getenv("CRAN_VERSION"))
   } else {
@@ -41,12 +40,6 @@ local({
     bioc_soft <- "https://bioc.r-universe.dev"
     bioc_anno <- sprintf("https://bioconductor.posit.co/packages/%s/data/annotation", utils:::.BioC_version_associated_with_R_version())
     bioc_exp  <- sprintf("https://bioconductor.posit.co/packages/%s/data/experiment", utils:::.BioC_version_associated_with_R_version())
-  }
-
-  # Always use our own binary repos on arm64-windows
-  if(R.version$platform == "aarch64-w64-mingw32"){
-    cran_url <- "https://cran.r-universe.dev"
-    #bioc_soft <- "https://bioc.r-universe.dev"
   }
 
   options(repos = c(
