@@ -68,7 +68,7 @@ runs:
         
         # Sources: https://github.com/r-universe-org/patches
         # Format: https://www.r-project.org/nosvn/winutf8/ucrt3/patches_aarch64/
-        if [ "$UNIVERSE_NAME" = "cran" ] || [ "$UNIVERSE_NAME" = "bioc" ] || [ "$UNIVERSE_NAME" = "bioc-release" ] || [ "$UNIVERSE_NAME" = "r-multiverse" ] || [ "$UNIVERSE_NAME" = "r-multiverse-staging" ]; then
+        if [ "$UNIVERSE_NAME" = "apache" ] || [ "$UNIVERSE_NAME" = "cran" ] || [ "$UNIVERSE_NAME" = "bioc" ] || [ "$UNIVERSE_NAME" = "bioc-release" ] || [ "$UNIVERSE_NAME" = "r-multiverse" ] || [ "$UNIVERSE_NAME" = "r-multiverse-staging" ]; then
           echo "_R_INSTALL_TIME_PATCHES_=http://contributor.r-project.org/windows-arm64/patches" >> $GITHUB_ENV
         fi
 
