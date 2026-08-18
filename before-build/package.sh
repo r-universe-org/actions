@@ -39,6 +39,9 @@ fi
 if [ "$ORGANIZATION" = "r-multiverse" ]; then
 ORGANIZATION="r-multiverse"
 fi
+if [ "$ORGANIZATION" = "ropensci-staging" ]; then
+ORGANIZATION="ropensci"
+fi
 fi
 
 # Check if we have the app
