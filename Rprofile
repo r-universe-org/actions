@@ -32,7 +32,7 @@ local({
     bioc_soft <- "https://bioconductor.posit.co/packages/release/bioc"
     bioc_anno <- "https://bioconductor.posit.co/packages/release/data/annotation"
     bioc_exp  <- "https://bioconductor.posit.co/packages/release/data/experiment"
-  } else if(universe == 'bioc') {
+  } else if(universe %in% c('bioc', 'biocstaging')) {
     bioc_soft <- "https://bioconductor.posit.co/packages/devel/bioc"
     bioc_anno <- "https://bioconductor.posit.co/packages/devel/data/annotation"
     bioc_exp  <- "https://bioconductor.posit.co/packages/devel/data/experiment"
