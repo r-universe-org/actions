@@ -36,6 +36,10 @@ local({
     bioc_soft <- "https://bioconductor.posit.co/packages/devel/bioc"
     bioc_anno <- "https://bioconductor.posit.co/packages/devel/data/annotation"
     bioc_exp  <- "https://bioconductor.posit.co/packages/devel/data/experiment"
+  } else if(universe == 'biocstaging') {
+    bioc_soft <- "https://bioc.r-universe.dev"
+    bioc_anno <- "https://bioconductor.posit.co/packages/devel/data/annotation"
+    bioc_exp  <- "https://bioconductor.posit.co/packages/devel/data/experiment"
   } else {
     bioc_soft <- "https://bioc.r-universe.dev"
     bioc_anno <- sprintf("https://bioconductor.posit.co/packages/%s/data/annotation", utils:::.BioC_version_associated_with_R_version())
