@@ -32,3 +32,6 @@ try({
 })
 
 write_output('CHECKSTATUS', status)
+if(status == 'ERROR' || status == 'FAILURE'){
+  quit(status = 1)
+}

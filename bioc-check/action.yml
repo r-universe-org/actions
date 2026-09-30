@@ -19,16 +19,17 @@ runs:
       id: check
       shell: bash
       run: |
-        Rscript "${GITHUB_ACTION_PATH}/prep.R" 
-        Rscript "${GITHUB_ACTION_PATH}/bioccheck.R" "${{inputs.sourcepkg}}" 2> >(tee -a output.log >&2)
+        Rscript "${GITHUB_ACTION_PATH}/prep.R"
+        Rscript "${GITHUB_ACTION_PATH}/bioccheck.R" "${{inputs.sourcepkg}}" 2> >(tee -a output.log >&2) || CHECKFAILED=1
         sed -e 's/\x1b\[[0-9;]*m//g' -i.bak output.log
         cp -f output.log *.BiocCheck
+        test -z "$CHECKFAILED"
       env:
         R_CHECK_ENVIRON: ${{github.action_path}}/../check.Renviron
 
 # Fail manually instead of 'exit 1' to avoid annotation: https://stackoverflow.com/a/73532770/318752 
-    - name: Set failed conclusion
-      if: steps.check.outputs.CHECKSTATUS == 'ERROR' || steps.check.outputs.CHECKSTATUS == 'FAILURE'
-      uses: actions/github-script@v9
-      with:
-        script: core.setFailed()
+#    - name: Set failed conclusion
+#      if: steps.check.outputs.CHECKSTATUS == 'ERROR' || steps.check.outputs.CHECKSTATUS == 'FAILURE'
+#      uses: actions/github-script@v9
+#      with:
+#        script: core.setFailed()
