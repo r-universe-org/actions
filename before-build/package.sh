@@ -24,11 +24,17 @@ REPOSITORY=$(git config --list | grep "submodule.${PACKAGE}.url=" | cut -d'=' -f
 REF=$(git submodule status $PACKAGE | awk '{print $1}' | sed 's/^[^0-9a-z]*//')
 SUBDIR=$(git config -f .gitmodules --get "submodule.${PACKAGE}.subdir" || true)
 if [ "$GITHUB_REPOSITORY" = "r-universe/cran" ]; then
-NOBINARIES="true"
+SKIP="macos"
 fi
 
 # Check for remotes
 REGISTERED=$(git config -f .gitmodules --get "submodule.${PACKAGE}.registered" || true)
+
+# For Bioc data packages
+PKGTYPE=$(git config -f .gitmodules --get "submodule.${PACKAGE}.type" || true)
+if [ "$PKGTYPE" = "data" ]; then
+SKIP="linux,windows,macos,wasm"
+fi
 
 # Custom organization hooks
 if [ "$REGISTERED" != "false" ]; then
@@ -62,7 +68,7 @@ echo "universe=$UNIVERSE" | tee -a $GITHUB_OUTPUT
 echo "repository=$REPOSITORY" | tee -a $GITHUB_OUTPUT
 echo "subdir=$SUBDIR" | tee -a $GITHUB_OUTPUT
 echo "ref=$REF" | tee -a $GITHUB_OUTPUT
-echo "nobinaries=$NOBINARIES" | tee -a $GITHUB_OUTPUT
+echo "skip=$SKIP" | tee -a $GITHUB_OUTPUT
 echo "organization=$ORGANIZATION" | tee -a $GITHUB_OUTPUT
 echo "registered=$REGISTERED" | tee -a $GITHUB_OUTPUT
 echo "hasapp=$HASAPP" | tee -a $GITHUB_OUTPUT
