@@ -35,9 +35,11 @@ runs:
 
     - shell: bash
       run: |
-        if [ -n "$(find "${{ inputs.FILE }}" -prune -size +100M)" ]; then
-          echo "File ${{ inputs.FILE }} is larger than 100 MB. This is not allowed"
-          exit 1
+        if [ "${UNIVERSE_NAME:0:4}" != "bioc" ]; then
+          if [ -n "$(find "${{ inputs.FILE }}" -prune -size +100M)" ]; then
+            echo "File ${{ inputs.FILE }} is larger than 100 MB. This is not allowed"
+            exit 1
+          fi
         fi
 
     - name: "Save source package"
