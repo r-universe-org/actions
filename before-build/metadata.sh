@@ -55,6 +55,10 @@ fi
 UPSTREAMBRANCH=$(git config -f .gitmodules --get "submodule.${PACKAGE}.branch" || true)
 echo "UPSTREAMBRANCH=$UPSTREAMBRANCH" | tee -a $GITHUB_OUTPUT
 
+# Propagate pkgtype to identify data packages
+PKGTYPE=$(git config -f .gitmodules --get "submodule.${PACKAGE}.type" || true)
+echo "PKGTYPE=$PKGTYPE" | tee -a $GITHUB_OUTPUT
+
 # This requires a GitHub session token...
 if [ "$DUMMY_SESSION" ] && [ "$REGISTERED" != "false" ]; then
   echo "Looking up blackbird count..."
