@@ -33,7 +33,7 @@ REGISTERED=$(git config -f .gitmodules --get "submodule.${PACKAGE}.registered" |
 # For Bioc data packages
 PKGTYPE=$(git config -f .gitmodules --get "submodule.${PACKAGE}.type" || true)
 if [ "$PKGTYPE" = "data" ]; then
-SKIP="linux,windows,macos,wasm"
+SKIP="windows,macos,wasm"
 fi
 
 # Custom organization hooks
