@@ -91,6 +91,12 @@ if(length(unavail)) {
   remotes::install_deps(sourcepkg, dependencies = TRUE, upgrade = FALSE)
 }
 
+# If cmdstanr is a dependency we probably need it
+if('cmdstanr' %in% pkg_deps){
+  message("Package cmdstanr is a dependency. Installing cmdstan")
+  try(cmdstanr::install_cmdstan(quiet = TRUE))
+}
+
 # Temp fixes for broken CRAN binaries
 #if(identical(.Platform$pkgType, 'mac.binary.big-sur-x86_64') && R.version$minor == '6.0'){
 #  if('data.table' %in% installed){
