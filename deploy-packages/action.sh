@@ -28,7 +28,9 @@ if [ -f "pkgdata.txt" ]; then
 mkdir package-source && mv pkgdata.txt *.tar.gz package-source/ || true
 else
 echo "No source package exists? Could be a systsem failure in GitHub Actions."
-TARGET=failure ${GITHUB_ACTION_PATH}/deploy.sh
+# Run from a subdirectory like the deploys below, the script reads ../jobsdata.txt
+mkdir package-failure && cd package-failure
+TARGET=failure ${GITHUB_ACTION_PATH}/deploy-r2.sh
 exit 1
 fi
 fi
@@ -46,7 +48,7 @@ for dir in package-*; do
   if [ "$DEPLOY_TO_R2_CDN" ]; then
     (cd "${dir}"; eval $(cat pkgdata.txt) ${GITHUB_ACTION_PATH}/deploy-r2.sh) || FAILURE=1
   else
-    (cd "${dir}"; eval $(cat pkgdata.txt) ${GITHUB_ACTION_PATH}/deploy.sh) || FAILURE=1
+    (cd "${dir}"; eval $(cat pkgdata.txt) ${GITHUB_ACTION_PATH}/deploy-old.sh) || FAILURE=1
   fi
   echo "::endgroup::"
 done
