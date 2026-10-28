@@ -138,7 +138,7 @@ upload_to_r2(){
 
 	# VERIFY that file public now
 	# R2 sometimes gives HTTP 520 while it is processing a fresh upload.
-	SHACDN=$(curl --no-progress-meter --max-time 30 --retry 3 --retry-delay 5 --retry-all-errors --fail-with-body "$DOWNLOADURL" | openssl dgst -sha256 |  awk '{print $2}')
+	SHACDN=$(curl --http1.1 --no-progress-meter --max-time 30 --retry 3 --retry-delay 5 --retry-all-errors --fail-with-body "$DOWNLOADURL" | openssl dgst -sha256 |  awk '{print $2}')
 	if [ "$SHACDN" = "$SHASUM" ]; then
 		echo "CDN file OK: $DOWNLOADURL"
 	else
