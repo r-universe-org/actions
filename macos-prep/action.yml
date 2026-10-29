@@ -52,18 +52,29 @@ runs:
     - shell: bash
       run: |
         echo "::group::Removing Homebrew"
-        cp $(which gtar git-lfs rustup-init) .
+        cp $(which gtar git-lfs) .
         brew unlink $(brew list --formula) || true
         brewdir=$(brew --repo)
         sudo mv $(brew --prefix)/Cellar $(brew --prefix)/Cellar.old
         sudo rm -vf $(which brew)
         sudo mv $brewdir $brewdir.old
-        cp -f gtar git-lfs rustup-init /usr/local/bin/
+        cp -f gtar git-lfs /usr/local/bin/
         hash -r
         echo "Done removing homebrew!"
+        echo "::endgroup::"
+        echo "::group::Restoring rustup"
+        # The rust toolchains are in ~/.rustup, but rustup came from homebrew (and links to brew libs).
+        # Replace it with the official standalone rustup binary and its proxies (cargo, rustc, ...)
+        rustarch=$(uname -m | sed 's/arm64/aarch64/')
+        mkdir -p $HOME/.cargo/bin
+        rm -f $HOME/.cargo/bin/rustup
+        curl --retry 3 -sSfL "https://static.rust-lang.org/rustup/dist/${rustarch}-apple-darwin/rustup-init" -o $HOME/.cargo/bin/rustup
+        chmod +x $HOME/.cargo/bin/rustup
+        for proxy in cargo cargo-clippy cargo-fmt cargo-miri clippy-driver rls rust-analyzer rust-gdb rust-gdbgui rust-lldb rustc rustdoc rustfmt; do
+          ln -sf rustup $HOME/.cargo/bin/$proxy
+        done
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-        ln -sf /usr/local/bin/rustup-init $HOME/.cargo/bin/rustup
-        cargo --version || true
+        $HOME/.cargo/bin/cargo --version || true
         echo "::endgroup::"
 
     - shell: bash
