@@ -28,22 +28,23 @@ local({
     }
   }
 
+  bioc_mirror <- sub("/+$", "", Sys.getenv('R_BIOC_MIRROR', 'https://bioconductor.org'))
   if(universe == 'bioc-release') {
-    bioc_soft <- "https://bioconductor.posit.co/packages/release/bioc"
-    bioc_anno <- "https://bioconductor.posit.co/packages/release/data/annotation"
-    bioc_exp  <- "https://bioconductor.posit.co/packages/release/data/experiment"
+    bioc_soft <- paste0(bioc_mirror, "/packages/release/bioc")
+    bioc_anno <- paste0(bioc_mirror, "/packages/release/data/annotation")
+    bioc_exp  <- paste0(bioc_mirror, "/packages/release/data/experiment")
   } else if(universe == 'bioc') {
-    bioc_soft <- "https://bioconductor.posit.co/packages/devel/bioc"
-    bioc_anno <- "https://bioconductor.posit.co/packages/devel/data/annotation"
-    bioc_exp  <- "https://bioconductor.posit.co/packages/devel/data/experiment"
+    bioc_soft <- paste0(bioc_mirror, "/packages/devel/bioc")
+    bioc_anno <- paste0(bioc_mirror, "/packages/devel/data/annotation")
+    bioc_exp  <- paste0(bioc_mirror, "/packages/devel/data/experiment")
   } else if(universe == 'biocstaging') {
     bioc_soft <- "https://bioc.r-universe.dev"
-    bioc_anno <- "https://bioconductor.posit.co/packages/devel/data/annotation"
-    bioc_exp  <- "https://bioconductor.posit.co/packages/devel/data/experiment"
+    bioc_anno <- paste0(bioc_mirror, "/packages/devel/data/annotation")
+    bioc_exp  <- paste0(bioc_mirror, "/packages/devel/data/experiment")
   } else {
     bioc_soft <- "https://bioc.r-universe.dev"
-    bioc_anno <- sprintf("https://bioconductor.posit.co/packages/%s/data/annotation", utils:::.BioC_version_associated_with_R_version())
-    bioc_exp  <- sprintf("https://bioconductor.posit.co/packages/%s/data/experiment", utils:::.BioC_version_associated_with_R_version())
+    bioc_anno <- sprintf("%s/packages/%s/data/annotation", bioc_mirror, utils:::.BioC_version_associated_with_R_version())
+    bioc_exp  <- sprintf("%s/packages/%s/data/experiment", bioc_mirror, utils:::.BioC_version_associated_with_R_version())
   }
 
   options(repos = c(
