@@ -1,6 +1,13 @@
 #!/bin/bash
-if [ "$UNIVERSE" == "cran" ] || [ "$UNIVERSE" == "bioc" ] || [ "$UNIVERSE" == "bioc-release" ]; then
-echo "Skipping version bump check for cran/bioc repos."
+if [ "$UNIVERSE" == "cran" ]; then
+echo "Skipping version bump check for cran repos."
+exit 0
+fi
+
+# For S4 it might be needed that revdeps of revdeps also get rebuilt hence skip version req
+# Version bumps are meaningless in bioconductor anyway but we use abitools to find breakage
+if [ "${UNIVERSE:0:4}" = "bioc" ]; then
+echo "version_change=true" >> $GITHUB_OUTPUT
 exit 0
 fi
 
