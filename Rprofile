@@ -21,7 +21,11 @@ local({
     cran_url <- sprintf("https://p3m.dev/cran/%s", Sys.getenv("CRAN_VERSION"))
   } else {
     if(grepl('darwin', R.version$platform)){
-      fallback <- "https://mac.cran.dev"
+      fallback <- if(identical(R.version$platform, "x86_64-apple-darwin20")){
+        "https://p3m.dev/cran/latest"
+      } else {
+        "https://mac.cran.dev"
+      }
     }
     if(grepl('x86_64-w64-mingw32', R.version$platform)){
       fallback <- "https://win.cran.dev"
