@@ -28,7 +28,7 @@ local({
       }
     }
     if(grepl('x86_64-w64-mingw32', R.version$platform)){
-      fallback <- "https://win.cran.dev"
+      fallback <- "https://cloud.r-project.org"
     }
   }
 
