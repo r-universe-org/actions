@@ -13,10 +13,9 @@ write_output <- function(key, value){
 }
 write_output('rversion', getRversion())
 
-# Do not try to install base packages
-too_big <- c('SNPlocs.Hsapiens.dbSNP155.GRCh38', 'SNPlocs.Hsapiens.dbSNP155.GRCh37',
-  'MafDb.gnomAD.r2.1.GRCh38', 'MafDb.gnomAD.r2.1.hs37d5')
-skiplist <- c("R", too_big, row.names(installed.packages(priority="base")), too_big)
+# We install annotation packages one by one because they can be huge
+annotation <- row.names(available.packages(repos='https://bioconductor.org/packages/devel/data/annotation'))
+skiplist <- c("R", row.names(installed.packages(priority="base")), annotation)
 
 #cat('::group::Install package dependencies\n')
 dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE, showWarnings = FALSE)
@@ -29,6 +28,7 @@ desc <- as.data.frame(read.dcf("DESCRIPTION"))
 unlink('DESCRIPTION')
 deps <- c(desc$Depends, desc$Imports, desc$LinkingTo, desc$Suggests, desc$Enhances)
 pkg_deps <- unique(trimws(sub("\\(.*\\)", "", unlist(strsplit(as.character(deps), ',')))))
+big_deps <- intersect(pkg_deps, annotation)
 pkg_deps <- setdiff(pkg_deps, skiplist)
 
 # Add Additional_repositories
@@ -81,6 +81,17 @@ if(R.version$platform == "x86_64-w64-mingw32"){
 options(install.packages.check.source = NULL)
 options("install.packages.compile.from.source"="interactive")
 update.packages(oldPkgs = pkg_deps, type = 'source', ask = FALSE)
+
+# Delete temp files
+unlink(file.path(tempdir(), "downloaded_packages"), recursive = TRUE)
+
+# Install huge bioc dependencies
+for(big_pkg in big_deps){
+  message("Installing annotation separately: ", big_pkg)
+  options(timeout = 500)
+  install.packages(big_pkg, type = 'source')
+  unlink(file.path(tempdir(), "downloaded_packages"), recursive = TRUE)
+}
 
 # Test again if any are missing, try with remotes
 installed <- row.names(installed.packages())
