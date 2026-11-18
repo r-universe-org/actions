@@ -87,10 +87,14 @@ unlink(file.path(tempdir(), "downloaded_packages"), recursive = TRUE)
 
 # Install huge bioc dependencies
 for(big_pkg in big_deps){
-  message("Installing annotation separately: ", big_pkg)
   options(timeout = 500)
-  install.packages(big_pkg, type = 'source')
-  unlink(file.path(tempdir(), "downloaded_packages"), recursive = TRUE)
+  for(attempt in 1:3){
+    message("Installing annotation: ", big_pkg)
+    install.packages(big_pkg, type = 'source')
+    unlink(file.path(tempdir(), "downloaded_packages"), recursive = TRUE)
+    if(nchar(system.file(package = big_pkg)))
+      break
+  }
 }
 
 # Test again if any are missing, try with remotes
