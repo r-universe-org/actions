@@ -100,7 +100,7 @@ for(big_pkg in big_deps){
 # Test again if any are missing, try with remotes
 installed <- row.names(installed.packages())
 unavail <- setdiff(pkg_deps, installed)
-if(length(unavail)) {
+if(length(unavail) && Sys.getenv('NO_ADDITIONAL_REPOSITORIES') != 'true') {
   warning("Installing from remotes: ", paste(unavail, collapse = ','))
   install.packages('remotes')
   remotes::install_deps(sourcepkg, dependencies = TRUE, upgrade = FALSE)
