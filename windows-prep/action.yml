@@ -97,7 +97,14 @@ runs:
         $short = (New-Object -ComObject Scripting.FileSystemObject).GetFolder($dir.FullName).ShortPath
         Write-Host "Setting JAGS_ROOT=$short"
         "JAGS_ROOT=$short" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
-        "JAGS_HOME=$short" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+        if ("${{runner.arch}}" -eq "ARM64") {
+            $url = "https://github.com/r-universe-org/actions/releases/download/JAGS-5/JAGS-5.0.2-aarch64.exe"
+        } else {
+            $url = "https://github.com/r-universe-org/actions/releases/download/JAGS-5/JAGS-5.0.2-x86_64.exe"
+        }
+        $jags = Join-Path $env:RUNNER_TEMP 'JAGS.exe'
+        curl.exe -sSL -o $jags $url
+        Start-Process $jags -ArgumentList '/S','/AllUsers' -Wait
       shell: pwsh
       if: inputs.jags
 
