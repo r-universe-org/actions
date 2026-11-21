@@ -168,12 +168,6 @@ runs:
       shell: bash
       run: |
         echo "::group::Installing JAGS"
-        curl --retry 3 --fail-with-body -LO https://github.com/autobrew/bundler/releases/download/jags-4.3.2/JAGS-4.3.2.pkg
-        sudo installer -pkg JAGS-4.3.2.pkg -target /
-        rm -f JAGS-4.3.2.pkg
-        if [ -d "/opt/R/arm64/lib/pkgconfig" ]; then
-          cp -f /usr/local/lib/pkgconfig/jags.pc /opt/R/arm64/lib/pkgconfig/
-        fi
         curl --retry 3 --fail-with-body -LO https://github.com/r-universe-org/actions/releases/download/JAGS-5/JAGS-5.0.2-vecLib-single-universal.pkg
         sudo installer -pkg JAGS-5.0.2-vecLib-single-universal.pkg -target /
         rm -f JAGS-5.0.2-vecLib-single-universal.pkg
