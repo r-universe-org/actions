@@ -119,8 +119,8 @@ if('cmdstanr' %in% pkg_deps){
 
 # Temp fix for JAGS5 compat
 if(grepl("linux", R.Version()$platform) && identical(R.version$minor, '6.2')) {
-  if('rjags' %in% pkg_deps){
-    install.packages(c("rjags", "runjags"), repos = 'https://cran.r-project.org', type = 'source')
+  if('runjags' %in% pkg_deps){
+    install.packages("runjags", repos = 'https://cran.r-project.org', type = 'source')
   }
 }
 
