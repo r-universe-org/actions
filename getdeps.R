@@ -28,7 +28,7 @@ desc <- as.data.frame(read.dcf("DESCRIPTION"))
 unlink('DESCRIPTION')
 deps <- c(desc$Depends, desc$Imports, desc$LinkingTo, desc$Suggests, desc$Enhances)
 pkg_deps <- unique(trimws(sub("\\(.*\\)", "", unlist(strsplit(as.character(deps), ',')))))
-big_deps <- intersect(pkg_deps, annotation)
+direct_deps <- pkg_deps
 pkg_deps <- setdiff(pkg_deps, skiplist)
 
 # Add Additional_repositories
@@ -43,6 +43,10 @@ if(length(desc$Additional_repositories)){
     options(repos = c(getOption('repos'), addrepos))
   }
 }
+
+# Recursive deps, needed to find indirect annotation packages
+all_deps <- unique(unname(c(direct_deps, unlist(tools::package_dependencies(direct_deps, recursive = TRUE)))))
+big_deps <- intersect(all_deps, annotation)
 
 # Install sysdeps (Linux only)
 if(grepl("linux", R.Version()$platform)) {
@@ -68,8 +72,7 @@ options("install.packages.compile.from.source"="never")
 # But we also need transitive deps that are not available as binary such as bioconductor data packages
 if(R.version$platform == "x86_64-w64-mingw32"){
   install.packages(pkg_deps, type = .Platform$pkgType)
-  alldeps <- unique(unname(c(pkg_deps, unlist(tools::package_dependencies(pkg_deps, recursive = TRUE)))))
-  missingdeps <- setdiff(alldeps, c(skiplist, row.names(installed.packages())))
+  missingdeps <- setdiff(all_deps, c(skiplist, row.names(installed.packages())))
   message("Try building from source: ", paste(missingdeps, collapse = ', '))
   # Needed when some binaries are 404
   install.packages(missingdeps, type = 'source')
@@ -87,6 +90,8 @@ unlink(file.path(tempdir(), "downloaded_packages"), recursive = TRUE)
 
 # Install huge bioc dependencies
 for(big_pkg in big_deps){
+  if(nchar(system.file(package = big_pkg)))
+    next
   options(timeout = 500)
   for(attempt in 1:3){
     message("Installing annotation: ", big_pkg)
