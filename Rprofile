@@ -51,8 +51,14 @@ local({
     bioc_exp  <- sprintf("%s/packages/%s/data/experiment", bioc_mirror, utils:::.BioC_version_associated_with_R_version())
   }
 
+  # Fix race conditions during mass version bump
+  bootstrap <- if(Sys.getenv('BIOC_RELEASE_BOOTSTRAP') ==  'true'){
+    'https://bioc.r-universe.dev'
+  }
+
   options(repos = c(
     universe = universe_url,
+    bootstrap = bootstrap,
     CRAN = cran_url,
     fallback = fallback,
     BioCsoft = bioc_soft,
