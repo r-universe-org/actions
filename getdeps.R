@@ -117,13 +117,6 @@ if('cmdstanr' %in% pkg_deps){
   try(cmdstanr::install_cmdstan(quiet = TRUE))
 }
 
-# Temp fix for JAGS5 compat
-if(grepl("linux", R.Version()$platform) && identical(R.version$minor, '6.2')) {
-  if('runjags' %in% pkg_deps){
-    install.packages("runjags", repos = 'https://cran.r-project.org', type = 'source')
-  }
-}
-
 # Temp fixes for broken CRAN binaries
 #if(identical(.Platform$pkgType, 'mac.binary.big-sur-x86_64') && R.version$minor == '6.0'){
 #  if('data.table' %in% installed){
